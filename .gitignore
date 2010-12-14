@@ -1,2 +1,4 @@
 *.pyc
 keys.py
+
+docs/_build
