@@ -1,0 +1,93 @@
+\documentclass{article}
+\usepackage{fullpage}
+\usepackage{graphicx}
+\usepackage{hyperref}
+
+\title{\texttt{twilio} Python Package}
+\author{ Kyle Conroy }
+\begin{document}
+\maketitle
+
+\section{Module Overview}
+
+The \texttt{twilio} package is broken up into three different modules:
+\begin{itemize}
+\item The \texttt{api} module
+\item The \texttt{twiml} module
+\item The \texttt{util} module
+
+\section{\texttt{api} Module}
+
+TBD
+
+\section{\texttt{twiml} Module}
+
+The \texttt{twiml} module is responsible for the creation and validation of TwiML. Configuration options also allow users to specift defaults for various verbs.
+
+\subsection{Creation}
+
+TwiML creation begins with the \texttt{Response} verb. Each succesive verb is created by calling various methods on the response, such as \texttt{say} or \texttt{play}. These methods return the verbs they create to ease the creation of nested TwiML. To finish, call the \texttt{toxml} method on the \texttt{Response}, which returns raw TwiML.
+
+\begin{verbatim}
+from twilio import twiml
+
+r = twiml.Response()
+r.say("Hello")
+r.toxml() # returns <Response><Say>Hello</Say><Response>
+\end{verbatim}
+
+The verb methods (outlined in the complete reference) take the body (only text) of the verb as the first argument. All attributes are keyword arguements.
+
+\begin{verbatim}
+from twilio import twiml
+
+r = twiml.Response()
+r.play("monkey.mp3", loop=5)
+r.toxml() # returns <Response><Play loop="3">monkey.mp3</Play><Response>
+\end{verbatim}
+
+\subsubsection{Psuedo-blocks}
+
+Python 2.6+ added the \texttt{with} statement for context management. Using \texttt{with}, the module can \textit{almost} emulate Ruby blocks.
+
+\begin{verbatim}
+from twilio import twiml
+
+r = twiml.Response()
+r.say("hello")
+with r.gather(end_on_key=4) as g:
+    g.say("world")
+r.toxml() 
+
+# returns 
+# <Response>
+#   <Say>Hello</Say>
+#   <Gather endOnKey="4"><Say>World</Say></Gather>
+# </Response>
+\end{verbatim}
+
+\subsection{Configuration}
+
+Usres may want to configure TwiML creation at a global scope. For example, make all \textt{Redirects} use the POST method by default. The \texttt{config} function allows for easy custimization. Each verb also has a config method. See the complete reference for all the configuration options.
+
+\begin{verbatim}
+from twilio import twiml
+
+twiml.config(validation=False)
+twiml.redirect.config(method=POST)
+\end{verbatim}
+
+\subsection{Vaidation}
+
+TBD
+
+\section{Complete Reference}
+
+Below is the complete reference for all the available verbs in the \texttt{twiml} module
+
+\subsection{\texttt{twilio.twiml.Verb} Class}
+
+\subsubsection{\texttt{Verb.say(body, [
+
+
+\end{document}
