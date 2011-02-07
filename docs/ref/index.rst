@@ -7,5 +7,6 @@ API Reference
    :maxdepth: 1
 
    twiml
-   api
+   resources/index
    util
+   
