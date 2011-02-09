@@ -2,64 +2,6 @@
 
 .. module:: twilio.twiml
 
-==============
-TwiML Creation
-==============
-
-Tutorial
----------------
-The :mod:`twiml` module is responsible for the creation and validation of TwiML. Configuration options also allow users to specift defaults for various verbs.
-
-Creation
-^^^^^^^^
-
-TwiML creation begins with the :class:`Response` verb. Each succesive verb is created by calling various methods on the response, such as :meth:`say` or :meth:`play`. These methods return the verbs they create to ease the creation of nested TwiML. To finish, call the :meth:`toxml` method on the :class:`Response`, which returns raw TwiML.::
-
-    from twilio import twiml
-
-    r = twiml.Response()
-    r.say("Hello")
-    r.toxml() 
-    # returns <Response><Say>Hello</Say><Response>
-
-The verb methods (outlined in the complete reference) take the body (only text) of the verb as the first argument. All attributes are keyword arguements.::
-
-    from twilio import twiml
-
-    r = twiml.Response()
-    r.play("monkey.mp3", loop=5)
-    r.toxml() 
-    # returns <Response><Play loop="3">monkey.mp3</Play><Response>
-
-Python 2.6+ added the :const:`with` statement for context management. Using :const:`with`, the module can *almost* emulate Ruby blocks.::
-
-    from twilio import twiml
-
-    r = twiml.Response()
-    r.say("hello")
-    with r.gather(end_on_key=4) as g:
-        g.say("world")
-    r.toxml() 
-
-which returns::
-
-    <Response>
-      <Say>Hello</Say>
-      <Gather endOnKey="4"><Say>World</Say></Gather>
-    </Response>
-
-Configuration
-^^^^^^^^^^^^^
-
-**THIS SECTION STILL TBD**
-
-Usres may want to configure TwiML creation at a global scope. For example, make all :class:`Redirect` use the POST method by default. The :func:`config` function allows for easy custimization. Each verb also has a config method. See the complete reference for all the configuration options.::
-
-    from twilio import twiml
-
-    twiml.config(validation=False)
-    twiml.redirect.config(method=POST)
-
 
 Reference Guide
 ---------------
@@ -74,50 +16,6 @@ Reference Guide
 
 Primary Verbs
 ^^^^^^^^^^^^^
-
-.. class:: Response
-
-   Returns a TwiML :class:`Response` object.
-
-   .. method:: say(body="", **kwargs)
-
-      Return a newly created :class:`Say` verb, nested inside this verb
-
-   .. method:: play(body="", **kwargs)
-
-      Return a newly created :class:`Play` verb, nested inside this verb
-
-   .. method:: gather(**kwargs)
-
-      Return a newly created :class:`Gather` verb, nested inside this verb
-
-   .. method:: record(**kwargs)
-
-      Return a newly created :class:`Record` verb, nested inside this verb
-
-   .. method:: sms(body="", **kwargs)
-
-      Return a newly created :class:`Sms` verb, nested inside this verb
-
-   .. method:: dial(body="", **kwargs)
-
-      Return a newly created :class:`Dial` verb, nested inside this verb
-
-   .. method:: pause(**kwargs)
-
-      Return a newly created :class:`Pause` verb, nested inside this verb
-
-   .. method:: reject(**kwargs)
-
-      Return a newly created :class:`Reject` verb, nested inside this verb
-
-   .. method:: redirect(body="", **kwargs)
-
-      Return a newly created :class:`Redirect` verb, nested inside this verb
-
-   .. method:: hangup()
-
-      Return a newly created :class:`Hangup` verb, nested inside this verb
 
 .. class:: Say(body, voice="man", langauge="en", loop=1)
 
@@ -134,6 +32,7 @@ Primary Verbs
    .. attribute:: loop
 
       The :attr:`loop` attribute specifies how many times you'd like the text repeated. The default is once. Specifying '0' will cause the the :class:`Say` verb to loop until the call is hung up.
+
 
 .. class:: Play(url="", loop=1)
 
@@ -208,31 +107,6 @@ Nouns
 .. class:: Conference(body, muted=False, beep=True, stat_on_enter=True, end_on_exit=False, wait_url=None, wait_method="POST")
 
 .. class:: Number(phone, send_digits=None, url=None)
-
-Constants
-^^^^^^^^^
-
-Voices
->>>>>>
-.. data:: MAN
-.. data:: WOMAN
-
-Languages
->>>>>>>>>
-.. data:: ENGLISH
-.. data:: SPANISH
-.. data:: FRENCH
-.. data:: GERMAN
-
-HTTP Method
->>>>>>>>>>>
-.. data:: GET
-.. data:: POST
-
-Rejection Reasons
->>>>>>>>>>>>>>>>>
-.. data:: REJECTED
-.. data:: BUSY
 
 
 

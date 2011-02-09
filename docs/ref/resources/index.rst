@@ -12,3 +12,4 @@ Twilio API Resources
    caller_ids
    notifications
    phone_numbers
+   sandbox
