@@ -1,4 +1,3 @@
-import httplib2
 import json
 import logging
 import os
@@ -11,7 +10,6 @@ try:
     from django.utils import simplejson as json
     APPENGINE = True
 except:
-    import httplib2
     import json
     APPENGINE = False
 
@@ -54,7 +52,6 @@ class Client(object):
             self.account = account
             self.token = token
             if not APPENGINE:
-                self.http_client = httplib2.Http()
                 self.http_client.add_credentials(account, token)
         else:
             raise TwilioException("The Wufoo API requires authentication")
@@ -151,6 +148,12 @@ class ListResource(Resource):
         ListResources must expliciity support Instance creation
         """
         raise TwilioException("InstanceResource creation not supported")
+
+    def count(self):
+        """
+        Return the number of instance resources contained in this list resource
+        """
+        pass
 
     def list(self):
         content = json.loads(self._get())

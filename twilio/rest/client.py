@@ -1,7 +1,7 @@
 import httplib2
 import logging
-from twilio.api.core import Client
-from twilio.api.resources import *
+from twilio.rest.core import Client
+from twilio.rest.resources import *
 from urllib import urlencode 
 from urlparse import urljoin
 

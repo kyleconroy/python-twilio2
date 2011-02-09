@@ -3,19 +3,38 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-=============================
-twilio-python2 Documentation
-=============================
+===============
+twilio-python
+===============
+
+Status
+=======
+
+This documentation is for version 2.0 of the Twilio module. Please go here for documentation of the older versions
+
+.. include:: ../README.rst
+
+Tutorial and Overview
+=====================
+
+* Twiml Creation
+* REST API Usage
+* Integration with common web frameworks
 
 .. toctree::
-   :maxdepth: 2
-   
-   ref/index
+    :maxdepth: 1
+    :glob:
 
-.. Indices, glossary and tables
-.. ============================
+    usage/*
 
-.. * :ref:`genindex`
-.. * :ref:`modindex`
-.. * :ref:`glossary`
+API Documentation
+==================
+
+.. toctree::
+    :maxdepth: 1
+    :glob:
+
+    api/*
+
+
 

@@ -22,6 +22,8 @@ Updating :class:`Account` information is really easy::
 Creating a Sub Account
 ----------------------
 
+.. code-block:: python
+
     import twilio
 
     conn = twilio.api.Client()
@@ -30,7 +32,7 @@ Creating a Sub Account
 Can I make calls with this sub account? I have no idea
 
 Phone Calls
-===============
+==============
 
 Making a Phone Call
 -------------------
@@ -121,3 +123,105 @@ Handing up the call also works.::
     conn.calls.hangup(sid)
 
 
+
+Caller Ids
+=============
+
+Validate a Phone Number
+-----------------------
+Adding a new phone number to your validated numbers is quick and easy
+
+.. code-block:: python
+
+    import twilio
+
+    conn = twilio.api.Client()
+    response = conn.caller_ids.validate("+9876543212")
+    print response["validation_code"]
+
+Twilio will call the provided number and for the  validation code to be entered.
+
+Listing all Validated Phone Numbers
+-----------------------------------
+Show all the current caller_ids
+
+.. code-block:: python
+
+    import twilio
+
+    conn = twilio.api.Client()
+    for caller_id in conn.caller_ids.list():
+        print caller_id.friendly_name
+
+Conferences
+================
+
+Filter Conferences by Status
+---------------------------------
+
+.. code-block:: python
+
+    import twilio
+
+    conn = twilio.api.Client()
+    for c in conn.conferences.list(status="in-progress"):
+        print c.sid
+
+Mute all participants
+----------------------
+
+.. code-block:: python
+
+    import twilio
+    conference = "CO119231312"
+
+    conn = twilio.api.Client()
+    for p in conn.participants.list(conference):
+        p.mute()
+
+Notifications 
+=================
+
+Filter Notifications by Log Level
+---------------------------------
+
+.. code-block:: python
+
+    import twilio
+
+    conn = twilio.api.Client()
+    for n in conn.notifications.list(log_level=0):
+        print n.error_code
+
+SMS Mesages
+==============
+
+Sending a SMS Message
+----------------------
+
+The :class:`SmsMessages` resource allows you to send outgoing text messages
+
+.. code-block:: python
+
+    import twilio
+
+    conn = twilio.api.Client()
+    t = "9991231234
+    f ="9991231234"
+    text = "Hello monkey!"
+    message = conn.sms.messages.create(to=t, from_=f, body=text)
+    print message.sid
+
+Transcriptions
+=================
+
+Show all Transcribed Messagse
+---------------------------------
+
+.. code-block:: python
+
+    import twilio
+
+    conn = twilio.api.Client()
+    for t in conn.transcriptions.list():
+        print t.transcription_text
