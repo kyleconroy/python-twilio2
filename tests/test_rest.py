@@ -162,6 +162,58 @@ class AccountsTest(unittest.TestCase):
         request.assert_called_with(expected_uri, method="POST", body=body, 
                                    headers=hs)
 
+    def test_instance_update_uri(self):
+        account_sid = "AC4bf2dafb92341f7caf8650403e422d23"
+        base_uri = "{0}Accounts".format(BASE_URI)
+        expected_uri = "{0}Accounts/{1}.json".format(BASE_URI, account_sid)
+
+        request = create_mock_request()
+        self.mock_http.request = request
+        
+        a = Account(self.c.accounts, base_uri, {"sid": account_sid})
+
+        with self.assertRaises(TwilioException) as cm:
+            c = a.update(friendly_name="You")
+
+        body = "FriendlyName=You"
+        hs = {'Content-type': 'application/x-www-form-urlencoded'}
+        request.assert_called_with(expected_uri, method="POST", body=body, 
+                                   headers=hs)
+
+        with open("tests/content/create_account.json") as f:
+            content = f.read()
+
+    def test_instance_update(self):
+        account_sid = "AC4bf2dafb92341f7caf8650403e422d23"
+        base_uri = "{0}Accounts".format(BASE_URI)
+        expected_uri = "{0}Accounts/{1}.json".format(BASE_URI, account_sid)
+
+        with open("tests/content/create_account.json") as f:
+            c = f.read()
+
+        request = create_mock_request(content=c)
+        self.mock_http.request = request
+        
+        a = Account(self.c.accounts, base_uri, {"sid": account_sid})
+        a.update(friendly_name="You")
+
+        self.assertEquals(a.date_created, "Fri, 11 Feb 2011 00:19:37 +0000")
+
+    def test_close_uri(self):
+        account_sid = "AC4bf2dafb92341f7caf8650403e422d23"
+        expected_uri = "{0}Accounts/{1}.json".format(BASE_URI, account_sid)
+
+        request = create_mock_request()
+        self.mock_http.request = request
+        
+        with self.assertRaises(TwilioException) as cm:
+            c = self.c.accounts.close(account_sid)
+
+        body = "Status=closed"
+        hs = {'Content-type': 'application/x-www-form-urlencoded'}
+        request.assert_called_with(expected_uri, method="POST", body=body, 
+                                   headers=hs)
+
     def test_request(self):
         request = create_mock_request(status=201)
         self.mock_http.request = request

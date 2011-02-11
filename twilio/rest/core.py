@@ -27,7 +27,6 @@ class TwilioRestException(TwilioException):
 
 class Resource(object):
     """An HTTP Resource"""
-    
 
     def __init__(self, client, base_uri):
         self.client = client
@@ -52,6 +51,12 @@ class Resource(object):
 
         return resp, content
 
+    def _fparam(self, p):
+        """
+        Filter the parameters, throwing away any None values
+        """
+        return dict([(d,p[d]) for d in p if p[d]])
+
 class ListResource(Resource):
 
     def _create(self, body):
@@ -70,9 +75,19 @@ class ListResource(Resource):
         entries = json.loads(content)
         return self._create_instance(entries)
 
+    def _delete(self, sid):
+        """
+        Delete an InstanceResource via DELETE
+        
+        body: string -- HTTP Body for the quest
+        """
+        uri = "{0}/{1}".format(self.uri, sid)
+        resp, content =  self._request(uri, method="DELETE")
+        return resp.status == 204
+
     def _update(self, sid, body):
         """
-        Update an InstanceResource via a POST to the List Resource
+        Update an InstanceResource via a POST
         
         sid: string -- String identifier for the list resource
         body: string -- HTTP Body for the quest
@@ -115,7 +130,7 @@ class ListResource(Resource):
 
     def _create_instance(self, content):
         try:
-            return self.instance(self.client, self.uri, content)
+            return self.instance(self, self.uri, content)
         except AttributeError:
             raise TwilioException("ListResource missing self.instance")
 
@@ -123,7 +138,9 @@ class InstanceResource(Resource):
 
     id_key = "sid"
 
-    def __init__(self, client, base_uri, entries):
+    def __init__(self, list_resource, base_uri, entries):
+        
+        self.list_resource = list_resource
 
         try:
             self.name = entries[self.id_key]
@@ -131,9 +148,12 @@ class InstanceResource(Resource):
             msg = "Key {0} not present in content".format(self.id_key)
             raise TwilioException(msg)
 
-        super(InstanceResource, self).__init__(client, base_uri)
+        super(InstanceResource, self).__init__(None, base_uri)
         
         # Delete conflicting parameter names
+        self._load(entries)
+
+    def _load(self, entries):
         if "from" in entries.keys():
             entries["from_"] = entries["from"]
             del entries["from"]
@@ -142,3 +162,10 @@ class InstanceResource(Resource):
             del entries["uri"]
 
         self.__dict__.update(entries)
+
+    def _update(self, **kwargs):
+        a = self.list_resource.update(self.sid, **kwargs)
+        self._load(a.__dict__)
+
+    def _delete(self, **kwargs):
+        self.list_resource.delete(self.sid, **kwargs)

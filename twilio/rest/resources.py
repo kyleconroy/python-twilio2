@@ -57,12 +57,16 @@ class AvailablePhoneNumber(core.InstanceResource):
 class Account(core.InstanceResource):
     """ An Account resource """
 
-    def update(friendly_name=None, status=None):
+    ACTIVE    = "active"
+    SUSPENDED = "suspended"
+    CLOSED    = "closed"
+
+    def update(self, **kwargs):
         """
         :param friendly_name: Update the human-readable description of this account.
         :param status: Alter the status of this account: use :data:`CLOSED` to irreversibly close this account, :data:`SUSPENDED` to temporarily suspend it, or :data:`ACTIVE` to reactivate it.
         """
-        pass
+        self._update(**kwargs)
 
 class Accounts(core.ListResource):
     """ A list of Account resources """
@@ -78,12 +82,10 @@ class Accounts(core.ListResource):
         :param date after: Only list calls started after this datetime
         :param date before: Only list calls started before this datetime
         """
-        params = {}
-        if friendly_name:
-            params["FriendlyName"] = friendly_name
-        if status:
-            params["Status"] = status
-
+        params = self._fparam({
+                "FriendlyName": friendly_name,
+                "Status": status,
+                })
         return self._list(params=params)
     
     def update(self, sid, friendly_name=None, status=None):
@@ -92,13 +94,29 @@ class Accounts(core.ListResource):
         :param friendly_name: Update the human-readable description of this account.
         :param status: Alter the status of this account: use :data:`CLOSED` to irreversibly close this account, :data:`SUSPENDED` to temporarily suspend it, or :data:`ACTIVE` to reactivate it.
         """
-        params = {}
-        if friendly_name:
-            params["FriendlyName"] = friendly_name
-        if status:
-            params["Status"] = status
-        body = urllib.urlencode(params)
-        return self._update(sid, body)
+        params = self._fparam({
+            "FriendlyName": friendly_name,
+            "Status": status
+            })
+        return self._update(sid, urllib.urlencode(params))
+
+    def close(self, sid):
+        """
+        Permenently deactivate an account, Alias to update
+        """
+        return self.update(sid, status=Account.CLOSED)
+
+    def suspend(self, sid):
+        """
+        Temporarily suspend an account, Alias to update
+        """
+        return self.update(sid, status=Account.SUSPENDED)
+
+    def activate(self, sid):
+        """
+        Reactivate an account, Alias to update
+        """
+        return self.update(sid, status=Account.ACTIVE)
 
     def create(self, friendly_name=None):
         """
