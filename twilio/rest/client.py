@@ -48,8 +48,8 @@ class TwilioClient(object):
         account_uri = "{0}/{1}/Accounts/{2}".format(base, version, account)
 
         self.accounts       = Accounts(self.client, version_uri)
+        self.calls          = Calls(self.client, account_uri)
         # self.phone_numbers  = AvailablePhoneNumbers(uri, client=self)
-        # self.calls          = Calls(uri, client=self)
         # self.conferences    = Conferences(uri, client=self)
         # self.notifications  = Notifications(uri, client=self)
         # self.caller_ids     = OutgoingCallerIds(uri, client=self)

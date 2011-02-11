@@ -1,6 +1,8 @@
 import json
 import os
 import unittest
+from datetime import datetime
+from datetime import date
 
 from mock import patch
 from mock import Mock
@@ -8,10 +10,12 @@ from twilio.rest.resources import *
 from twilio.rest.client import TwilioClient
 from twilio.rest.core import TwilioException
 from twilio.rest.core import TwilioRestException
+from twilio.rest.core import InstanceResource
 
 ACCOUNT_SID = "AC111111111"
-AUTH_TOKEN = "AUTH_TOKEN"
-BASE_URI = "https://api.twilio.com/2010-04-01/"
+AUTH_TOKEN  = "AUTH_TOKEN"
+BASE_URI    = "https://api.twilio.com/2010-04-01/"
+ACCOUNT_URI = "{0}Accounts/{1}/".format(BASE_URI, ACCOUNT_SID)
 
 def create_mock_request(status=200, content="{}"):
     request = Mock()
@@ -56,7 +60,7 @@ class ResourceTest(unittest.TestCase):
 
     def setUp(self):
         mock_http, request, self.resp = Mock(), Mock(), Mock()
-        request.return_value = resp, ""
+        request.return_value = self.resp, ""
         mock_http.request = request
         self.c = TwilioClient(account=ACCOUNT_SID, token=AUTH_TOKEN, 
                               client=mock_http)
@@ -244,7 +248,85 @@ class AccountsTest(unittest.TestCase):
         self.assertEquals(a.status, entries["status"])
         self.assertEquals(a.auth_token, entries["auth_token"])
 
-class ResourceTest(unittest.TestCase):
 
-    def test_resource(self):
-        pass
+class AccountTest(unittest.TestCase):
+
+    ct = {'Content-type': 'application/x-www-form-urlencoded'}
+
+    def setUp(self):
+        self.mock_http = Mock()
+        self.c = TwilioClient(account=ACCOUNT_SID, token=AUTH_TOKEN, 
+                              client=self.mock_http)
+
+        self.account_sid = "AC4bf2dafb92341f7caf8650403e422d23"
+        self.base_uri = "{0}Accounts".format(BASE_URI)
+        self.expected_uri = "{0}Accounts/{1}.json".format(BASE_URI, 
+                                                          self.account_sid)
+        self.account =  Account(self.c.accounts, self.base_uri, {"sid": self.account_sid})
+
+
+    def _validate(self, func, content_path, status):
+        with open(content_path) as f:
+            request = create_mock_request(content=f.read())
+            self.mock_http.request = request
+
+        func()
+
+        request.assert_called_with(self.expected_uri, method="POST", 
+                                   body="Status={0}".format(status), 
+                                   headers=self.ct)
+
+        self.assertEquals(self.account.status, status)
+
+    def test_close(self):
+        self._validate(self.account.close, "tests/content/close_account.json",
+                       Account.CLOSED)
+
+    def test_suspend(self):
+        self._validate(self.account.suspend, "tests/content/suspend_account.json",
+                       Account.SUSPENDED)
+
+    def test_activate(self):
+        self._validate(self.account.activate, "tests/content/create_account.json",
+                       Account.ACTIVE)
+
+
+class CallsTest(unittest.TestCase):
+
+    def setUp(self):
+        self.c = TwilioClient(account=ACCOUNT_SID, token=AUTH_TOKEN)
+
+    def mock_request(self, status=200, content="{}"):
+        request = Mock()
+        resp = Mock()
+        resp.status = status
+        resp.reason = "CREATED"
+        request.return_value = resp, content
+        self.c.client.request = request
+        return request
+
+    def test_uri(self):
+        uri = "{0}Calls".format(ACCOUNT_URI)
+        self.assertEquals(self.c.calls.uri, uri)
+
+    def test_get_uri(self):
+        csid = "CA12312313"
+        e_uri = "{0}Accounts/{1}/Calls/{2}.json".format(BASE_URI, 
+                                                        ACCOUNT_SID, csid)
+        request = self.mock_request()
+        
+        with self.assertRaises(TwilioException) as cm:
+            c = self.c.calls.get(csid)
+
+        request.assert_called_with(e_uri, method="GET")
+
+    def test_get_uri(self):
+        csid = "CA12312313"
+        e_uri = "{0}Accounts/{1}/Calls/{2}.json".format(BASE_URI, 
+                                                        ACCOUNT_SID, csid)
+        request = self.mock_request()
+        
+        with self.assertRaises(TwilioException) as cm:
+            c = self.c.calls.get(csid)
+
+        request.assert_called_with(e_uri, method="GET")

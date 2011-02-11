@@ -68,6 +68,25 @@ class Account(core.InstanceResource):
         """
         self._update(**kwargs)
 
+    def close(self):
+         """
+         Permenently deactivate an account, Alias to update
+         """
+         return self._update(status=Account.CLOSED)
+
+    def suspend(self):
+        """
+        Temporarily suspend an account, Alias to update
+        """
+        return self._update(status=Account.SUSPENDED)
+
+    def activate(self):
+        """
+        Reactivate an account, Alias to update
+        """
+        return self._update(status=Account.ACTIVE)
+
+
 class Accounts(core.ListResource):
     """ A list of Account resources """
 
@@ -82,7 +101,7 @@ class Accounts(core.ListResource):
         :param date after: Only list calls started after this datetime
         :param date before: Only list calls started before this datetime
         """
-        params = self._fparam({
+        params = core.fparam({
                 "FriendlyName": friendly_name,
                 "Status": status,
                 })
@@ -94,7 +113,7 @@ class Accounts(core.ListResource):
         :param friendly_name: Update the human-readable description of this account.
         :param status: Alter the status of this account: use :data:`CLOSED` to irreversibly close this account, :data:`SUSPENDED` to temporarily suspend it, or :data:`ACTIVE` to reactivate it.
         """
-        params = self._fparam({
+        params = core.fparam({
             "FriendlyName": friendly_name,
             "Status": status
             })
@@ -130,19 +149,44 @@ class Accounts(core.ListResource):
         body = urllib.urlencode({ "FriendlyName":friendly_name })
         return self._create(body)
 
+class Call(core.InstanceResource):
+    """ A call resource """
+
+    BUSY        = "busy"
+    CANCELED    = "canceled"
+    COMPLETED   = "completed"
+    FAILED      = "failed"
+    IN_PROGRESS = "in-progress"
+    NO_ANSWER   = "no-answer"
+    QUEUED      = "queued"
+    RINGING     = "ringing"
+
+    def hangup(self):
+        """ If this call is currenlty active, hang up the call. 
+        If this call is scheduled to be made, remove the call
+        from the queue
+        """
+        pass
+
+    def route(self, url, method="POST"):
+        """Route the specified :class:`Call` to another url.
+
+        :param url: A valid URL that returns TwiML. Twilio will immediately redirect the call to the new TwiML.
+        :param method: The HTTP method Twilio should use when requesting the above URL. Defaults to POST.
+        """
+        pass
+
+
 class Calls(core.ListResource):
     """ A list of Call resources """
 
-    def __init__(self, uri, **kwargs):
-        name = "calls"
-        uri += "/Calls"
-        super(Calls, self).__init__(uri, name=name, **kwargs)
+    name = "Calls"
+    instance = Call
 
-    def _load_instance(self, d):
-        return Call(self.uri, client=self.client, entries=d)
-    
-    def list(self, to=None, from_=None, status=None, 
-             before=None, after=None, page=0):
+    @core.normalize_dates
+    def list(self, to=None, from_=None, status=None, ended_after=None,
+             ended_before=None, ended_on=None, started_before=None, 
+             started_after=None, started_on=None, page=0):
         """
         Returns a page of :class:`Call` resources as a list. For paging 
         informtion see :class:`ListResource`
@@ -150,8 +194,20 @@ class Calls(core.ListResource):
         :param date after: Only list calls started after this datetime
         :param date before: Only list calls started before this datetime
         """
-        pass
+        params = core.fparam({
+            "To": to,
+            "From": form_,
+            "Status": status,
+            "StartTime<": started_before,
+            "StartTime>": started_after,
+            "StartTime": started_on,
+            "EndTime<": ended_before,
+            "EndTime>": ended_after,
+            "EndTime": ended_on,
+            })
+        return self._update(sid, urllib.urlencode(params))
 
+    @core.normalize_dates
     def iter(self, to=None, from_=None, status=None, 
              before=None, after=None, page=0):
         """
@@ -190,26 +246,6 @@ class Calls(core.ListResource):
         """
         pass
 
-class Call(core.InstanceResource):
-    """ A call resource """
-
-    def __init__(self, uri, entries={}, **kwargs):
-        super(Call, self).__init__(uri, entries=entries, **kwargs)
-
-    def hangup(self):
-        """ If this call is currenlty active, hang up the call. 
-        If this call is scheduled to be made, remove the call
-        from the queue
-        """
-        pass
-
-    def route(self, url, method="POST"):
-        """Route the specified :class:`Call` to another url.
-
-        :param url: A valid URL that returns TwiML. Twilio will immediately redirect the call to the new TwiML.
-        :param method: The HTTP method Twilio should use when requesting the above URL. Defaults to POST.
-        """
-        pass
 
 class CallerIds(core.ListResource):
     """ A list of :class:`CallerId` resources """

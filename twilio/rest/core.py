@@ -3,6 +3,7 @@ import os
 import re
 import urllib
 import base64
+import datetime
 
 # import json
 try:
@@ -24,6 +25,33 @@ class TwilioRestException(TwilioException):
 
     def __str__(self):
         return "HTTP ERROR {0}: {1} \n {2}".format(self.status, self.msg, self.uri)
+
+def fparam(p):
+    """
+    Filter the parameters, throwing away any None values
+    """
+    return dict([(d,p[d]) for d in p if p[d]])
+
+def parse_date(d):
+    """
+    Return a string representation of a date that the Twilio API understands
+    Format is YYYY-MM-DD. Returns None if d is not a string, datetime, or date
+    """
+    if isinstance(d, datetime.datetime):
+        return str(d.date())
+    elif isinstance(d, datetime.date):
+        return str(d)
+    elif isinstance(d, str):
+        return d
+
+def normalize_dates(myfunc):
+    def inner_func(*args, **kwargs):
+        for k, v in kwargs.iteritems():
+            res = [ True for s in ["after", "before", "on"] if s in k]
+            if len(res):
+                kwargs[k] = parse_date(v)                    
+        return myfunc(*args, **kwargs)
+    return inner_func
 
 class Resource(object):
     """An HTTP Resource"""
@@ -50,12 +78,6 @@ class Resource(object):
             raise TwilioRestException(resp.status, furi, resp.reason)
 
         return resp, content
-
-    def _fparam(self, p):
-        """
-        Filter the parameters, throwing away any None values
-        """
-        return dict([(d,p[d]) for d in p if p[d]])
 
 class ListResource(Resource):
 
