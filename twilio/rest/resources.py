@@ -184,28 +184,31 @@ class Calls(core.ListResource):
     instance = Call
 
     @core.normalize_dates
-    def list(self, to=None, from_=None, status=None, ended_after=None,
-             ended_before=None, ended_on=None, started_before=None, 
-             started_after=None, started_on=None, page=0):
+    def list(self, **kwargs):
         """
         Returns a page of :class:`Call` resources as a list. For paging 
         informtion see :class:`ListResource`
-   
-        :param date after: Only list calls started after this datetime
-        :param date before: Only list calls started before this datetime
+
+        Options Arguments:
+        * to
+        * from_
+        * status
+        * ended_after
+        * ended_before
+        * ended
+        * started_before 
+        * started_after
+        * started
+        * page
         """
-        params = core.fparam({
-            "To": to,
-            "From": form_,
-            "Status": status,
-            "StartTime<": started_before,
-            "StartTime>": started_after,
-            "StartTime": started_on,
-            "EndTime<": ended_before,
-            "EndTime>": ended_after,
-            "EndTime": ended_on,
-            })
-        return self._update(sid, urllib.urlencode(params))
+        # opt_args = ["to", "from_", "status", "ended_after", "ended_before", "ended"      * started_before 
+        # * started_after
+        # * started
+        # * page
+        # for k, v in kwargs.iteritems():
+        #     if k not in opt_args:
+        #         raise TypeError("list() got an unexpected keyword argument '{0}'".format(k))
+        return self._list(core.convert_keys(kwargs))
 
     @core.normalize_dates
     def iter(self, to=None, from_=None, status=None, 

@@ -320,13 +320,14 @@ class CallsTest(unittest.TestCase):
 
         request.assert_called_with(e_uri, method="GET")
 
-    def test_get_uri(self):
-        csid = "CA12312313"
-        e_uri = "{0}Accounts/{1}/Calls/{2}.json".format(BASE_URI, 
-                                                        ACCOUNT_SID, csid)
+    def test_list_uri(self):
+        query = "EndTime%3C=2009-01-31&StartTime%3E=2009-01-01&EndTime=2009-12-12"
+        e_uri = "{0}Accounts/{1}/Calls.json?{2}".format(BASE_URI, ACCOUNT_SID, 
+                                                        query)
         request = self.mock_request()
         
         with self.assertRaises(TwilioException) as cm:
-            c = self.c.calls.get(csid)
-
+            c = self.c.calls.list(ended=date(2009,12,12), 
+                                  started_after="2009-01-01",
+                                  ended_before=datetime(2009,1,31))
         request.assert_called_with(e_uri, method="GET")
