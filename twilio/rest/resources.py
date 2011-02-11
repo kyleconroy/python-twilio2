@@ -166,16 +166,17 @@ class Call(core.InstanceResource):
         If this call is scheduled to be made, remove the call
         from the queue
         """
-        pass
+        a = self.list_resource.hangup(self.sid)
+        self._load(a.__dict__)
 
-    def route(self, url, method="POST"):
+    def route(self, **kwargs):
         """Route the specified :class:`Call` to another url.
 
         :param url: A valid URL that returns TwiML. Twilio will immediately redirect the call to the new TwiML.
         :param method: The HTTP method Twilio should use when requesting the above URL. Defaults to POST.
         """
-        pass
-
+        a = self.list_resource.route(self.sid, **kwargs)
+        self._load(a.__dict__)
 
 class Calls(core.ListResource):
     """ A list of Call resources """
@@ -184,50 +185,49 @@ class Calls(core.ListResource):
     instance = Call
 
     @core.normalize_dates
-    def list(self, **kwargs):
+    def list(self, to=None, from_=None, status=None, ended_after=None,
+             ended_before=None, ended=None, started_before=None, 
+             started_after=None, started=None, page=0):
         """
         Returns a page of :class:`Call` resources as a list. For paging 
         informtion see :class:`ListResource`
-
-        Options Arguments:
-        * to
-        * from_
-        * status
-        * ended_after
-        * ended_before
-        * ended
-        * started_before 
-        * started_after
-        * started
-        * page
-        """
-        # opt_args = ["to", "from_", "status", "ended_after", "ended_before", "ended"      * started_before 
-        # * started_after
-        # * started
-        # * page
-        # for k, v in kwargs.iteritems():
-        #     if k not in opt_args:
-        #         raise TypeError("list() got an unexpected keyword argument '{0}'".format(k))
-        return self._list(core.convert_keys(kwargs))
-
-    @core.normalize_dates
-    def iter(self, to=None, from_=None, status=None, 
-             before=None, after=None, page=0):
-        """
-        Returns a iterator of **all** :class:`Call` resources. 
    
         :param date after: Only list calls started after this datetime
         :param date before: Only list calls started before this datetime
         """
-        pass
+        params = core.fparam({
+            "To": to,
+            "From": from_,
+            "Status": status,
+            "StartTime<": started_before,
+            "StartTime>": started_after,
+            "StartTime": started,
+            "EndTime<": ended_before,
+            "EndTime>": ended_after,
+            "EndTime": ended,
+            })
+        return self._list(params)
 
-    def make(self, to, from_, url=None, method=None, fallback_url=None,
+    def create(self, to, from_, url, method=None, fallback_url=None,
              fallback_method=None, status_callback=None, status_method=None, 
-             if_machine=None, timeout=60):
+             if_machine=None, send_digits=None, timeout=None):
         """
         Really just a wrapper for :meth:`create`
         """
-        pass
+        params = core.fparam({
+            "To": to,
+            "From": from_,
+            "Url": url,
+            "Method": method,
+            "FallbackUrl": fallback_url,
+            "FallbackMethod": fallback_method,
+            "StatusCallback": status_callback,
+            "StatusCallbackMethod": status_method,
+            "SendDigits": send_digits,
+            "Timeout": timeout,
+            "IfMachine": if_machine,
+            })
+        return self._create(urllib.urlencode(params))
 
     def hangup(self, sid):
         """ If this call is currenlty active, hang up the call. 
@@ -237,7 +237,8 @@ class Calls(core.ListResource):
         :param sid: A Call Sid for a specific call
         :returns: Updated :class:`Call` resource
         """
-        pass
+        body = urllib.urlencode({"Status": Call.CANCELED})
+        self._update(sid, body)
 
     def route(self, sid, url, method="POST"):
         """Route the specified :class:`Call` to another url.
@@ -247,8 +248,8 @@ class Calls(core.ListResource):
         :param method: The HTTP method Twilio should use when requesting the above URL. Defaults to POST.
         :returns: Updated :class:`Call` resource
         """
-        pass
-
+        body = urllib.urlencode({"Url": url, "Method": method})
+        self._update(sid, body)
 
 class CallerIds(core.ListResource):
     """ A list of :class:`CallerId` resources """
