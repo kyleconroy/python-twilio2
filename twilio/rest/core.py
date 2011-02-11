@@ -44,6 +44,35 @@ def parse_date(d):
     elif isinstance(d, str):
         return d
 
+def convert_case(s):
+    """
+    Given a string in snake case, conver to CamelCase
+    """
+    return ''.join([a.title() for a in s.split("_") if a])
+
+def convert_keys(d):
+    """
+    Return a dictionary with all keys converted from arguments
+    """
+    special = {
+        "started_before": "StartTime<",
+        "started_after":  "StartTime>",
+        "started":        "StartTime",
+        "ended_before":   "EndTime<",
+        "ended_after":    "EndTime>",
+        "ended":          "EndTime",
+        "from_":          "From",
+    }
+
+    result = {}
+
+    for k,v in d.iteritems():
+        if k in special:
+            result[special[k]] = v
+        else:
+            result[convert_case(k)] = v
+    return result
+
 def normalize_dates(myfunc):
     def inner_func(*args, **kwargs):
         for k, v in kwargs.iteritems():

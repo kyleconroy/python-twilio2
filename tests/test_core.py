@@ -47,6 +47,26 @@ class CoreTest(unittest.TestCase):
         self.assertEquals(d["on"], "2009-10-10")
         self.assertEquals(d["after"], "2009-10-10")
         self.assertEquals(d["before"], "2009-10-10")
-    
 
-            
+    def test_convert_case(self):
+        self.assertEquals(core.convert_case("from_"), "From")
+        self.assertEquals(core.convert_case("to"), "To")
+        self.assertEquals(core.convert_case("frienldy_name"), "FrienldyName")
+
+    def test_convert_keys(self):
+        d = {
+            "from_": 0,
+            "to": 0,
+            "friendly_name": 0,
+            "ended": 0,
+            }
+
+        ed = {
+            "From": 0,
+            "To": 0,
+            "FriendlyName": 0,
+            "EndTime": 0,
+            }
+
+        self.assertEquals(ed, core.convert_keys(d))
+               
