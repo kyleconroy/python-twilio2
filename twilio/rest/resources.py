@@ -69,6 +69,22 @@ class Accounts(core.ListResource):
 
     name = "Accounts"
     instance = Account
+
+    def list(self, friendly_name=None, status=None):
+        """
+        Returns a page of :class:`Account` resources as a list. For paging
+        informtion see :class:`ListResource`
+   
+        :param date after: Only list calls started after this datetime
+        :param date before: Only list calls started before this datetime
+        """
+        params = {}
+        if friendly_name:
+            params["FriendlyName"] = friendly_name
+        if status:
+            params["Status"] = status
+
+        return self._list(params=params)
     
     def update(self, sid, friendly_name=None, status=None):
         """
@@ -76,7 +92,13 @@ class Accounts(core.ListResource):
         :param friendly_name: Update the human-readable description of this account.
         :param status: Alter the status of this account: use :data:`CLOSED` to irreversibly close this account, :data:`SUSPENDED` to temporarily suspend it, or :data:`ACTIVE` to reactivate it.
         """
-        pass
+        params = {}
+        if friendly_name:
+            params["FriendlyName"] = friendly_name
+        if status:
+            params["Status"] = status
+        body = urllib.urlencode(params)
+        return self._update(sid, body)
 
     def create(self, friendly_name=None):
         """
@@ -87,11 +109,8 @@ class Accounts(core.ListResource):
         if not friendly_name:
             raise TypeError("friendly_name argument required")
 
-        params = { "FriendlyName":friendly_name }
-        body = urllib.urlencode(params)
-        uri = "{0}.json".format(self.uri)
-        hs = {'Content-type': 'application/x-www-form-urlencoded'}
-        return self.client.request(uri, method="POST", body=body, headers=hs)
+        body = urllib.urlencode({ "FriendlyName":friendly_name })
+        return self._create(body)
 
 class Calls(core.ListResource):
     """ A list of Call resources """

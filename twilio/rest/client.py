@@ -44,10 +44,10 @@ class TwilioClient(object):
         self.client = client or httplib2.Http()
         self.client.add_credentials(account, token)
 
-        version_uri = "{0}/{1}/".format(base, version)
-        account_uri = "{0}/{1}/Accounts/{2}/".format(base, version, account)
+        version_uri = "{0}/{1}".format(base, version)
+        account_uri = "{0}/{1}/Accounts/{2}".format(base, version, account)
 
-        self.accounts       = Accounts(client, version_uri)
+        self.accounts       = Accounts(self.client, version_uri)
         # self.phone_numbers  = AvailablePhoneNumbers(uri, client=self)
         # self.calls          = Calls(uri, client=self)
         # self.conferences    = Conferences(uri, client=self)

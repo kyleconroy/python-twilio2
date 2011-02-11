@@ -7,10 +7,19 @@ from mock import Mock
 from twilio.rest.resources import *
 from twilio.rest.client import TwilioClient
 from twilio.rest.core import TwilioException
+from twilio.rest.core import TwilioRestException
 
 ACCOUNT_SID = "AC111111111"
 AUTH_TOKEN = "AUTH_TOKEN"
 BASE_URI = "https://api.twilio.com/2010-04-01/"
+
+def create_mock_request(status=200, content="{}"):
+    request = Mock()
+    resp = Mock()
+    resp.status = status
+    resp.reason = "CREATED"
+    request.return_value = resp, content
+    return request
 
 class ClientTest(unittest.TestCase):
 
@@ -43,6 +52,27 @@ class ClientTest(unittest.TestCase):
             with patch.dict(os.environ, {}, clear=True):
                 c = TwilioClient()
 
+class ResourceTest(unittest.TestCase):
+
+    def setUp(self):
+        mock_http, request, self.resp = Mock(), Mock(), Mock()
+        request.return_value = resp, ""
+        mock_http.request = request
+        self.c = TwilioClient(account=ACCOUNT_SID, token=AUTH_TOKEN, 
+                              client=mock_http)
+        
+    def test_not_found(self):
+        self.resp.status = 404
+        self.resp.description = "NOT FOUND"
+        with self.assertRaises(TwilioRestException) as cm:
+            self.c.accounts.create(friendly_name="MyNewAccount")
+
+    def test_auth_required(self):
+        self.resp.status = 401
+        self.resp.description = "AUTH REQUIRED"
+        with self.assertRaises(TwilioRestException) as cm:
+            self.c.accounts.create(friendly_name="MyNewAccount")
+
 class AccountsTest(unittest.TestCase):
     
     def setUp(self):
@@ -59,27 +89,108 @@ class AccountsTest(unittest.TestCase):
             a = self.c.accounts.create()
 
     def test_create(self):
-        request = Mock()
-        request.return_value = 4,5
+
+        account_name = "SubAccount Created at 2011-02-10 16:19 pm"
+
+        with open("tests/content/create_account.json") as f:
+            content = f.read()
+
+        request = create_mock_request(201, content)
         self.mock_http.request = request
+
+        c = self.c.accounts.create(friendly_name=account_name)
+
+        entries = json.loads(content)
+        self.assertEquals(c.friendly_name, account_name)
+        self.assertEquals(c.sid, entries["sid"])
+        self.assertEquals(c.date_created, entries["date_created"])
+        self.assertEquals(c.date_updated, entries["date_updated"])
+        self.assertEquals(c.status, entries["status"])
+        self.assertEquals(c.auth_token, entries["auth_token"])
+
+    def test_get_uri(self):
+
+        account_sid = "AC4bf2dafb92341f7caf8650403e422d23"
+        expected_uri = "{0}Accounts/{1}.json".format(BASE_URI,account_sid)
+
+        request = create_mock_request()
+        self.mock_http.request = request
+
+        with self.assertRaises(TwilioException) as cm:
+            c = self.c.accounts.get(account_sid)
+
+        request.assert_called_with(expected_uri, method="GET")
+
+    def test_list_uri(self):
+
+        expected_uri = "{0}Accounts.json".format(BASE_URI)
+
+        request = create_mock_request()
+        self.mock_http.request = request
+
+        
+        with self.assertRaises(TwilioException) as cm:
+            c = self.c.accounts.list()
+
+        request.assert_called_with(expected_uri, method="GET")
+
+    def test_list_uri_filter(self):
+
+        expected_uri = "{0}Accounts.json?FriendlyName=You&Status=active".format(BASE_URI)
+
+        request = create_mock_request()
+        self.mock_http.request = request
+
+        
+        with self.assertRaises(TwilioException) as cm:
+            c = self.c.accounts.list(friendly_name="You", status="active")
+
+        request.assert_called_with(expected_uri, method="GET")
+
+    def test_update_uri(self):
+        account_sid = "AC4bf2dafb92341f7caf8650403e422d23"
+        expected_uri = "{0}Accounts/{1}.json".format(BASE_URI, account_sid)
+
+        request = create_mock_request()
+        self.mock_http.request = request
+        
+        with self.assertRaises(TwilioException) as cm:
+            c = self.c.accounts.update(account_sid, friendly_name="You")
+
+        body = "FriendlyName=You"
+        hs = {'Content-type': 'application/x-www-form-urlencoded'}
+        request.assert_called_with(expected_uri, method="POST", body=body, 
+                                   headers=hs)
+
+    def test_request(self):
+        request = create_mock_request(status=201)
+        self.mock_http.request = request
+        self.c.accounts._create_instance = Mock()
 
         self.c.accounts.create(friendly_name="MyNewAccount")
 
         uri = "{0}.json".format(self.c.accounts.uri)
         body = "FriendlyName=MyNewAccount"
-        request.assert_called_with(uri, method="POST", body=body)
+        hs = {'Content-type': 'application/x-www-form-urlencoded'}
+        request.assert_called_with(uri, method="POST", body=body, headers=hs)
 
     def test_instance_creation(self):
 
-        with open("tests/http/create_account_content.json") as f:
+        with open("tests/content/create_account.json") as f:
             content = f.read()
 
         entries = json.loads(content)
 
         print self.c.accounts.instance
-        a = self.c.accounts._create_instance(content)
+        a = self.c.accounts._create_instance(entries)
 
+        uri = "{0}Accounts/{1}".format(BASE_URI, entries["sid"])
         self.assertEquals(a.sid, entries["sid"])
+        self.assertEquals(a.uri, uri)
+        self.assertEquals(a.date_created, entries["date_created"])
+        self.assertEquals(a.date_updated, entries["date_updated"])
+        self.assertEquals(a.status, entries["status"])
+        self.assertEquals(a.auth_token, entries["auth_token"])
 
 class ResourceTest(unittest.TestCase):
 

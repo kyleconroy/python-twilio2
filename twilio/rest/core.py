@@ -17,33 +17,72 @@ class TwilioException(Exception): pass
 
 class TwilioRestException(TwilioException):
 
-    def __init__(sexlf, status, uri, msg=""):
+    def __init__(self, status, uri, msg=""):
         self.uri = uri
         self.status = status
         self.msg = msg
 
     def __str__(self):
-        return "HTTP ERROR %s: %s \n %s" % (self.status, self.msg, self.uri)
+        return "HTTP ERROR {0}: {1} \n {2}".format(self.status, self.msg, self.uri)
 
 class Resource(object):
-
     """An HTTP Resource"""
+    
+
     def __init__(self, client, base_uri):
         self.client = client
-        self.uri = "{0}{1}".format(base_uri, self.name)
+        self.uri = "{0}/{1}".format(base_uri, self.name)
 
-    def _request(self, uri, **kwargs):
-        return self.client.request(uri, **kwargs)
+    def _request(self, uri, fmt="json", query=None, **kwargs):
+        """
+        Send an HTTP request to uri+fmt+query
+        """
+        furi = "{0}.{1}".format(uri, fmt)
 
+        if query:
+            furi = "{0}?{1}".format(furi, urllib.urlencode(query))
+
+        resp, content = self.client.request(furi, **kwargs)
+        logging.debug(resp)
+        logging.debug(content)
+        
+        # If the HTTP request errored, throw RestException
+        if resp.status >= 400:
+            raise TwilioRestException(resp.status, furi, resp.reason)
+
+        return resp, content
 
 class ListResource(Resource):
 
-    def create(self):
+    def _create(self, body):
         """
-        Create an InstanceResource
-        ListResources must expliciity support Instance creation
+        Create an InstanceResource via a POST to the List Resource
+        
+        body: string -- HTTP Body for the quest
         """
-        raise TwilioException("InstanceResource creation not supported")
+        hs = {'Content-type': 'application/x-www-form-urlencoded'}
+        resp, content =  self._request(self.uri, method="POST", body=body, 
+                                       headers=hs)
+
+        if resp.status != 201:
+            raise TwilioRestException(resp.status, self.uri, "Resource not created")
+
+        entries = json.loads(content)
+        return self._create_instance(entries)
+
+    def _update(self, sid, body):
+        """
+        Update an InstanceResource via a POST to the List Resource
+        
+        sid: string -- String identifier for the list resource
+        body: string -- HTTP Body for the quest
+        """
+        uri = "{0}/{1}".format(self.uri, sid)
+        hs = {'Content-type': 'application/x-www-form-urlencoded'}
+        resp, content =  self._request(uri, method="POST", body=body, 
+                                       headers=hs)
+        entries = json.loads(content)
+        return self._create_instance(entries)
 
     def count(self):
         """
@@ -51,28 +90,32 @@ class ListResource(Resource):
         """
         raise TwilioException("InstanceResource count not supported")
 
-    def list(self, **kwargs):
-        
-        try:
-            result = []
-            for item in content[self.name]:
-                result.append(self._load_instance(item))
-            return result
-        except KeyError:
-            raise TwilioException, "Key %s not present in response" % self.name
+    def _list(self, params={}):
+        # Get the items
+        resp, content =  self._request(self.uri, method="GET", query=params)
+        page = json.loads(content)
 
+        # Get key for the array of items
+        try:
+            key = self.key
+        except AttributeError:
+            key = self.name.lower()
+
+        # Turn all those items into objects
+        try:
+            return [ self._create_instance(i) for i in page[key]]
+        except KeyError:
+            raise TwilioException("Key {0} not present in response".format(key))
         
     def get(self, sid):
         """Request the specified instance resource"""
-        content = self._get("/" + sid)
-        return self._load_instance(json.loads(content))
+        uri = "{0}/{1}".format(self.uri, sid)
+        resp, content =  self._request(uri, method="GET")
+        return self._create_instance(json.loads(content))
 
-    def _load_instance(self, d):
-        raise TwilioException("NOT IMPLEMENTED")
-
-    def _create_instance(self, entries):
+    def _create_instance(self, content):
         try:
-            return self.instance(self.client, self.uri, entries)
+            return self.instance(self.client, self.uri, content)
         except AttributeError:
             raise TwilioException("ListResource missing self.instance")
 
@@ -80,10 +123,13 @@ class InstanceResource(Resource):
 
     id_key = "sid"
 
-    def __init__(self, client, base_uri, content):
+    def __init__(self, client, base_uri, entries):
 
-        entries = json.loads(content)
-        self.name = entries[self.id_key]
+        try:
+            self.name = entries[self.id_key]
+        except KeyError:
+            msg = "Key {0} not present in content".format(self.id_key)
+            raise TwilioException(msg)
 
         super(InstanceResource, self).__init__(client, base_uri)
         
@@ -91,5 +137,8 @@ class InstanceResource(Resource):
         if "from" in entries.keys():
             entries["from_"] = entries["from"]
             del entries["from"]
+            
+        if "uri" in entries.keys():
+            del entries["uri"]
 
         self.__dict__.update(entries)
