@@ -6,15 +6,6 @@ from twilio.rest.resources import *
 from urllib import urlencode 
 from urlparse import urljoin
 
-# import json
-try:
-    import json
-except ImportError:
-    try:
-        import simplejson as json
-    except ImportError:
-        from django.utils import simplejson as json
-
 # import httplib2
 try:
     import httplib2
@@ -34,23 +25,29 @@ class TwilioClient(object):
         except KeyError:
             return None, None
 
-    def __init__(self, account=None, token=None, base="https://api.twilio.com",
-                 version="2010-04-01"):
+    def request(self, *args, **kwargs):
+        return self.client.request(*args, **kwargs)
 
+    def __init__(self, account=None, token=None, base="https://api.twilio.com",
+                 version="2010-04-01", client=None):
 
         # Get account credentials
-        if not account and not token:
+        if not account or not token:
             account, token = self._credentials_lookup()
-            if not account and not token:
+            if not account or not token:
                 raise TwilioException("Could not find account credentials")
 
         self.account_sid = account
         self.auth_token = token
+        
+        # Make Client
+        self.client = client or httplib2.Http()
+        self.client.add_credentials(account, token)
 
-        version_uri = "/{0}/".format(version)
-        account_uri = "/{0}/Accounts/{1}/".format(version, account)
+        version_uri = "{0}/{1}/".format(base, version)
+        account_uri = "{0}/{1}/Accounts/{2}/".format(base, version, account)
 
-        self.accounts       = Accounts(version_uri, client=self)
+        self.accounts       = Accounts(client, version_uri)
         # self.phone_numbers  = AvailablePhoneNumbers(uri, client=self)
         # self.calls          = Calls(uri, client=self)
         # self.conferences    = Conferences(uri, client=self)

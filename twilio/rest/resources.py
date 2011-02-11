@@ -1,6 +1,7 @@
 import json
 import logging
 import re
+import urllib
 
 from twilio.rest import core
 
@@ -53,25 +54,6 @@ class AvailablePhoneNumber(core.InstanceResource):
         """
         pass
 
-class Accounts(core.ListResource):
-    """ A list of Account resources """
-    
-    def update(sid, friendly_name=None, status=None):
-        """
-        :param sid: Account identifier
-        :param friendly_name: Update the human-readable description of this account.
-        :param status: Alter the status of this account: use :data:`CLOSED` to irreversibly close this account, :data:`SUSPENDED` to temporarily suspend it, or :data:`ACTIVE` to reactivate it.
-        """
-        pass
-
-    def create(friendly_name=None):
-        """
-        Returns a newly created sub account resource.
-        
-        :param friendly_name: Update the human-readable description of this account.
-        """
-        pass
-
 class Account(core.InstanceResource):
     """ An Account resource """
 
@@ -81,6 +63,35 @@ class Account(core.InstanceResource):
         :param status: Alter the status of this account: use :data:`CLOSED` to irreversibly close this account, :data:`SUSPENDED` to temporarily suspend it, or :data:`ACTIVE` to reactivate it.
         """
         pass
+
+class Accounts(core.ListResource):
+    """ A list of Account resources """
+
+    name = "Accounts"
+    instance = Account
+    
+    def update(self, sid, friendly_name=None, status=None):
+        """
+        :param sid: Account identifier
+        :param friendly_name: Update the human-readable description of this account.
+        :param status: Alter the status of this account: use :data:`CLOSED` to irreversibly close this account, :data:`SUSPENDED` to temporarily suspend it, or :data:`ACTIVE` to reactivate it.
+        """
+        pass
+
+    def create(self, friendly_name=None):
+        """
+        Returns a newly created sub account resource.
+        
+        :param friendly_name: Update the human-readable description of this account.
+        """
+        if not friendly_name:
+            raise TypeError("friendly_name argument required")
+
+        params = { "FriendlyName":friendly_name }
+        body = urllib.urlencode(params)
+        uri = "{0}.json".format(self.uri)
+        hs = {'Content-type': 'application/x-www-form-urlencoded'}
+        return self.client.request(uri, method="POST", body=body, headers=hs)
 
 class Calls(core.ListResource):
     """ A list of Call resources """
