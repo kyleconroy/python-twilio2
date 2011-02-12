@@ -114,99 +114,6 @@ class Notifications(core.ListResource):
         """
         self._delete(sid)
 
-class Account(core.InstanceResource):
-    """ An Account resource """
-
-    ACTIVE    = "active"
-    SUSPENDED = "suspended"
-    CLOSED    = "closed"
-
-    def update(self, **kwargs):
-        """
-        :param friendly_name: Update the human-readable description of this account.
-        :param status: Alter the status of this account: use :data:`CLOSED` to irreversibly close this account, :data:`SUSPENDED` to temporarily suspend it, or :data:`ACTIVE` to reactivate it.
-        """
-        self._update(**kwargs)
-
-    def close(self):
-         """
-         Permenently deactivate an account, Alias to update
-         """
-         return self._update(status=Account.CLOSED)
-
-    def suspend(self):
-        """
-        Temporarily suspend an account, Alias to update
-        """
-        return self._update(status=Account.SUSPENDED)
-
-    def activate(self):
-        """
-        Reactivate an account, Alias to update
-        """
-        return self._update(status=Account.ACTIVE)
-
-
-
-class Accounts(core.ListResource):
-    """ A list of Account resources """
-
-    name = "Accounts"
-    instance = Account
-
-    def list(self, friendly_name=None, status=None):
-        """
-        Returns a page of :class:`Account` resources as a list. For paging
-        informtion see :class:`ListResource`
-   
-        :param date after: Only list calls started after this datetime
-        :param date before: Only list calls started before this datetime
-        """
-        params = core.fparam({
-                "FriendlyName": friendly_name,
-                "Status": status,
-                })
-        return self._list(params=params)
-    
-    def update(self, sid, friendly_name=None, status=None):
-        """
-        :param sid: Account identifier
-        :param friendly_name: Update the human-readable description of this account.
-        :param status: Alter the status of this account: use :data:`CLOSED` to irreversibly close this account, :data:`SUSPENDED` to temporarily suspend it, or :data:`ACTIVE` to reactivate it.
-        """
-        params = core.fparam({
-            "FriendlyName": friendly_name,
-            "Status": status
-            })
-        return self._update(sid, urllib.urlencode(params))
-
-    def close(self, sid):
-        """
-        Permenently deactivate an account, Alias to update
-        """
-        return self.update(sid, status=Account.CLOSED)
-
-    def suspend(self, sid):
-        """
-        Temporarily suspend an account, Alias to update
-        """
-        return self.update(sid, status=Account.SUSPENDED)
-
-    def activate(self, sid):
-        """
-        Reactivate an account, Alias to update
-        """
-        return self.update(sid, status=Account.ACTIVE)
-
-    def create(self, friendly_name):
-        """
-        Returns a newly created sub account resource.
-        
-        :param friendly_name: Update the human-readable description of this account.
-        """
-        body = urllib.urlencode({ "FriendlyName":friendly_name })
-        return self._create(body)
-
 class Call(core.InstanceResource):
     """ A call resource """
 
@@ -393,61 +300,6 @@ class CallerIds(core.ListResource):
                                        headers=hs)
         return json.loads(content)
 
-
-
-class PhoneNumbers(core.ListResource):
-
-   def delete(self, sid):
-       """
-       Release this phone number from your account. Twilio will no longer answer calls to this number, and you will stop being billed the monthly phone number fees. The phone number will eventually be recycled and potentially given to another customer, so use with care. If you make a mistake, contact us... we may be able to give you the number back.
-       """
-       pass
-
-   def list(self, phone_number=None, friendly_name=None):
-       """
-       :param phone_number: Only return phone numbers that match this pattern. You can specify partial numbers and use '*' as a wildcard for any digit.
-       :param friendly_name: Only return phone numbers with friendly names that exactly match this name.
-       """
-       pass
-
-   def purchase(self, phone_number=None, area_code=None, voice_url=None, 
-                voice_method=None, voice_fallback_url=None, 
-                voice_fallback_method=None, status_callback_method=None, 
-                sms_url=None, sms_method=None, sms_fallback_url=None, 
-                sms_fallback_method=None, voice_caller_id_lookup=False, 
-                account_sid=None):
-       """
-       Attempt to purchase the specified number. The only required parameters are **either** phone_number or area_code
-
-       :returns: Returns a :class:`PhoneNumber` instance on success, :data:`False` on failure
-       """
-       pass
-
-   def search(self, type="LOCAL", country="US", region=None, area_code=None, 
-              postal_code=None, near_number=None, near_lat_long=None, lata=None,
-              rate_center=None, distance=25):
-       """
-       :param type: Either :data:`LOCAL` or :data:`TOLL_FREE`. Defaults to :data:`LOCAL`
-       :param integer area_code:
-       """
-       pass
-
-   def trasfer(self, sid, account_sid):
-       """
-       Transfer the phone number with sid from the current account to another identified by account_sid
-       """
-       pass
-
-   def update(self, sid, api_version=None, voice_url=None, voice_method=None, 
-              voice_fallback_url=None, voice_fallback_method=None, 
-              status_callback_method=None, sms_url=None, sms_method=None, 
-              sms_fallback_url=None, sms_fallback_method=None, 
-              voice_caller_id_lookup=False, account_sid=None):
-       """
-       Update this phone number instance
-       """
-       pass
-
 class PhoneNumber(core.InstanceResource):
 
    def trasfer(self, account_sid):
@@ -471,6 +323,69 @@ class PhoneNumber(core.InstanceResource):
        Release this phone number from your account. Twilio will no longer answer calls to this number, and you will stop being billed the monthly phone number fees. The phone number will eventually be recycled and potentially given to another customer, so use with care. If you make a mistake, contact us... we may be able to give you the number back.
        """
        pass
+
+
+class PhoneNumbers(core.ListResource):
+
+
+    name ="IncomingPhoneNumbers"
+    key = "incoming_phone_numbers"
+    instance = PhoneNumber
+    
+    def delete(self, sid):
+        """
+        Release this phone number from your account. Twilio will no longer answer calls to this number, and you will stop being billed the monthly phone number fees. The phone number will eventually be recycled and potentially given to another customer, so use with care. If you make a mistake, contact us... we may be able to give you the number back.
+        """
+        return self._delete(sid)
+
+    def list(self, phone_number=None, friendly_name=None):
+        """
+        :param phone_number: Only return phone numbers that match this pattern. You can specify partial numbers and use '*' as a wildcard for any digit.
+        :param friendly_name: Only return phone numbers with friendly names that exactly match this name.
+        """
+        params = core.fparam({
+               "PhoneNumber": phone_number,
+               "FriendlyName": friendly_name,
+               })
+        return self._list(params)
+
+    def purchase(self, phone_number=None, area_code=None, voice_url=None, 
+                 voice_method=None, voice_fallback_url=None, 
+                 voice_fallback_method=None, status_callback_method=None, 
+                 sms_url=None, sms_method=None, sms_fallback_url=None, 
+                 sms_fallback_method=None, voice_caller_id_lookup=False, 
+                 account_sid=None):
+        """
+        Attempt to purchase the specified number. The only required parameters are **either** phone_number or area_code
+
+        :returns: Returns a :class:`PhoneNumber` instance on success, :data:`False` on failure
+        """
+        pass
+
+    def search(self, type="LOCAL", country="US", region=None, area_code=None, 
+               postal_code=None, near_number=None, near_lat_long=None, lata=None,
+               rate_center=None, distance=25):
+        """
+        :param type: Either :data:`LOCAL` or :data:`TOLL_FREE`. Defaults to :data:`LOCAL`
+        :param integer area_code:
+        """
+        pass
+
+    def trasfer(self, sid, account_sid):
+        """
+        Transfer the phone number with sid from the current account to another identified by account_sid
+        """
+        pass
+
+    def update(self, sid, api_version=None, voice_url=None, voice_method=None, 
+               voice_fallback_url=None, voice_fallback_method=None, 
+               status_callback_method=None, sms_url=None, sms_method=None, 
+               sms_fallback_url=None, sms_fallback_method=None, 
+               voice_caller_id_lookup=False, account_sid=None):
+        """
+        Update this phone number instance
+        """
+        pass
        
 class Sandboxes(core.ListResource):
     
@@ -501,10 +416,22 @@ class Sms(object):
     """
     Holds all the specific SMS list resources
     """
-    def __init__(self):
-        self.messages = []
+
+    name = "SMS"
     
+    def __init__(self, client, base_uri):
+        self.uri = "{0}/SMS".format(base_uri)
+        self.messages = SmsMessages(client, self.uri)
+    
+class SmsMessage(core.InstanceResource):
+    
+    pass
+
 class SmsMessages(core.ListResource):
+
+    name = "Messages"
+    key = "sms_messages"
+    instance = SmsMessage
 
     def create(self, to=None, from_=None, body=None, status_callback=None):
         """
@@ -515,7 +442,13 @@ class SmsMessages(core.ListResource):
         :param body: **Required** - The text of the message you want to send, limited to 160 characters.
         :param status_callback: A URL that Twilio will POST to when your message is processed. Twilio will POST the SmsSid as well as SmsStatus=sent or SmsStatus=failed.
         """
-        pass
+        params = core.fparam({
+            "To": to,
+            "From": from_,
+            "Body": body,
+            "StatusCallback": status_callback,
+            })
+        return self._create(urllib.urlencode(params))
 
     def list(self, to=None, from_=None, before=None, after=None):
         """
@@ -526,48 +459,34 @@ class SmsMessages(core.ListResource):
         :param date after: Only list recordings logged after this datetime
         :param date before: Only list recordings logger before this datetime
         """
-        pass
+        params = core.fparam({
+            "To": to,
+            "From": from_,
+            "DateSent<": before,
+            "DateSent>": after,
+            })
+        return self._list(params)
 
-    def iter(self, to=None, from_=None, before=None, after=None):
-        """
-        Returns a page of :class:`SMSMessage` resources as a list. For paging informtion see :class:`ListResource`. 
+class Participant(core.InstanceResource):
 
-        :param to: Only show SMS messages to this phone number.
-        :param from_: Onlye show SMS message from this phone number.
-        :param date after: Only list recordings logged after this datetime
-        :param date before: Only list recordings logger before this datetime
+    def mute(self):
         """
-        pass
+        Mute the participant
+        """
+        self._update(muted="true")
 
-class SmsMessage(core.ListResource):
-    
-    pass
+    def unmute(self):
+        """
+        Unmute the participant
+        """
+        self._update(muted="false")
 
-class Conferences(core.ListResource):
-    
-    def create(self):
+    def kick(self):
         """
-        Not supported, throws and exception
+        Remove the participant from the given conference
         """
-        pass
+        self._delete()
 
-    def list(self, status=None, friendly_name=None, updated_before=None,
-             updated_after=None, created_after=None, created_before=None):
-        """
-        Return a list of :class:`Conference` resources
-
-        :param status: Only show conferences with this status
-        :param frienldy_name: Onlye show conferences with this exact frienldy_name
-        :param date updated_after: Only list conferences updated after this datetime
-        :param date updated_before: Only list conferences updated before this datetime
-        :param date created_after: Only list conferences created after this datetime
-        :param date created_before: Only list conferences created before this datetime
-        """
-        pass
-    
-class Conference(core.InstanceResource):
-    
-    pass
 
 class Participants(core.ListResource):
 
@@ -616,23 +535,146 @@ class Participants(core.ListResource):
         """
         pass
 
-class Participant(core.InstanceResource):
 
-    def mute(self):
-        """
-        Mute the participant
-        """
-        pass
+class Conference(core.InstanceResource):
 
-    def unmute(self):
-        """
-        Unmute the participant
-        """
-        pass
+    subresources = [
+        Participants
+        ]
+    
+    pass
 
-    def kick(self):
+
+class Conferences(core.ListResource):
+
+    name = "Conferences"
+    instance = Conference
+    
+    def list(self, status=None, friendly_name=None, updated_before=None,
+             updated_after=None, created_after=None, created_before=None,
+             updated=None, created=None):
         """
-        Remove the participant from the given conference
+        Return a list of :class:`Conference` resources
+
+        :param status: Only show conferences with this status
+        :param frienldy_name: Onlye show conferences with this exact frienldy_name
+        :param date updated_after: Only list conferences updated after this datetime
+        :param date updated_before: Only list conferences updated before this datetime
+        :param date created_after: Only list conferences created after this datetime
+        :param date created_before: Only list conferences created before this datetime
         """
-        pass
+        params = core.fparam({
+            "Status": status,
+            "FriendlyName": friendly_name,
+            "DateUpdated<": updated_before,
+            "DateUpdated>": updated_after,
+            "DateUpdated": updated,
+            "DateCreated<": created_before,
+            "DateCreated>": created_after,
+            "DateCreated": created,
+            })
+        return self._list(params)
+    
+class Account(core.InstanceResource):
+    """ An Account resource """
+
+    ACTIVE    = "active"
+    SUSPENDED = "suspended"
+    CLOSED    = "closed"
+
+    subresources = [
+        Notifications,
+        Transcriptions,
+        Recordings,
+        Calls,
+        Sms,
+        CallerIds,
+        PhoneNumbers,
+        Conferences,
+        ]
+
+    def update(self, **kwargs):
+        """
+        :param friendly_name: Update the human-readable description of this account.
+        :param status: Alter the status of this account: use :data:`CLOSED` to irreversibly close this account, :data:`SUSPENDED` to temporarily suspend it, or :data:`ACTIVE` to reactivate it.
+        """
+        self._update(**kwargs)
+
+    def close(self):
+         """
+         Permenently deactivate an account, Alias to update
+         """
+         return self._update(status=Account.CLOSED)
+
+    def suspend(self):
+        """
+        Temporarily suspend an account, Alias to update
+        """
+        return self._update(status=Account.SUSPENDED)
+
+    def activate(self):
+        """
+        Reactivate an account, Alias to update
+        """
+        return self._update(status=Account.ACTIVE)
+
+
+class Accounts(core.ListResource):
+    """ A list of Account resources """
+
+    name = "Accounts"
+    instance = Account
+
+    def list(self, friendly_name=None, status=None):
+        """
+        Returns a page of :class:`Account` resources as a list. For paging
+        informtion see :class:`ListResource`
+   
+        :param date after: Only list calls started after this datetime
+        :param date before: Only list calls started before this datetime
+        """
+        params = core.fparam({
+                "FriendlyName": friendly_name,
+                "Status": status,
+                })
+        return self._list(params=params)
+    
+    def update(self, sid, friendly_name=None, status=None):
+        """
+        :param sid: Account identifier
+        :param friendly_name: Update the human-readable description of this account.
+        :param status: Alter the status of this account: use :data:`CLOSED` to irreversibly close this account, :data:`SUSPENDED` to temporarily suspend it, or :data:`ACTIVE` to reactivate it.
+        """
+        params = core.fparam({
+            "FriendlyName": friendly_name,
+            "Status": status
+            })
+        return self._update(sid, urllib.urlencode(params))
+
+    def close(self, sid):
+        """
+        Permenently deactivate an account, Alias to update
+        """
+        return self.update(sid, status=Account.CLOSED)
+
+    def suspend(self, sid):
+        """
+        Temporarily suspend an account, Alias to update
+        """
+        return self.update(sid, status=Account.SUSPENDED)
+
+    def activate(self, sid):
+        """
+        Reactivate an account, Alias to update
+        """
+        return self.update(sid, status=Account.ACTIVE)
+
+    def create(self, friendly_name):
+        """
+        Returns a newly created sub account resource.
+        
+        :param friendly_name: Update the human-readable description of this account.
+        """
+        body = urllib.urlencode({ "FriendlyName":friendly_name })
+        return self._create(body)
 
