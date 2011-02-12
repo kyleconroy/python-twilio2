@@ -49,10 +49,10 @@ class TwilioClient(object):
 
         self.accounts       = Accounts(self.client, version_uri)
         self.calls          = Calls(self.client, account_uri)
+        self.caller_ids     = CallerIds(self.client, account_uri)
         # self.phone_numbers  = AvailablePhoneNumbers(uri, client=self)
         # self.conferences    = Conferences(uri, client=self)
         # self.notifications  = Notifications(uri, client=self)
-        # self.caller_ids     = OutgoingCallerIds(uri, client=self)
         # self.recordings     = Recordings(uri, client=self)
         # self.sms            = Sms(uri, client=self)
         # self.transcriptions = Transcriptions(uri, client=self)

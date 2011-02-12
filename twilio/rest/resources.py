@@ -5,39 +5,6 @@ import urllib
 
 from twilio.rest import core
 
-class OutgoingCallerIds(core.ListResource):
-    """ A list of CallerId resources """
-
-    def __init__(self, uri, **kwargs):
-        name = "outgoing_caller_ids"
-        uri += "/OutgoingCallerIds"
-        super(OutgoingCallerIds, self).__init__(uri, name=name, **kwargs)
-
-    def _load_instance(self, d):
-        return OutgoingCallerId(self.uri, client=self.client, entries=d)
-
-class OutgoingCallerId(core.InstanceResource):
-    """ A Form resource """
-
-    def __init__(self, uri, entries={}, **kwargs):
-        if "sid" not in entries:
-            raise core.TwilioException, "OutgoingCallerId sid missing"
-        uri += "/" + entries["sid"]
-
-        super(OutgoingCallerId, self).__init__(uri, entries=entries, **kwargs)
-
-
-class AvailablePhoneNumbers(core.ListResource):
-    """ A list of CallerId resources """
-
-    def __init__(self, uri, **kwargs):
-        name = "available_phone_numbers"
-        uri += "/AvailablePhoneNumbers"
-        super(AvailablePhoneNumbers, self).__init__(uri, name=name, **kwargs)
-
-    def _load_instance(self, d):
-        return AvailablePhoneNumber(self.uri, client=self.client, entries=d)
-
 class AvailablePhoneNumber(core.InstanceResource):
     """ An available phone number resource """
 
@@ -137,15 +104,12 @@ class Accounts(core.ListResource):
         """
         return self.update(sid, status=Account.ACTIVE)
 
-    def create(self, friendly_name=None):
+    def create(self, friendly_name):
         """
         Returns a newly created sub account resource.
         
         :param friendly_name: Update the human-readable description of this account.
         """
-        if not friendly_name:
-            raise TypeError("friendly_name argument required")
-
         body = urllib.urlencode({ "FriendlyName":friendly_name })
         return self._create(body)
 
@@ -251,34 +215,52 @@ class Calls(core.ListResource):
         body = urllib.urlencode({"Url": url, "Method": method})
         self._update(sid, body)
 
+class CallerId(core.InstanceResource):
+    
+   def delete(self):
+       """
+       Deletes this caller ID from the account.
+       """
+       self._update(**kwargs)
+
+   def update(self, **kwargs)
+       """
+       Update the CallerId
+       """
+       self._update(**kwargs)
+
+
 class CallerIds(core.ListResource):
     """ A list of :class:`CallerId` resources """
     
+    name = "OutgoingCallerIds"
+    instance = CallerId
+
     def delete(self, sid):
         """
         Deletes a specific :class:`CallerId` from the account.
         """
-        pass
+        self._delete(sid)
 
     def list(self, phone_number=None, friendly_name=None):
         """
         :param phone_number: Only show the caller id resource that exactly matches this phone number.
         :param friendly_name: Only show the caller id resource that exactly  matches this name.
         """
-        pass
-
-    def iter(self, phone_number=None, friendly_name=None):
-        """
-        :param phone_number: Only show the caller id resource that exactly matches this phone number.
-        :param friendly_name: Only show the caller id resource that exactly matches this name.
-        """
-        pass
+        params = core.fparam({
+            "PhoneNumber": phone_number,
+            "FrienldyName": friendly_name,
+            })
+        return self._list(params)
 
     def update(self, sid, friendly_name=None):
         """
         Update a specific :class:`CallerId`
         """
-        pass
+        params = core.fparam({
+            "FriendlyName": friendly_name,
+            })
+        return self._update(sid, urllib.urlencode(params))
 
     def validate(self, phone_number, friendly_name=None, call_delay=0, 
                  extension=None):
@@ -298,21 +280,18 @@ class CallerIds(core.ListResource):
         :param extension: Digits to dial after connecting the validation call.
         :returns: A response dictionary
         """
-        pass
+        params = core.fparam({
+                "PhoneNumber": phone_number,
+                "FriendlyName": friendly_name,
+                "CallDelay": call_delay,
+                "Extension": extension,
+                })
 
-class CallerId(core.InstanceResource):
-    
-   def delete(self):
-       """
-       Deletes this caller ID from the account.
-       """
-       pass
-
-   def update(self, friendly_name=None):
-       """
-       Update the CallerId
-       """
-       pass
+        hs = {'Content-type': 'application/x-www-form-urlencoded'}
+        body = urllib.urlencode(params)
+        resp, content =  self._request(self.uri, method="POST", body=body, 
+                                       headers=hs)
+        return json.loads(content)
 
 class Notifications(core.ListResource):
 
