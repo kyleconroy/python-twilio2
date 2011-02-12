@@ -43,6 +43,9 @@ class GeneralResourceTest(unittest.TestCase):
 
 class ClientTest(unittest.TestCase):
 
+    def setUp(self):
+        self.c = TwilioClient(account=ACCOUNT_SID, token=AUTH_TOKEN)
+
     def test_creation(self):
         c = TwilioClient(account=ACCOUNT_SID, token=AUTH_TOKEN)
         self.assertEquals(c.account_sid, ACCOUNT_SID)
@@ -71,6 +74,11 @@ class ClientTest(unittest.TestCase):
         with self.assertRaises(TwilioException) as cm:
             with patch.dict(os.environ, {}, clear=True):
                 c = TwilioClient()
+
+    def test_notificaitons_uri(self):
+        uri = "{0}Notifications".format(ACCOUNT_URI)
+        self.assertEquals(self.c.notifications.uri, uri)
+
 
 class ResourceTest(unittest.TestCase):
 
@@ -383,11 +391,11 @@ class CallTest(unittest.TestCase):
 
     def setUp(self):
         self.c = TwilioClient(account=ACCOUNT_SID, token=AUTH_TOKEN)
-        call_sid = "CA123123"
-        base_uri = "{0}Accounts/{1}/Calls".format(BASE_URI, ACCOUNT_SID)
-        self.call_uri = "{0}/{1}.json".format(base_uri, call_sid)
+        self.call_sid = "CA123123"
+        self.base_uri = "{0}Accounts/{1}/Calls".format(BASE_URI, ACCOUNT_SID)
+        self.call_uri = "{0}/{1}.json".format(self.base_uri, self.call_sid)
 
-        self.call =  Call(self.c.calls, base_uri, {"sid": call_sid})
+        self.call =  Call(self.c.calls, self.base_uri, {"sid": self.call_sid})
 
     def mock_request(self, status=200, content="{}"):
         request = Mock()
@@ -398,6 +406,9 @@ class CallTest(unittest.TestCase):
         self.c.client.request = request
         return request
 
+    def test_subresources(self):
+        euri = "{1}/{0}/Notifications".format(self.call_sid, self.base_uri)
+        self.assertEquals(euri, self.call.notifications.uri)
 
     def test_hangup(self):
         request = self.mock_request()
@@ -430,3 +441,18 @@ class CallerIdsTest(GeneralResourceTest):
         request.assert_called_with(e_uri, method="POST", body=body,
                                    headers=FORM_CONTENT_TYPE)
         self.assertTrue("validation_code" in c)
+
+
+    def test_list(self):
+
+        body = urllib.urlencode({
+                "PhoneNumber": 5551231234,
+                })
+        e_uri = "{0}Accounts/{1}/OutgoingCallerIds.json?{2}".format(BASE_URI, ACCOUNT_SID,
+                                                                 body)
+        request = self.mock_request()
+        
+        with self.assertRaises(TwilioException) as cm:
+            c = self.c.caller_ids.list(phone_number=5551231234)
+
+        request.assert_called_with(e_uri, method="GET")

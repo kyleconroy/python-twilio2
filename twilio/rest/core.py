@@ -203,6 +203,7 @@ class InstanceResource(Resource):
         
         # Delete conflicting parameter names
         self._load(entries)
+        self._load_subresources()
 
     def _load(self, entries):
         if "from" in entries.keys():
@@ -214,6 +215,14 @@ class InstanceResource(Resource):
 
         self.__dict__.update(entries)
 
+    def _load_subresources(self):
+        try:
+            client = self.list_resource.client
+            for r in self.subresources:
+                self.__dict__[r.name.lower()] = r(client, self.uri)
+        except AttributeError:
+            pass
+            
     def _update(self, **kwargs):
         a = self.list_resource.update(self.sid, **kwargs)
         self._load(a.__dict__)

@@ -21,6 +21,99 @@ class AvailablePhoneNumber(core.InstanceResource):
         """
         pass
 
+class Transcription(core.InstanceResource):
+
+    pass
+    
+
+class Transcriptions(core.ListResource):
+
+    name = "Transcriptions"
+    instance = Transcription
+
+    def list(self):
+        """
+        Return a list of :class:`Transcription` resources
+        """
+        return self._list([])
+
+
+class Recording(core.InstanceResource):
+
+    subresources = [
+        Transcriptions,
+        ]
+    
+    def delete(self):
+        """
+        Delete this recording
+        """
+        self._delete()
+
+
+class Recordings(core.ListResource):
+
+    name = "Recordings"
+    instance = Recording
+
+    def list(self, call_sid=None, before=None, after=None):
+        """
+        Returns a page of :class:`Recording` resources as a list. For paging informtion see :class:`ListResource`. 
+
+        :param date after: Only list recordings logged after this datetime
+        :param date before: Only list recordings logger before this datetime
+        :param call_sid: Only list recordings from this :class:`Call`
+        """
+        params = {
+            "CallSid": call_sid,
+            "DateCreated<": before,
+            "DateCreated>": after,
+            }
+        return self._list(params)
+
+    def delete(self, sid):
+        """
+        Delete the given recording
+        """
+        self._delete(sid)
+
+
+class Notification(core.InstanceResource):
+
+    def delete(self):
+        """
+        Delete this notification
+        """
+        self._delete()
+
+class Notifications(core.ListResource):
+
+    name = "Notifications"
+    instance = Notification
+
+    def list(self, before=None, after=None, log_level=None):
+        """
+        Returns a page of :class:`Notification` resources as a list. For paging informtion see :class:`ListResource`. 
+
+        **NOTE**: Due to the potentially voluminous amount of data in a notification, the full HTTP request and response data is only returned in the Notification instance resource representation.
+   
+        :param date after: Only list notifications logged after this datetime
+        :param date before: Only list notifications logger before this datetime
+        :param log_level: If 1, only shows errors. If 0, only show warnings
+        """
+        params = core.fparam({
+                "MessageDate<": before,
+                "MessageDate>": after,
+                "LogLevel": log_level,
+                })
+        return self._list(params)
+
+    def delete(self, sid):
+        """ 
+        Delete a given Notificiation
+        """
+        self._delete(sid)
+
 class Account(core.InstanceResource):
     """ An Account resource """
 
@@ -52,6 +145,7 @@ class Account(core.InstanceResource):
         Reactivate an account, Alias to update
         """
         return self._update(status=Account.ACTIVE)
+
 
 
 class Accounts(core.ListResource):
@@ -124,6 +218,11 @@ class Call(core.InstanceResource):
     NO_ANSWER   = "no-answer"
     QUEUED      = "queued"
     RINGING     = "ringing"
+
+    subresources = [
+        Notifications,
+        Recordings,
+        ]
 
     def hangup(self):
         """ If this call is currenlty active, hang up the call. 
@@ -221,9 +320,9 @@ class CallerId(core.InstanceResource):
        """
        Deletes this caller ID from the account.
        """
-       self._update(**kwargs)
+       self._delete(**kwargs)
 
-   def update(self, **kwargs)
+   def update(self, **kwargs):
        """
        Update the CallerId
        """
@@ -232,8 +331,9 @@ class CallerId(core.InstanceResource):
 
 class CallerIds(core.ListResource):
     """ A list of :class:`CallerId` resources """
-    
+
     name = "OutgoingCallerIds"
+    key = "outgoing_caller_ids"
     instance = CallerId
 
     def delete(self, sid):
@@ -293,45 +393,7 @@ class CallerIds(core.ListResource):
                                        headers=hs)
         return json.loads(content)
 
-class Notifications(core.ListResource):
 
-    def list(self, before=None, after=None, log_level=None):
-        """
-        Returns a page of :class:`Notification` resources as a list. For paging informtion see :class:`ListResource`. 
-
-        **NOTE**: Due to the potentially voluminous amount of data in a notification, the full HTTP request and response data is only returned in the Notification instance resource representation.
-   
-        :param date after: Only list notifications logged after this datetime
-        :param date before: Only list notifications logger before this datetime
-        :param log_level: If 1, only shows errors. If 0, only show warnings
-        """
-        pass
-
-    def iter(self, before=None, after=None, log_level=None):
-        """
-        Returns a iterator of **all** :class:`Notification` resources as a list. For paging informtion see :class:`ListResource`. 
-
-        **NOTE**: Due to the potentially voluminous amount of data in a notification, the full HTTP request and response data is only returned in the Notification instance resource representation.
-   
-        :param date after: Only list notifications logged after this datetime
-        :param date before: Only list notifications logger before this datetime
-        :param log_level: If 1, only shows errors. If 0, only show warnings
-        """
-        pass
-
-    def delete(self, sid):
-        """ 
-        Delete a given Notificiation
-        """
-        pass
-
-class Notification(core.InstanceResource):
-
-    def delete(self):
-        """
-        Delete this notification
-        """
-        pass
 
 class PhoneNumbers(core.ListResource):
 
@@ -434,41 +496,6 @@ class Sandbox(core.InstanceResource):
         """
         pass
 
-class Recordings(core.ListResource):
-
-    def list(self, call_sid=None, before=None, after=None):
-        """
-        Returns a page of :class:`Recording` resources as a list. For paging informtion see :class:`ListResource`. 
-
-        :param date after: Only list recordings logged after this datetime
-        :param date before: Only list recordings logger before this datetime
-        :param call_sid: Only list recordings from this :class:`Call`
-        """
-        pass
-
-    def iter(self, call_sid=None, before=None, after=None):
-        """
-        Returns a page of :class:`Recording` resources as a list. For paging informtion see :class:`ListResource`. 
-
-        :param date after: Only list recordings logged after this datetime
-        :param date before: Only list recordings logger before this datetime
-        :param call_sid: Only list recordings from this :class:`Call`
-        """
-        pass
-
-    def delete(self, sid):
-        """
-        Delete the given recording
-        """
-        pass
-
-class Recording(core.InstanceResource):
-    
-    def delete(self):
-        """
-        Delete this recording
-        """
-        pass
 
 class Sms(object):
     """
@@ -513,14 +540,6 @@ class SmsMessages(core.ListResource):
         pass
 
 class SmsMessage(core.ListResource):
-    
-    pass
-
-class Transcriptions(core.ListResource):
-
-    pass
-
-class Transcription(core.InstanceResource):
     
     pass
 
