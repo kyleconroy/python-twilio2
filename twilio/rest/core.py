@@ -30,7 +30,7 @@ def fparam(p):
     """
     Filter the parameters, throwing away any None values
     """
-    return dict([(d,p[d]) for d in p if p[d]])
+    return dict([(d,p[d]) for d in p if p[d] is not None])
 
 def parse_date(d):
     """
@@ -110,6 +110,13 @@ class Resource(object):
 
 class ListResource(Resource):
 
+    def __init__(self, *args, **kwargs):
+        super(ListResource, self).__init__(*args, **kwargs)
+        try:
+            self.key
+        except AttributeError:
+            self.key = self.name.lower()
+
     def _create(self, body):
         """
         Create an InstanceResource via a POST to the List Resource
@@ -162,16 +169,13 @@ class ListResource(Resource):
         page = json.loads(content)
 
         # Get key for the array of items
-        try:
-            key = self.key
-        except AttributeError:
-            key = self.name.lower()
 
         # Turn all those items into objects
         try:
-            return [ self._create_instance(i) for i in page[key]]
+            return [ self._create_instance(i) for i in page[self.key]]
         except KeyError:
-            raise TwilioException("Key {0} not present in response".format(key))
+            raise TwilioException("Key {0} not present in response".format(
+                    self.key))
         
     def get(self, sid):
         """Request the specified instance resource"""
@@ -188,6 +192,7 @@ class ListResource(Resource):
 class InstanceResource(Resource):
 
     id_key = "sid"
+    subresources = []
 
     def __init__(self, list_resource, base_uri, entries):
         
@@ -216,12 +221,9 @@ class InstanceResource(Resource):
         self.__dict__.update(entries)
 
     def _load_subresources(self):
-        try:
-            client = self.list_resource.client
-            for r in self.subresources:
-                self.__dict__[r.name.lower()] = r(client, self.uri)
-        except AttributeError:
-            pass
+        client = self.list_resource.client
+        for r in self.subresources:
+            self.__dict__[r.name.lower()] = r(client, self.uri)
             
     def _update(self, **kwargs):
         a = self.list_resource.update(self.sid, **kwargs)

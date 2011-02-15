@@ -41,6 +41,38 @@ class GeneralResourceTest(unittest.TestCase):
         self.c.client.request = request
         return request
 
+class ListResourceTest(GeneralResourceTest):
+
+    def check_list_uri(self, resource, e_uri, **kwargs):
+        body = '{"%s":[]}' % resource.key
+        request = self.mock_request(content=body)
+        resource.list(**kwargs)
+        request.assert_called_with(e_uri, method="GET")
+
+    def check_delete_uri(self, resource, sid, e_uri):
+        request = self.mock_request()
+        resource.delete(sid)
+        request.assert_called_with(e_uri, method="DELETE")
+
+    def check_update_uri(self, resource, sid, e_uri, body, **kwargs):
+        request = self.mock_request(content='{"sid":"hey"}')
+        resource.update(sid, **kwargs)
+        request.assert_called_with(e_uri, method="POST", body=body, 
+                                   headers=FORM_CONTENT_TYPE)
+
+class InstanceResourceTest(GeneralResourceTest):
+
+    def check_update_uri(self, resource, e_uri, body, **kwargs):
+        request = self.mock_request(content='{"sid":"hey"}')
+        resource.update(**kwargs)
+        request.assert_called_with(e_uri, method="POST", body=body, 
+                                   headers=FORM_CONTENT_TYPE)
+
+    def check_delete_uri(self, resource, e_uri):
+        request = self.mock_request(content='{"sid":"hey"}')
+        resource.delete()
+        request.assert_called_with(e_uri, method="DELETE")
+
 class ClientTest(unittest.TestCase):
 
     def setUp(self):
@@ -422,7 +454,7 @@ class CallTest(unittest.TestCase):
                                    body="Status={0}".format(Call.CANCELED),
                                    headers=FORM_CONTENT_TYPE)
 
-class CallerIdsTest(GeneralResourceTest):
+class CallerIdsTest(ListResourceTest):
 
     def test_validate(self):
 
@@ -442,17 +474,125 @@ class CallerIdsTest(GeneralResourceTest):
                                    headers=FORM_CONTENT_TYPE)
         self.assertTrue("validation_code" in c)
 
-
     def test_list(self):
 
         body = urllib.urlencode({
                 "PhoneNumber": 5551231234,
                 })
-        e_uri = "{0}Accounts/{1}/OutgoingCallerIds.json?{2}".format(BASE_URI, ACCOUNT_SID,
-                                                                 body)
+        e_uri = "{}OutgoingCallerIds.json?{}".format(ACCOUNT_URI,body)
         request = self.mock_request()
         
         with self.assertRaises(TwilioException) as cm:
             c = self.c.caller_ids.list(phone_number=5551231234)
 
         request.assert_called_with(e_uri, method="GET")
+
+    def test_list_uri(self):
+        uri =  "{}OutgoingCallerIds.json".format(ACCOUNT_URI)
+        self.check_list_uri(self.c.caller_ids, uri)
+
+    def test_delete_uri(self):
+        sid = "CI123123"
+        uri = "{}OutgoingCallerIds/{}.json".format(ACCOUNT_URI, sid)
+        self.check_delete_uri(self.c.caller_ids, sid, uri)
+
+    def test_update_uri(self):
+        sid = "CI123123"
+        uri = "{}OutgoingCallerIds/{}.json".format(ACCOUNT_URI, sid)
+        body = urllib.urlencode({"FriendlyName": "MyCallerId"})
+        self.check_update_uri(self.c.caller_ids, sid, uri, body,
+                              friendly_name="MyCallerId")
+
+class CallerIdTest(InstanceResourceTest):
+
+    def setUp(self):
+        self.c = TwilioClient(account=ACCOUNT_SID, token=AUTH_TOKEN)
+        self.sid = "CA123123"
+        self.base_uri = "{0}Accounts/{1}/OutgoingCallerIds".format(BASE_URI, ACCOUNT_SID)
+        self.uri = "{0}/{1}.json".format(self.base_uri, self.sid)
+        self.callerid =  CallerId(self.c.caller_ids, self.base_uri, {"sid": self.sid})
+
+    def test_hangup(self):
+        request = self.mock_request(content='{"sid":"asdh"}')
+        self.check_update_uri(self.callerid, self.uri,
+                              "FriendlyName=MyFriendlyName", 
+                              friendly_name="MyFriendlyName")
+
+    def test_delete(self):
+        request = self.mock_request(content='{"sid":"asdh"}')
+        self.check_delete_uri(self.callerid, self.uri)
+
+class NotificationsTest(ListResourceTest):
+
+    def test_list_uri(self):
+        uri =  "{}Notifications.json".format(ACCOUNT_URI)
+        self.check_list_uri(self.c.notifications, uri)
+
+    def test_list_uri_fiter(self):
+        query = urllib.urlencode({"MessageDate<": "2009-10-10",
+                                  "MessageDate>": "2010-10-10",
+                                  "LogLevel": 1})
+        uri =  "{}Notifications.json?{}".format(ACCOUNT_URI, query)
+        self.check_list_uri(self.c.notifications, uri, before="2009-10-10",
+                            after="2010-10-10", log_level=1)
+
+    def test_delete_uri(self):
+        sid = "N123123"
+        uri = "{}Notifications/{}.json".format(ACCOUNT_URI, sid)
+        self.check_delete_uri(self.c.notifications, sid, uri)
+
+class NotificationTest(InstanceResourceTest):
+
+    def setUp(self):
+        self.c = TwilioClient(account=ACCOUNT_SID, token=AUTH_TOKEN)
+        self.sid = "NO123123"
+        self.base_uri = "{0}Accounts/{1}/Notifications".format(BASE_URI, ACCOUNT_SID)
+        self.uri = "{0}/{1}.json".format(self.base_uri, self.sid)
+        self.notification =  Notification(self.c.notifications, self.base_uri, {"sid": self.sid})
+
+    def test_delete(self):
+        request = self.mock_request(content='{"sid":"asdh"}')
+        self.check_delete_uri(self.notification, self.uri)
+
+
+class TranscriptionsTest(ListResourceTest):
+
+    def test_list_uri(self):
+        uri =  "{}Transcriptions.json".format(ACCOUNT_URI)
+        self.check_list_uri(self.c.transcriptions, uri)
+
+
+class PhoneNumbersTest(ListResourceTest):
+
+    def test_list_uri(self):
+        uri =  "{}IncomingPhoneNumbers.json".format(ACCOUNT_URI)
+        self.check_list_uri(self.c.phone_numbers, uri)
+
+    def test_delete_uri(self):
+        sid = "PN123123"
+        uri =  "{}IncomingPhoneNumbers/{}.json".format(ACCOUNT_URI, sid)
+        self.check_delete_uri(self.c.phone_numbers, sid, uri)
+
+
+class ConferencesTest(ListResourceTest):
+
+    def test_list_uri(self):
+        uri =  "{}Conferences.json".format(ACCOUNT_URI)
+        self.check_list_uri(self.c.conferences, uri)
+
+
+class PhoneNumbersTest(ListResourceTest):
+
+    def test_search_local_uri(self):
+        uri =  "{}AvailablePhoneNumbers/US/Local.json".format(ACCOUNT_URI)
+        body = '{"available_phone_numbers":[]}'
+        request = self.mock_request(content=body)
+        self.c.phone_numbers.search()
+        request.assert_called_with(uri, method="GET")
+
+    def test_search_local_uri(self):
+        uri =  "{}AvailablePhoneNumbers/US/TollFree.json".format(ACCOUNT_URI)
+        body = '{"available_phone_numbers":[]}'
+        request = self.mock_request(content=body)
+        self.c.phone_numbers.search(type="TOLLFREE")
+        request.assert_called_with(uri, method="GET")

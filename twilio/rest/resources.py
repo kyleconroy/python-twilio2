@@ -7,19 +7,61 @@ from twilio.rest import core
 
 class AvailablePhoneNumber(core.InstanceResource):
     """ An available phone number resource """
+    def __init__(self, list_resource, base_uri, entries):
+        self.list_resource = list_resource
+        self.name = ""
+        self._load(entries)
 
-    def __init__(self, uri, entries={}, **kwargs):
-        super(AvailablePhoneNumber, self).__init__(uri, entries=entries, **kwargs)
+    def purchase(self, **kwargs):
+        return self.list_resource.purchase(phone_number=self.phone_number,
+                                           **kwargs)
 
-    def purchase(self, voice_url=None, voice_method=None, account_sid=None,
-                 voice_fallback_url=None, voice_fallback_method=None, 
-                 status_callback_method=None, sms_url=None, sms_method=None,
-                 sms_fallback_url=None, sms_fallback_method=None,
-                 voice_caller_id_lookup=False):
+class AvailablePhoneNumbers(core.ListResource):
+
+    name = "AvailablePhoneNumbers"
+    key = "available_phone_numbers"
+    instance = AvailablePhoneNumber
+
+    types = {"LOCAL": "Local", "TOLLFREE": "TollFree"}
+
+    def __init__(self, client, base_uri, phone_numbers):
+        self.phone_numbers = phone_numbers
+        super(AvailablePhoneNumbers,self).__init__(client, base_uri)
+
+    def _create_instance(self, content):
+        try:
+            return self.instance(self.phone_numbers, self.uri, content)
+        except AttributeError:
+            raise TwilioException("ListResource missing self.instance")
+
+    def list(self, type="LOCAL", country="US", region=None, area_code=None, 
+               postal_code=None, near_number=None, near_lat_long=None, lata=None,
+               rate_center=None, distance=None, contains=None):
         """
-        Provision the phone number and then return the new :class:`PhoneNumber` instance.
+        Search for phone numbers
         """
-        pass
+        params = core.fparam({
+               "InRegion": region,
+               "InPostalCode": postal_code,
+               "Contains": contains,
+               "AreaCode": area_code,
+               "InLata": lata,
+               "InRateCenter": rate_center,
+               "Distance": distance,
+               "NearNumber": near_number,
+               "NearLatLong": near_lat_long,
+               })
+
+        uri = "%s/%s/%s" % (self.uri, country, self.types[type])
+        resp, content =  self._request(uri, method="GET", query=params)
+        page = json.loads(content)
+
+        try:
+            return [ self._create_instance(i) for i in page[self.key]]
+        except KeyError:
+            raise core.TwilioException("Key {0} not present in response".format(
+                    self.key))
+
 
 class Transcription(core.InstanceResource):
 
@@ -208,7 +250,7 @@ class Calls(core.ListResource):
         :returns: Updated :class:`Call` resource
         """
         body = urllib.urlencode({"Status": Call.CANCELED})
-        self._update(sid, body)
+        return self._update(sid, body)
 
     def route(self, sid, url, method="POST"):
         """Route the specified :class:`Call` to another url.
@@ -219,7 +261,7 @@ class Calls(core.ListResource):
         :returns: Updated :class:`Call` resource
         """
         body = urllib.urlencode({"Url": url, "Method": method})
-        self._update(sid, body)
+        return self._update(sid, body)
 
 class CallerId(core.InstanceResource):
     
@@ -227,7 +269,7 @@ class CallerId(core.InstanceResource):
        """
        Deletes this caller ID from the account.
        """
-       self._delete(**kwargs)
+       self._delete()
 
    def update(self, **kwargs):
        """
@@ -308,21 +350,18 @@ class PhoneNumber(core.InstanceResource):
        """
        pass
 
-   def update(self, api_version=None, voice_url=None, voice_method=None, 
-              voice_fallback_url=None, voice_fallback_method=None, 
-              status_callback_method=None, sms_url=None, sms_method=None, 
-              sms_fallback_url=None, sms_fallback_method=None, 
-              voice_caller_id_lookup=False, account_sid=None):
+   def update(self, **kwargs):
        """
        Update this phone number instance
        """
-       pass
+       a = self.list_resource.update(self.sid, **kwargs)
+       self._load(a.__dict__)
 
    def delete(self):
        """
        Release this phone number from your account. Twilio will no longer answer calls to this number, and you will stop being billed the monthly phone number fees. The phone number will eventually be recycled and potentially given to another customer, so use with care. If you make a mistake, contact us... we may be able to give you the number back.
        """
-       pass
+       a = self.list_resource.delete(self.sid)
 
 
 class PhoneNumbers(core.ListResource):
@@ -331,6 +370,10 @@ class PhoneNumbers(core.ListResource):
     name ="IncomingPhoneNumbers"
     key = "incoming_phone_numbers"
     instance = PhoneNumber
+
+    def __init__(self, client, base_uri):
+        super(PhoneNumbers,self).__init__(client, base_uri)
+        self.available_phone_numbers = AvailablePhoneNumbers(client, base_uri, self)
     
     def delete(self, sid):
         """
@@ -353,39 +396,72 @@ class PhoneNumbers(core.ListResource):
                  voice_method=None, voice_fallback_url=None, 
                  voice_fallback_method=None, status_callback_method=None, 
                  sms_url=None, sms_method=None, sms_fallback_url=None, 
-                 sms_fallback_method=None, voice_caller_id_lookup=False, 
+                 sms_fallback_method=None, voice_caller_id_lookup=None, 
                  account_sid=None):
         """
         Attempt to purchase the specified number. The only required parameters are **either** phone_number or area_code
 
         :returns: Returns a :class:`PhoneNumber` instance on success, :data:`False` on failure
         """
-        pass
+        params = core.fparam({
+                "VoiceUrl": voice_url,
+                "VoiceMethod": voice_method,
+                "VoiceFallbackUrl": voice_fallback_url,
+                "VoiceFallbackMethod": voice_fallback_method,
+                "SmsUrl": sms_url,
+                "SmsMethod": sms_method,
+                "SmsFallbackUrl": sms_fallback_url,
+                "SmsFallbackMethod": sms_fallback_method,
+                "VoiceCallerIdLookup": voice_caller_id_lookup,
+                "AccountSid": account_sid,
+               })
 
-    def search(self, type="LOCAL", country="US", region=None, area_code=None, 
-               postal_code=None, near_number=None, near_lat_long=None, lata=None,
-               rate_center=None, distance=25):
+        if phone_number:
+            params["PhoneNumber"] = phone_number
+        elif area_code:
+            params["AreaCode"] = area_code
+        else:
+            raise TypeError("phone_number or area_code is required")
+
+        return self._create(urllib.urlencode(params))
+
+    def search(self, **kwargs):
         """
         :param type: Either :data:`LOCAL` or :data:`TOLL_FREE`. Defaults to :data:`LOCAL`
         :param integer area_code:
         """
-        pass
+        return self.available_phone_numbers.list(**kwargs)
 
     def trasfer(self, sid, account_sid):
         """
         Transfer the phone number with sid from the current account to another identified by account_sid
         """
-        pass
+        body = urllib.urlencode({"Url": url, "Method": method})
+        return self._update(sid, body)
 
     def update(self, sid, api_version=None, voice_url=None, voice_method=None, 
                voice_fallback_url=None, voice_fallback_method=None, 
                status_callback_method=None, sms_url=None, sms_method=None, 
                sms_fallback_url=None, sms_fallback_method=None, 
-               voice_caller_id_lookup=False, account_sid=None):
+               voice_caller_id_lookup=None, account_sid=None):
         """
         Update this phone number instance
         """
-        pass
+        params = core.fparam({
+                "ApiVersion": api_version,
+                "VoiceUrl": voice_url,
+                "VoiceMethod": voice_method,
+                "VoiceFallbackUrl": voice_fallback_url,
+                "VoiceFallbackMethod": voice_fallback_method,
+                "StatusCallbackMethod": status_callback_method,
+                "SmsUrl": sms_url,
+                "SmsMethod": sms_method,
+                "SmsFallbackUrl": sms_fallback_url,
+                "SmsFallbackMethod": sms_fallback_method,
+                "VoiceCallerIdLookup": voice_caller_id_lookup,
+                "AccountSid": account_sid,
+                })
+        return self._update(sid, urllib.urlencode(params))
        
 class Sandboxes(core.ListResource):
     
