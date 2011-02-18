@@ -223,7 +223,7 @@ class InstanceResource(Resource):
     def _load_subresources(self):
         client = self.list_resource.client
         for r in self.subresources:
-            self.__dict__[r.name.lower()] = r(client, self.uri)
+            self.__dict__[r.key] = r(client, self.uri)
             
     def _update(self, **kwargs):
         a = self.list_resource.update(self.sid, **kwargs)

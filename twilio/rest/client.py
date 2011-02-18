@@ -56,3 +56,4 @@ class TwilioClient(object):
         self.sms            = Sms(self.client, account_uri)
         self.phone_numbers  = PhoneNumbers(self.client, account_uri)
         self.conferences    = Conferences(self.client, account_uri)
+        self.sandboxes      = Sandboxes(self.client, account_uri)

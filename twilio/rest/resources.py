@@ -311,7 +311,7 @@ class CallerIds(core.ListResource):
             })
         return self._update(sid, urllib.urlencode(params))
 
-    def validate(self, phone_number, friendly_name=None, call_delay=0, 
+    def validate(self, phone_number, friendly_name=None, call_delay=None, 
                  extension=None):
         """
         Begin the validation procress for the given number. 
@@ -463,29 +463,41 @@ class PhoneNumbers(core.ListResource):
                 })
         return self._update(sid, urllib.urlencode(params))
        
-class Sandboxes(core.ListResource):
+class Sandbox(core.InstanceResource):
     
+    id_key = "pin"
+
+    def update(self, **kwargs):
+        """
+        Update your Twilio Sandbox
+        """
+        a = self.list_resource.update(**kwargs)
+        self._load(a.__dict__)
+        
+
+class Sandboxes(core.ListResource):
+
+    name = "Sandbox"
+    instance = Sandbox
+        
     def get(self):
         """
         Return your Twilio Sandbox resource
         """
-        pass
+        return super(Sandboxes, self).get("")
 
-    def update(self, voice_url=None, voice_method="POST", sms_url=None, 
-               sms_method="POST"):
+    def update(self, voice_url=None, voice_method=None, sms_url=None, 
+               sms_method=None):
         """
         Update your Twilio Sandbox
         """
-        pass
-
-class Sandbox(core.InstanceResource):
-
-    def update(self, voice_url=None, voice_method="POST", sms_url=None, 
-               sms_method="POST"):
-        """
-        Update your Twilio Sandbox
-        """
-        pass
+        params = core.fparam({
+                "VoiceUrl": voice_url,
+                "VoiceMethod": voice_method,
+                "SmsUrl": sms_url,
+                "SmsMethod": sms_method,
+                })
+        return self._update("", urllib.urlencode(params))
 
 
 class Sms(object):
@@ -722,9 +734,9 @@ class Accounts(core.ListResource):
         :param status: Alter the status of this account: use :data:`CLOSED` to irreversibly close this account, :data:`SUSPENDED` to temporarily suspend it, or :data:`ACTIVE` to reactivate it.
         """
         params = core.fparam({
-            "FriendlyName": friendly_name,
-            "Status": status
-            })
+                "FriendlyName": friendly_name,
+                "Status": status
+                })
         return self._update(sid, urllib.urlencode(params))
 
     def close(self, sid):
