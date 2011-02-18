@@ -232,23 +232,8 @@ class AccountsTest(unittest.TestCase):
         request.assert_called_with(expected_uri, method="POST", body=body,
                                    headers=hs)
 
-        with open("tests/content/create_account.json") as f:
+        with open("tests/resources/accounts_instance.json") as f:
             content = f.read()
-
-    def test_instance_update(self):
-        account_sid = "AC4bf2dafb92341f7caf8650403e422d23"
-        base_uri = "{0}Accounts".format(BASE_URI)
-        expected_uri = "{0}Accounts/{1}.json".format(BASE_URI, account_sid)
-
-        with open("tests/content/create_account.json") as f:
-            c = f.read()
-
-        request = create_mock_request(content=c)
-        self.mock_http.request = request
-        a = Account(self.c.accounts, base_uri, {"sid": account_sid})
-        a.update(friendly_name="You")
-
-        self.assertEquals(a.date_created, "Fri, 11 Feb 2011 00:19:37 +0000")
 
     def test_close_uri(self):
         account_sid = "AC4bf2dafb92341f7caf8650403e422d23"
@@ -278,7 +263,7 @@ class AccountsTest(unittest.TestCase):
 
     def test_instance_creation(self):
 
-        with open("tests/content/create_account.json") as f:
+        with open("tests/resources/accounts_instance.json") as f:
             content = f.read()
 
         entries = json.loads(content)
@@ -322,18 +307,16 @@ class AccountTest(unittest.TestCase):
                                    body="Status={0}".format(status),
                                    headers=self.ct)
 
-        self.assertEquals(self.account.status, status)
-
     def test_close(self):
-        self._validate(self.account.close, "tests/content/close_account.json",
+        self._validate(self.account.close, "tests/resources/accounts_instance.json",
                        Account.CLOSED)
 
     def test_suspend(self):
-        self._validate(self.account.suspend, "tests/content/suspend_account.json",
+        self._validate(self.account.suspend, "tests/resources/accounts_instance.json",
                        Account.SUSPENDED)
 
     def test_activate(self):
-        self._validate(self.account.activate, "tests/content/create_account.json",
+        self._validate(self.account.activate, "tests/resources/accounts_instance.json",
                        Account.ACTIVE)
 
 
