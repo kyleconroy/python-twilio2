@@ -482,8 +482,7 @@ class Sandboxes(core.ListResource):
 
     def get(self):
         """Request the specified instance resource"""
-        resp, content =  self._request(self.uri, method="GET")
-        return self._create_instance(json.loads(content))
+        return self._get(self.uri)
 
     def update(self, voice_url=None, voice_method=None, sms_url=None, 
                sms_method=None):
@@ -561,6 +560,8 @@ class SmsMessages(core.ListResource):
 
 class Participant(core.InstanceResource):
 
+    id_key = "call_sid"
+
     def mute(self):
         """
         Mute the participant
@@ -585,50 +586,52 @@ class Participants(core.ListResource):
     name = "Participants"
     instance = Participant
 
-    def get(self, conference_sid, sid):
-        """
-        Returns a :class:`Particiapant` resource. Requires a conference sid
-        
-        :param conference_sid: Conference this participant is part of
-        :param sid: Participant identifier
-        """
-        pass
-
-    def list(conference_sid, muted=None):
+    def list(self, muted=None):
         """
         Returns a list of :class:`Participant` resources in the given conference
 
         :param conference_sid: Conference this participant is part of
         :param boolean muted: If True, only show participants who are muted
         """
-        pass
+        params = core.fparam({
+            "Muted": muted,
+            })
+        return self._list(params)
 
-    def iter(conference_sid, muted=None):
-        """
-        Returns a list of :class:`Participant` resources in the given conference
-
-        :param conference_sid: Conference this participant is part of
-        :param boolean muted: If True, only show participants who are muted
-        """
-        pass
-
-    def mute(self, conference_sid, participant_sid):
+    def mute(self, call_sid):
         """
         Mute the given participant
         """
-        pass
+        return self.update(call_sid, muted=True)
 
-    def unmute(self, conference_sid, participant_sid):
+    def unmute(self, call_sid):
         """
         Unmute the given participant
         """
-        pass
+        return self.update(call_sid, muted=False)
 
-    def kick(self, conference_sid, participant_sid):
+    def kick(self, call_sid):
         """
         Remove the participant from the given conference
         """
-        pass
+        return self._delete(call_sid)
+
+    def delete(self, call_sid):
+        """
+        Remove the participant from the given conference
+        """
+        return self._delete(call_sid)
+
+    def update(self, sid, muted=None):
+        """
+        :param sid: Account identifier
+        :param friendly_name: Update the human-readable description of this account.
+        :param status: Alter the status of this account: use :data:`CLOSED` to irreversibly close this account, :data:`SUSPENDED` to temporarily suspend it, or :data:`ACTIVE` to reactivate it.
+        """
+        params = core.fparam({
+                "Muted": muted
+                })
+        return self._update(sid, urllib.urlencode(params))
 
 
 class Conference(core.InstanceResource):

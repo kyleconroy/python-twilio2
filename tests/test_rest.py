@@ -149,19 +149,15 @@ class AccountsTest(unittest.TestCase):
             a = self.c.accounts.create()
 
     def test_create(self):
-
-        account_name = "SubAccount Created at 2011-02-10 16:19 pm"
-
-        with open("tests/content/create_account.json") as f:
+        with open("tests/resources/accounts_instance.json") as f:
             content = f.read()
 
         request = create_mock_request(201, content)
         self.mock_http.request = request
 
-        c = self.c.accounts.create(friendly_name=account_name)
+        c = self.c.accounts.create(friendly_name="account_name")
 
         entries = json.loads(content)
-        self.assertEquals(c.friendly_name, account_name)
         self.assertEquals(c.sid, entries["sid"])
         self.assertEquals(c.date_created, entries["date_created"])
         self.assertEquals(c.date_updated, entries["date_updated"])
@@ -458,7 +454,7 @@ class CallerIdsTest(ListResourceTest):
 
     def test_validate(self):
 
-        with open("tests/content/validate_caller_id.json") as f:
+        with open("tests/resources/outgoing_caller_ids_validation.json") as f:
             content = f.read()
 
         e_uri = "{0}Accounts/{1}/OutgoingCallerIds.json".format(BASE_URI, ACCOUNT_SID)
@@ -596,3 +592,10 @@ class PhoneNumbersTest(ListResourceTest):
         request = self.mock_request(content=body)
         self.c.phone_numbers.search(type="TOLLFREE")
         request.assert_called_with(uri, method="GET")
+
+
+class RecordingsTest(ListResourceTest):
+
+    def test_list_uri(self):
+        uri =  "{}Recordings.json".format(ACCOUNT_URI)
+        self.check_list_uri(self.c.recordings, uri)

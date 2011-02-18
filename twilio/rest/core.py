@@ -176,12 +176,16 @@ class ListResource(Resource):
         except KeyError:
             raise TwilioException("Key {0} not present in response".format(
                     self.key))
+
+    def _get(self, uri):
+        """Request the specified instance resource"""
+        resp, content =  self._request(uri, method="GET")
+        return self._create_instance(json.loads(content))
         
     def get(self, sid):
         """Request the specified instance resource"""
         uri = "{0}/{1}".format(self.uri, sid)
-        resp, content =  self._request(uri, method="GET")
-        return self._create_instance(json.loads(content))
+        return self._get(uri)
 
     def _create_instance(self, content):
         try:
@@ -227,8 +231,8 @@ class InstanceResource(Resource):
             self.__dict__[ir.key] = ir
             
     def _update(self, **kwargs):
-        a = self.list_resource.update(self.sid, **kwargs)
+        a = self.list_resource.update(self.name, **kwargs)
         self._load(a.__dict__)
 
     def _delete(self, **kwargs):
-        self.list_resource.delete(self.sid, **kwargs)
+        self.list_resource.delete(self.name, **kwargs)
