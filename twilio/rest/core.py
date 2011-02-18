@@ -161,7 +161,9 @@ class ListResource(Resource):
         """
         Return the number of instance resources contained in this list resource
         """
-        raise TwilioException("InstanceResource count not supported")
+        resp, content =  self._request(self.uri, method="GET")
+        page = json.loads(content)
+        return page["total"]
 
     def _list(self, params={}):
         # Get the items

@@ -552,6 +552,11 @@ class PhoneNumbersTest(ListResourceTest):
         uri =  "{}IncomingPhoneNumbers/{}.json".format(ACCOUNT_URI, sid)
         self.check_delete_uri(self.c.phone_numbers, sid, uri)
 
+    def test_check_count(self):
+        with open("tests/resources/incoming_phone_numbers_list.json") as f:
+            content = f.read()
+            self.mock_request(content=content)
+            self.assertEquals(self.c.phone_numbers.count(), 3)
 
 class ConferencesTest(ListResourceTest):
 
@@ -560,7 +565,7 @@ class ConferencesTest(ListResourceTest):
         self.check_list_uri(self.c.conferences, uri)
 
 
-class PhoneNumbersTest(ListResourceTest):
+class AvailableNumbersTest(ListResourceTest):
 
     def test_search_local_uri(self):
         uri =  "{}AvailablePhoneNumbers/US/Local.json".format(ACCOUNT_URI)
