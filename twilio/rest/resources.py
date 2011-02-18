@@ -106,11 +106,11 @@ class Recordings(core.ListResource):
         :param date before: Only list recordings logger before this datetime
         :param call_sid: Only list recordings from this :class:`Call`
         """
-        params = {
+        params = core.fparam({
             "CallSid": call_sid,
             "DateCreated<": before,
             "DateCreated>": after,
-            }
+            })
         return self._list(params)
 
     def delete(self, sid):
@@ -479,25 +479,28 @@ class Sandboxes(core.ListResource):
 
     name = "Sandbox"
     instance = Sandbox
-        
+
     def get(self):
-        """
-        Return your Twilio Sandbox resource
-        """
-        return super(Sandboxes, self).get("")
+        """Request the specified instance resource"""
+        resp, content =  self._request(self.uri, method="GET")
+        return self._create_instance(json.loads(content))
 
     def update(self, voice_url=None, voice_method=None, sms_url=None, 
                sms_method=None):
         """
         Update your Twilio Sandbox
         """
-        params = core.fparam({
+        body = urllib.urlencode(core.fparam({
                 "VoiceUrl": voice_url,
                 "VoiceMethod": voice_method,
                 "SmsUrl": sms_url,
                 "SmsMethod": sms_method,
-                })
-        return self._update("", urllib.urlencode(params))
+                }))
+        hs = {'Content-type': 'application/x-www-form-urlencoded'}
+        resp, content =  self._request(self.uri, method="POST", body=body, 
+                                       headers=hs)
+        entries = json.loads(content)
+        return self._create_instance(entries)
 
 
 class Sms(object):
@@ -506,6 +509,7 @@ class Sms(object):
     """
 
     name = "SMS"
+    key = "sms"
     
     def __init__(self, client, base_uri):
         self.uri = "{0}/SMS".format(base_uri)
@@ -578,6 +582,9 @@ class Participant(core.InstanceResource):
 
 class Participants(core.ListResource):
 
+    name = "Participants"
+    instance = Participant
+
     def get(self, conference_sid, sid):
         """
         Returns a :class:`Particiapant` resource. Requires a conference sid
@@ -630,8 +637,6 @@ class Conference(core.InstanceResource):
         Participants
         ]
     
-    pass
-
 
 class Conferences(core.ListResource):
 

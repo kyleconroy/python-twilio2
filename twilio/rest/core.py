@@ -187,7 +187,7 @@ class ListResource(Resource):
         try:
             return self.instance(self, self.uri, content)
         except AttributeError:
-            raise TwilioException("ListResource missing self.instance")
+            raise TwilioException("%s missing self.instance" % self.name)
 
 class InstanceResource(Resource):
 
@@ -223,7 +223,8 @@ class InstanceResource(Resource):
     def _load_subresources(self):
         client = self.list_resource.client
         for r in self.subresources:
-            self.__dict__[r.key] = r(client, self.uri)
+            ir = r(client, self.uri)
+            self.__dict__[ir.key] = ir
             
     def _update(self, **kwargs):
         a = self.list_resource.update(self.sid, **kwargs)
