@@ -165,10 +165,12 @@ class ListResource(Resource):
         page = json.loads(content)
         return page["total"]
 
-    def _list(self, params={}, page=None):
+    def _list(self, params={}, page=None, page_size=None):
         # Get the items
         if page is not None:
             params["Page"] = page
+        if page_size is not None:
+            params["PageSize"] = page_size
         resp, content =  self._request(self.uri, method="GET", query=params)
         page = json.loads(content)
 
@@ -180,6 +182,21 @@ class ListResource(Resource):
         except KeyError:
             raise TwilioException("Key {0} not present in response".format(
                     self.key))
+
+    def iter(self, **kwargs):
+        """
+        Return all instance resources using an iterator
+        Can only be called on classes which implement list()
+        """
+        p = 0
+        try:
+            while True:
+                for r in self.list(page=p, **kwargs):
+                    yield r
+                p += 1
+        except TwilioRestException:
+            pass
+        
 
     def _get(self, uri):
         """Request the specified instance resource"""
