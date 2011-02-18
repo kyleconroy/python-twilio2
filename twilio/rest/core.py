@@ -165,8 +165,10 @@ class ListResource(Resource):
         page = json.loads(content)
         return page["total"]
 
-    def _list(self, params={}):
+    def _list(self, params={}, page=None):
         # Get the items
+        if page is not None:
+            params["Page"] = page
         resp, content =  self._request(self.uri, method="GET", query=params)
         page = json.loads(content)
 

@@ -73,11 +73,11 @@ class Transcriptions(core.ListResource):
     name = "Transcriptions"
     instance = Transcription
 
-    def list(self):
+    def list(self, **kwargs):
         """
         Return a list of :class:`Transcription` resources
         """
-        return self._list([])
+        return self._list({}, **kwargs)
 
 
 class Recording(core.InstanceResource):
@@ -98,7 +98,7 @@ class Recordings(core.ListResource):
     name = "Recordings"
     instance = Recording
 
-    def list(self, call_sid=None, before=None, after=None):
+    def list(self, call_sid=None, before=None, after=None, **kwargs):
         """
         Returns a page of :class:`Recording` resources as a list. For paging informtion see :class:`ListResource`. 
 
@@ -111,7 +111,7 @@ class Recordings(core.ListResource):
             "DateCreated<": before,
             "DateCreated>": after,
             })
-        return self._list(params)
+        return self._list(params, **kwargs)
 
     def delete(self, sid):
         """
@@ -133,7 +133,7 @@ class Notifications(core.ListResource):
     name = "Notifications"
     instance = Notification
 
-    def list(self, before=None, after=None, log_level=None):
+    def list(self, before=None, after=None, log_level=None, **kwargs):
         """
         Returns a page of :class:`Notification` resources as a list. For paging informtion see :class:`ListResource`. 
 
@@ -148,7 +148,7 @@ class Notifications(core.ListResource):
                 "MessageDate>": after,
                 "LogLevel": log_level,
                 })
-        return self._list(params)
+        return self._list(params, **kwargs)
 
     def delete(self, sid):
         """ 
@@ -199,7 +199,7 @@ class Calls(core.ListResource):
     @core.normalize_dates
     def list(self, to=None, from_=None, status=None, ended_after=None,
              ended_before=None, ended=None, started_before=None, 
-             started_after=None, started=None, page=0):
+             started_after=None, started=None, **kwargs):
         """
         Returns a page of :class:`Call` resources as a list. For paging 
         informtion see :class:`ListResource`
@@ -218,7 +218,7 @@ class Calls(core.ListResource):
             "EndTime>": ended_after,
             "EndTime": ended,
             })
-        return self._list(params)
+        return self._list(params, **kwargs)
 
     def create(self, to, from_, url, method=None, fallback_url=None,
              fallback_method=None, status_callback=None, status_method=None, 
@@ -291,7 +291,7 @@ class CallerIds(core.ListResource):
         """
         self._delete(sid)
 
-    def list(self, phone_number=None, friendly_name=None):
+    def list(self, phone_number=None, friendly_name=None, **kwargs):
         """
         :param phone_number: Only show the caller id resource that exactly matches this phone number.
         :param friendly_name: Only show the caller id resource that exactly  matches this name.
@@ -300,7 +300,7 @@ class CallerIds(core.ListResource):
             "PhoneNumber": phone_number,
             "FrienldyName": friendly_name,
             })
-        return self._list(params)
+        return self._list(params, **kwargs)
 
     def update(self, sid, friendly_name=None):
         """
@@ -344,24 +344,24 @@ class CallerIds(core.ListResource):
 
 class PhoneNumber(core.InstanceResource):
 
-   def trasfer(self, account_sid):
-       """
-       Transfer the phone number with sid from the current account to another identified by account_sid
-       """
-       pass
+    def trasfer(self, account_sid):
+        """
+        Transfer the phone number with sid from the current account to another identified by account_sid
+        """
+        pass
 
-   def update(self, **kwargs):
-       """
-       Update this phone number instance
-       """
-       a = self.list_resource.update(self.sid, **kwargs)
-       self._load(a.__dict__)
+    def update(self, **kwargs):
+        """
+        Update this phone number instance
+        """
+        a = self.list_resource.update(self.sid, **kwargs)
+        self._load(a.__dict__)
 
-   def delete(self):
-       """
-       Release this phone number from your account. Twilio will no longer answer calls to this number, and you will stop being billed the monthly phone number fees. The phone number will eventually be recycled and potentially given to another customer, so use with care. If you make a mistake, contact us... we may be able to give you the number back.
-       """
-       a = self.list_resource.delete(self.sid)
+    def delete(self):
+        """
+        Release this phone number from your account. Twilio will no longer answer calls to this number, and you will stop being billed the monthly phone number fees. The phone number will eventually be recycled and potentially given to another customer, so use with care. If you make a mistake, contact us... we may be able to give you the number back.
+        """
+        a = self.list_resource.delete(self.sid)
 
 
 class PhoneNumbers(core.ListResource):
@@ -381,7 +381,7 @@ class PhoneNumbers(core.ListResource):
         """
         return self._delete(sid)
 
-    def list(self, phone_number=None, friendly_name=None):
+    def list(self, phone_number=None, friendly_name=None, **kwargs):
         """
         :param phone_number: Only return phone numbers that match this pattern. You can specify partial numbers and use '*' as a wildcard for any digit.
         :param friendly_name: Only return phone numbers with friendly names that exactly match this name.
@@ -390,7 +390,7 @@ class PhoneNumbers(core.ListResource):
                "PhoneNumber": phone_number,
                "FriendlyName": friendly_name,
                })
-        return self._list(params)
+        return self._list(params, **kwargs)
 
     def purchase(self, phone_number=None, area_code=None, voice_url=None, 
                  voice_method=None, voice_fallback_url=None, 
@@ -541,7 +541,7 @@ class SmsMessages(core.ListResource):
             })
         return self._create(urllib.urlencode(params))
 
-    def list(self, to=None, from_=None, before=None, after=None):
+    def list(self, to=None, from_=None, before=None, after=None, **kwargs):
         """
         Returns a page of :class:`SMSMessage` resources as a list. For paging informtion see :class:`ListResource`. 
 
@@ -556,7 +556,7 @@ class SmsMessages(core.ListResource):
             "DateSent<": before,
             "DateSent>": after,
             })
-        return self._list(params)
+        return self._list(params, **kwargs)
 
 class Participant(core.InstanceResource):
 
@@ -586,7 +586,7 @@ class Participants(core.ListResource):
     name = "Participants"
     instance = Participant
 
-    def list(self, muted=None):
+    def list(self, muted=None, **kwargs):
         """
         Returns a list of :class:`Participant` resources in the given conference
 
@@ -596,7 +596,7 @@ class Participants(core.ListResource):
         params = core.fparam({
             "Muted": muted,
             })
-        return self._list(params)
+        return self._list(params, **kwargs)
 
     def mute(self, call_sid):
         """
@@ -648,7 +648,7 @@ class Conferences(core.ListResource):
     
     def list(self, status=None, friendly_name=None, updated_before=None,
              updated_after=None, created_after=None, created_before=None,
-             updated=None, created=None):
+             updated=None, created=None, **kwargs):
         """
         Return a list of :class:`Conference` resources
 
@@ -669,7 +669,7 @@ class Conferences(core.ListResource):
             "DateCreated>": created_after,
             "DateCreated": created,
             })
-        return self._list(params)
+        return self._list(params, **kwargs)
     
 class Account(core.InstanceResource):
     """ An Account resource """
@@ -721,7 +721,7 @@ class Accounts(core.ListResource):
     name = "Accounts"
     instance = Account
 
-    def list(self, friendly_name=None, status=None):
+    def list(self, friendly_name=None, status=None, **kwargs):
         """
         Returns a page of :class:`Account` resources as a list. For paging
         informtion see :class:`ListResource`
@@ -733,7 +733,7 @@ class Accounts(core.ListResource):
                 "FriendlyName": friendly_name,
                 "Status": status,
                 })
-        return self._list(params=params)
+        return self._list(params, **kwargs)
     
     def update(self, sid, friendly_name=None, status=None):
         """

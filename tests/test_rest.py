@@ -60,6 +60,11 @@ class ListResourceTest(GeneralResourceTest):
         request.assert_called_with(e_uri, method="POST", body=body, 
                                    headers=FORM_CONTENT_TYPE)
 
+    def check_paging(self, resource, response, uri):
+        request = self.mock_request(content=response)
+        resource.list(page=2)
+        request.assert_called_with(uri, method="GET")
+
 class InstanceResourceTest(GeneralResourceTest):
 
     def check_update_uri(self, resource, e_uri, body, **kwargs):
@@ -133,12 +138,17 @@ class ResourceTest(unittest.TestCase):
         with self.assertRaises(TwilioRestException) as cm:
             self.c.accounts.create(friendly_name="MyNewAccount")
 
-class AccountsTest(unittest.TestCase):
+class AccountsTest(ListResourceTest):
 
     def setUp(self):
         self.mock_http = Mock()
         self.c = TwilioClient(account=ACCOUNT_SID, token=AUTH_TOKEN,
                               client=self.mock_http)
+
+    def test_paging(self):
+        with open("tests/resources/accounts_list.json") as f:
+            uri = "{0}Accounts.json?Page=2".format(BASE_URI)
+            self.check_paging(self.c.accounts, f.read(), uri)
 
     def test_uri(self):
         uri = "{0}Accounts".format(BASE_URI)
@@ -320,19 +330,12 @@ class AccountTest(unittest.TestCase):
                        Account.ACTIVE)
 
 
-class CallsTest(unittest.TestCase):
+class CallsTest(ListResourceTest):
 
-    def setUp(self):
-        self.c = TwilioClient(account=ACCOUNT_SID, token=AUTH_TOKEN)
-
-    def mock_request(self, status=200, content="{}"):
-        request = Mock()
-        resp = Mock()
-        resp.status = status
-        resp.reason = "CREATED"
-        request.return_value = resp, content
-        self.c.client.request = request
-        return request
+    def test_paging(self):
+        with open("tests/resources/calls_list.json") as f:
+            uri = "{}Calls.json?Page=2".format(ACCOUNT_URI)
+            self.check_paging(self.c.calls, f.read(), uri)
 
     def test_uri(self):
         uri = "{0}Calls".format(ACCOUNT_URI)
@@ -435,6 +438,11 @@ class CallTest(unittest.TestCase):
 
 class CallerIdsTest(ListResourceTest):
 
+    def test_paging(self):
+        with open("tests/resources/outgoing_caller_ids_list.json") as f:
+            uri = "{}OutgoingCallerIds.json?Page=2".format(ACCOUNT_URI)
+            self.check_paging(self.c.caller_ids, f.read(), uri)
+
     def test_validate(self):
 
         with open("tests/resources/outgoing_caller_ids_validation.json") as f:
@@ -533,6 +541,13 @@ class NotificationTest(InstanceResourceTest):
         request = self.mock_request(content='{"sid":"asdh"}')
         self.check_delete_uri(self.notification, self.uri)
 
+    def test_paging(self):
+        with open("tests/resources/notifications_list.json") as f:
+            uri =  "{}.json?Page=2".format(self.base_uri)
+            request = self.mock_request(content=f.read())
+            self.c.notifications.list(page=2)
+            request.assert_called_with(uri, method="GET")
+
 
 class TranscriptionsTest(ListResourceTest):
 
@@ -540,8 +555,22 @@ class TranscriptionsTest(ListResourceTest):
         uri =  "{}Transcriptions.json".format(ACCOUNT_URI)
         self.check_list_uri(self.c.transcriptions, uri)
 
+    def test_paging(self):
+        with open("tests/resources/transcriptions_list.json") as f:
+            uri =  "{}Transcriptions.json?Page=2".format(ACCOUNT_URI)
+            request = self.mock_request(content=f.read())
+            self.c.transcriptions.list(page=2)
+            request.assert_called_with(uri, method="GET")
 
 class PhoneNumbersTest(ListResourceTest):
+
+    list_response = "tests/resources/incoming_phone_numbers_list.json"
+    instancet_response = "tests/resources/incoming_phone_numbers_instance.json"
+
+    def test_paging(self):
+        with open(self.list_response) as f:
+            uri = "{}IncomingPhoneNumbers.json?Page=2".format(ACCOUNT_URI)
+            self.check_paging(self.c.phone_numbers, f.read(), uri)
 
     def test_list_uri(self):
         uri =  "{}IncomingPhoneNumbers.json".format(ACCOUNT_URI)
@@ -559,6 +588,14 @@ class PhoneNumbersTest(ListResourceTest):
             self.assertEquals(self.c.phone_numbers.count(), 3)
 
 class ConferencesTest(ListResourceTest):
+
+    list_response = "tests/resources/conferences_list.json"
+    instancet_response = "tests/resources/conferences_instance.json"
+
+    def test_paging(self):
+        with open(self.list_response) as f:
+            uri = "{}Conferences.json?Page=2".format(ACCOUNT_URI)
+            self.check_paging(self.c.conferences, f.read(), uri)
 
     def test_list_uri(self):
         uri =  "{}Conferences.json".format(ACCOUNT_URI)
@@ -583,6 +620,14 @@ class AvailableNumbersTest(ListResourceTest):
 
 
 class RecordingsTest(ListResourceTest):
+
+    list_response = "tests/resources/recordings_list.json"
+    instancet_response = "tests/resources/recordings_instance.json"
+
+    def test_paging(self):
+        with open(self.list_response) as f:
+            uri = "{}Recordings.json?Page=2".format(ACCOUNT_URI)
+            self.check_paging(self.c.recordings, f.read(), uri)
 
     def test_list_uri(self):
         uri =  "{}Recordings.json".format(ACCOUNT_URI)
