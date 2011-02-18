@@ -3,3 +3,4 @@ keys.py
 
 docs/_build
 cover
+.coverage
