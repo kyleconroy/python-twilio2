@@ -1,15 +1,14 @@
-from distutils.core import setup
+from setuptools import setup, find_packages
 setup(
     name = "twilio",
-    py_modules = ['twilio'],
     version = "3.0.0",
     description = "Twilio API client and TwiML generator",
     author = "Twilio",
     author_email = "help@twilio.com",
     url = "http://github.com/twilio/twilio-python/",
-    download_url = "http://github.com/twilio/twilio-python/tarball/2.0.1",
     keywords = ["twilio","twiml"],
     requires = ["httplib2"],
+    packages = find_packages(),
     classifiers = [
         "Programming Language :: Python",
         "Operating System :: OS Independent",
