@@ -7,7 +7,7 @@ setup(
     author_email = "help@twilio.com",
     url = "http://github.com/twilio/twilio-python/",
     keywords = ["twilio","twiml"],
-    requires = ["httplib2"],
+    install_requires = ["httplib2"],
     packages = find_packages(),
     classifiers = [
         "Programming Language :: Python",
