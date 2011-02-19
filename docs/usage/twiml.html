@@ -1,0 +1,174 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>TwiML Creation &mdash; twilio-python2 v2.5.1 documentation</title>
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2.5.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="twilio-python2 v2.5.1 documentation" href="../index.html" />
+    <link rel="next" title="REST Documentation" href="../api/rest.html" />
+    <link rel="prev" title="REST API Usage" href="rest.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../api/rest.html" title="REST Documentation"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="rest.html" title="REST API Usage"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">twilio-python2 v2.5.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <span class="target" id="module-twilio.twiml"><span id="usage-twiml"></span></span><div class="section" id="twiml-creation">
+<h1>TwiML Creation<a class="headerlink" href="#twiml-creation" title="Permalink to this headline">¶</a></h1>
+<p>The <tt class="xref py py-mod docutils literal"><span class="pre">twiml</span></tt> module is responsible for the creation and validation of TwiML. Configuration options also allow users to specift defaults for various verbs.</p>
+<div class="section" id="creation">
+<h2>Creation<a class="headerlink" href="#creation" title="Permalink to this headline">¶</a></h2>
+<p>TwiML creation begins with the <a class="reference internal" href="../api/twiml.html#twilio.twiml.Response" title="twilio.twiml.Response"><tt class="xref py py-class docutils literal"><span class="pre">Response</span></tt></a> verb. Each succesive verb is created by calling various methods on the response, such as <tt class="xref py py-meth docutils literal"><span class="pre">say()</span></tt> or <tt class="xref py py-meth docutils literal"><span class="pre">play()</span></tt>. These methods return the verbs they create to ease the creation of nested TwiML. To finish, call the <tt class="xref py py-meth docutils literal"><span class="pre">toxml()</span></tt> method on the <a class="reference internal" href="../api/twiml.html#twilio.twiml.Response" title="twilio.twiml.Response"><tt class="xref py py-class docutils literal"><span class="pre">Response</span></tt></a>, which returns raw TwiML.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">twilio</span> <span class="kn">import</span> <span class="n">twiml</span>
+
+<span class="n">r</span> <span class="o">=</span> <span class="n">twiml</span><span class="o">.</span><span class="n">Response</span><span class="p">()</span>
+<span class="n">r</span><span class="o">.</span><span class="n">say</span><span class="p">(</span><span class="s">&quot;Hello&quot;</span><span class="p">)</span>
+<span class="n">r</span><span class="o">.</span><span class="n">toxml</span><span class="p">()</span>
+<span class="c"># returns &lt;Response&gt;&lt;Say&gt;Hello&lt;/Say&gt;&lt;Response&gt;</span>
+</pre></div>
+</div>
+<p>The verb methods (outlined in the complete reference) take the body (only text) of the verb as the first argument. All attributes are keyword arguements.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">twilio</span> <span class="kn">import</span> <span class="n">twiml</span>
+
+<span class="n">r</span> <span class="o">=</span> <span class="n">twiml</span><span class="o">.</span><span class="n">Response</span><span class="p">()</span>
+<span class="n">r</span><span class="o">.</span><span class="n">play</span><span class="p">(</span><span class="s">&quot;monkey.mp3&quot;</span><span class="p">,</span> <span class="n">loop</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">r</span><span class="o">.</span><span class="n">toxml</span><span class="p">()</span>
+<span class="c"># returns &lt;Response&gt;&lt;Play loop=&quot;3&quot;&gt;monkey.mp3&lt;/Play&gt;&lt;Response&gt;</span>
+</pre></div>
+</div>
+<p>Python 2.6+ added the <tt class="xref py py-const docutils literal"><span class="pre">with</span></tt> statement for context management. Using <tt class="xref py py-const docutils literal"><span class="pre">with</span></tt>, the module can <em>almost</em> emulate Ruby blocks.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">twilio</span> <span class="kn">import</span> <span class="n">twiml</span>
+
+<span class="n">r</span> <span class="o">=</span> <span class="n">twiml</span><span class="o">.</span><span class="n">Response</span><span class="p">()</span>
+<span class="n">r</span><span class="o">.</span><span class="n">say</span><span class="p">(</span><span class="s">&quot;hello&quot;</span><span class="p">)</span>
+<span class="k">with</span> <span class="n">r</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="n">end_on_key</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span> <span class="k">as</span> <span class="n">g</span><span class="p">:</span>
+    <span class="n">g</span><span class="o">.</span><span class="n">say</span><span class="p">(</span><span class="s">&quot;world&quot;</span><span class="p">)</span>
+<span class="n">r</span><span class="o">.</span><span class="n">toxml</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>which returns</p>
+<div class="highlight-xml"><div class="highlight"><pre><span class="nt">&lt;Response&gt;</span>
+  <span class="nt">&lt;Say&gt;</span>Hello<span class="nt">&lt;/Say&gt;</span>
+  <span class="nt">&lt;Gather</span> <span class="na">endOnKey=</span><span class="s">&quot;4&quot;</span><span class="nt">&gt;&lt;Say&gt;</span>World<span class="nt">&lt;/Say&gt;&lt;/Gather&gt;</span>
+<span class="nt">&lt;/Response&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="configuration">
+<h2>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h2>
+<p><strong>THIS SECTION STILL TBD</strong></p>
+<p>Usres may want to configure TwiML creation at a global scope. For example, make all <a class="reference internal" href="../api/twiml.html#twilio.twiml.Redirect" title="twilio.twiml.Redirect"><tt class="xref py py-class docutils literal"><span class="pre">Redirect</span></tt></a> use the POST method by default. The <tt class="xref py py-func docutils literal"><span class="pre">config()</span></tt> function allows for easy custimization. Each verb also has a config method. See the complete reference for all the configuration options.:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">twilio</span> <span class="kn">import</span> <span class="n">twiml</span>
+
+<span class="n">twiml</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">validation</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+<span class="n">twiml</span><span class="o">.</span><span class="n">redirect</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="n">POST</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">TwiML Creation</a><ul>
+<li><a class="reference internal" href="#creation">Creation</a></li>
+<li><a class="reference internal" href="#configuration">Configuration</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="rest.html"
+                        title="previous chapter">REST API Usage</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="../api/rest.html"
+                        title="next chapter">REST Documentation</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/usage/twiml.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../api/rest.html" title="REST Documentation"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="rest.html" title="REST API Usage"
+             >previous</a> |</li>
+        <li><a href="../index.html">twilio-python2 v2.5.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2010, Kyle Conroy.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

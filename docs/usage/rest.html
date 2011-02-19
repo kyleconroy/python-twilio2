@@ -1,0 +1,361 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>REST API Usage &mdash; twilio-python2 v2.5.1 documentation</title>
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2.5.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="twilio-python2 v2.5.1 documentation" href="../index.html" />
+    <link rel="next" title="TwiML Creation" href="twiml.html" />
+    <link rel="prev" title="twilio-python" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="twiml.html" title="TwiML Creation"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../index.html" title="twilio-python"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">twilio-python2 v2.5.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <span class="target" id="module-twilio.rest.resources"></span><div class="section" id="rest-api-usage">
+<h1>REST API Usage<a class="headerlink" href="#rest-api-usage" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="accounts">
+<h2>Accounts<a class="headerlink" href="#accounts" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="updating-account-information">
+<h3>Updating Account Information<a class="headerlink" href="#updating-account-information" title="Permalink to this headline">¶</a></h3>
+<p>Updating <a class="reference internal" href="../api/rest.html#twilio.rest.resources.Account" title="twilio.rest.resources.Account"><tt class="xref py py-class docutils literal"><span class="pre">Account</span></tt></a> information is really easy:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">twilio</span>
+
+<span class="n">conn</span> <span class="o">=</span> <span class="n">twilio</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">Client</span><span class="p">()</span>
+<span class="n">account</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">accounts</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+<span class="n">account</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;My Awesome Account&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="creating-a-sub-account">
+<h3>Creating a Sub Account<a class="headerlink" href="#creating-a-sub-account" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">twilio</span>
+
+<span class="n">conn</span> <span class="o">=</span> <span class="n">twilio</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">Client</span><span class="p">()</span>
+<span class="n">subaccount</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">accounts</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;My Awesome SubAccount&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Can I make calls with this sub account? I have no idea</p>
+</div>
+</div>
+<div class="section" id="phone-calls">
+<h2>Phone Calls<a class="headerlink" href="#phone-calls" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="making-a-phone-call">
+<h3>Making a Phone Call<a class="headerlink" href="#making-a-phone-call" title="Permalink to this headline">¶</a></h3>
+<p>The <a class="reference internal" href="../api/rest.html#twilio.rest.resources.Calls" title="twilio.rest.resources.Calls"><tt class="xref py py-class docutils literal"><span class="pre">Calls</span></tt></a> resource allows you to make outgoing calls:</p>
+<div class="highlight-python"><pre>import twilio
+
+conn = twilio.api.Client()
+call = conn.calls.make(to="9991231234, from_="9991231234",
+                       url="http://foo.com/call.xml")
+print call.length
+print call.sid</pre>
+</div>
+</div>
+<div class="section" id="accessing-resources-from-a-specific-call">
+<h3>Accessing Resources from a specific Call<a class="headerlink" href="#accessing-resources-from-a-specific-call" title="Permalink to this headline">¶</a></h3>
+<p>The <a class="reference internal" href="../api/rest.html#twilio.rest.resources.Call" title="twilio.rest.resources.Call"><tt class="xref py py-class docutils literal"><span class="pre">Call</span></tt></a> resource has some sub resources you can access, such as notifications and recordings. If you have already have a <a class="reference internal" href="../api/rest.html#twilio.rest.resources.Call" title="twilio.rest.resources.Call"><tt class="xref py py-class docutils literal"><span class="pre">Call</span></tt></a> resource, they are easy to get.:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">twilio</span>
+
+<span class="n">conn</span> <span class="o">=</span> <span class="n">twilio</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">Client</span><span class="p">()</span>
+<span class="n">calls</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">calls</span><span class="o">.</span><span class="n">list</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">calls</span><span class="p">:</span>
+    <span class="k">print</span> <span class="n">c</span><span class="o">.</span><span class="n">notifications</span><span class="o">.</span><span class="n">list</span><span class="p">()</span>
+    <span class="k">print</span> <span class="n">c</span><span class="o">.</span><span class="n">recordsings</span><span class="o">.</span><span class="n">list</span><span class="p">()</span>
+    <span class="k">print</span> <span class="n">c</span><span class="o">.</span><span class="n">transcriptions</span><span class="o">.</span><span class="n">list</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Be careful, as the above code makes quite a few HTTP requests. However, what if you only have a Call Sid, and not the actual <tt class="xref py py-class docutils literal"><span class="pre">Resource</span></tt>? No worries, as <tt class="xref py py-meth docutils literal"><span class="pre">list()</span></tt> can be passed a Call Sid as well.:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">twilio</span>
+
+<span class="n">conn</span> <span class="o">=</span> <span class="n">twilio</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">Client</span><span class="p">()</span>
+<span class="n">sid</span> <span class="o">=</span> <span class="s">&quot;CA24234&quot;</span>
+<span class="k">print</span> <span class="n">conn</span><span class="o">.</span><span class="n">notifications</span><span class="o">.</span><span class="n">list</span><span class="p">(</span><span class="n">call</span><span class="o">=</span><span class="n">sid</span><span class="p">)</span>
+<span class="k">print</span> <span class="n">conn</span><span class="o">.</span><span class="n">recordsings</span><span class="o">.</span><span class="n">list</span><span class="p">(</span><span class="n">call</span><span class="o">=</span><span class="n">sid</span><span class="p">)</span>
+<span class="k">print</span> <span class="n">conn</span><span class="o">.</span><span class="n">transcriptions</span><span class="o">.</span><span class="n">list</span><span class="p">(</span><span class="n">call</span><span class="o">=</span><span class="n">sid</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="retrieve-a-call-record">
+<h3>Retrieve a Call Record<a class="headerlink" href="#retrieve-a-call-record" title="Permalink to this headline">¶</a></h3>
+<p>If you already have a <a class="reference internal" href="../api/rest.html#twilio.rest.resources.Call" title="twilio.rest.resources.Call"><tt class="xref py py-class docutils literal"><span class="pre">Call</span></tt></a> sid, you can use the client to retrieve that record.:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">twilio</span>
+
+<span class="n">conn</span> <span class="o">=</span> <span class="n">twilio</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">Client</span><span class="p">()</span>
+<span class="n">sid</span> <span class="o">=</span> <span class="s">&quot;CA12341234&quot;</span>
+<span class="n">call</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">calls</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">sid</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="modifying-live-calls">
+<h3>Modifying live calls<a class="headerlink" href="#modifying-live-calls" title="Permalink to this headline">¶</a></h3>
+<p>The <a class="reference internal" href="../api/rest.html#twilio.rest.resources.Call" title="twilio.rest.resources.Call"><tt class="xref py py-class docutils literal"><span class="pre">Call</span></tt></a> resource makes it easy to find current live calls and redirect them as necessary:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">twilio</span>
+
+<span class="n">conn</span> <span class="o">=</span> <span class="n">twilio</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">Client</span><span class="p">()</span>
+<span class="n">calls</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">calls</span><span class="o">.</span><span class="n">list</span><span class="p">(</span><span class="n">statsus</span><span class="o">=</span><span class="n">api</span><span class="o">.</span><span class="n">IN_PROGRESS</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">calls</span><span class="p">:</span>
+    <span class="n">c</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s">&quot;http://foo.com/new.xml&quot;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">api</span><span class="o">.</span><span class="n">POST</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Ending all live calls is also possible:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">twilio</span>
+
+<span class="n">conn</span> <span class="o">=</span> <span class="n">twilio</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">Client</span><span class="p">()</span>
+<span class="n">calls</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">calls</span><span class="o">.</span><span class="n">list</span><span class="p">(</span><span class="n">statsus</span><span class="o">=</span><span class="n">api</span><span class="o">.</span><span class="n">IN_PROGRESS</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">calls</span><span class="p">:</span>
+    <span class="n">c</span><span class="o">.</span><span class="n">hangup</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Note that <tt class="xref py py-meth docutils literal"><span class="pre">hangup()</span></tt> will also cancel calls currently queued.</p>
+<p>If you already have a <a class="reference internal" href="../api/rest.html#twilio.rest.resources.Call" title="twilio.rest.resources.Call"><tt class="xref py py-class docutils literal"><span class="pre">Call</span></tt></a> sid, you can use the <a class="reference internal" href="../api/rest.html#twilio.rest.resources.Calls" title="twilio.rest.resources.Calls"><tt class="xref py py-class docutils literal"><span class="pre">Calls</span></tt></a> resource to update
+the record without having to use <tt class="xref py py-meth docutils literal"><span class="pre">get()</span></tt> first.:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">twilio</span>
+
+<span class="n">conn</span> <span class="o">=</span> <span class="n">twilio</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">Client</span><span class="p">()</span>
+<span class="n">sid</span> <span class="o">=</span> <span class="s">&quot;CA12341234&quot;</span>
+<span class="n">conn</span><span class="o">.</span><span class="n">calls</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">sid</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="s">&quot;http://foo.com/new.xml&quot;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">api</span><span class="o">.</span><span class="n">POST</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Handing up the call also works.:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">twilio</span>
+
+<span class="n">conn</span> <span class="o">=</span> <span class="n">twilio</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">Client</span><span class="p">()</span>
+<span class="n">sid</span> <span class="o">=</span> <span class="s">&quot;CA12341234&quot;</span>
+<span class="n">conn</span><span class="o">.</span><span class="n">calls</span><span class="o">.</span><span class="n">hangup</span><span class="p">(</span><span class="n">sid</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="caller-ids">
+<h2>Caller Ids<a class="headerlink" href="#caller-ids" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="validate-a-phone-number">
+<h3>Validate a Phone Number<a class="headerlink" href="#validate-a-phone-number" title="Permalink to this headline">¶</a></h3>
+<p>Adding a new phone number to your validated numbers is quick and easy</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">twilio</span>
+
+<span class="n">conn</span> <span class="o">=</span> <span class="n">twilio</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">Client</span><span class="p">()</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">caller_ids</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="s">&quot;+9876543212&quot;</span><span class="p">)</span>
+<span class="k">print</span> <span class="n">response</span><span class="p">[</span><span class="s">&quot;validation_code&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Twilio will call the provided number and for the  validation code to be entered.</p>
+</div>
+<div class="section" id="listing-all-validated-phone-numbers">
+<h3>Listing all Validated Phone Numbers<a class="headerlink" href="#listing-all-validated-phone-numbers" title="Permalink to this headline">¶</a></h3>
+<p>Show all the current caller_ids</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">twilio</span>
+
+<span class="n">conn</span> <span class="o">=</span> <span class="n">twilio</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">Client</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">caller_id</span> <span class="ow">in</span> <span class="n">conn</span><span class="o">.</span><span class="n">caller_ids</span><span class="o">.</span><span class="n">list</span><span class="p">():</span>
+    <span class="k">print</span> <span class="n">caller_id</span><span class="o">.</span><span class="n">friendly_name</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="conferences">
+<h2>Conferences<a class="headerlink" href="#conferences" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="filter-conferences-by-status">
+<h3>Filter Conferences by Status<a class="headerlink" href="#filter-conferences-by-status" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">twilio</span>
+
+<span class="n">conn</span> <span class="o">=</span> <span class="n">twilio</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">Client</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">conn</span><span class="o">.</span><span class="n">conferences</span><span class="o">.</span><span class="n">list</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="s">&quot;in-progress&quot;</span><span class="p">):</span>
+    <span class="k">print</span> <span class="n">c</span><span class="o">.</span><span class="n">sid</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="mute-all-participants">
+<h3>Mute all participants<a class="headerlink" href="#mute-all-participants" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">twilio</span>
+<span class="n">conference</span> <span class="o">=</span> <span class="s">&quot;CO119231312&quot;</span>
+
+<span class="n">conn</span> <span class="o">=</span> <span class="n">twilio</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">Client</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">conn</span><span class="o">.</span><span class="n">participants</span><span class="o">.</span><span class="n">list</span><span class="p">(</span><span class="n">conference</span><span class="p">):</span>
+    <span class="n">p</span><span class="o">.</span><span class="n">mute</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="notifications">
+<h2>Notifications<a class="headerlink" href="#notifications" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="filter-notifications-by-log-level">
+<h3>Filter Notifications by Log Level<a class="headerlink" href="#filter-notifications-by-log-level" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">twilio</span>
+
+<span class="n">conn</span> <span class="o">=</span> <span class="n">twilio</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">Client</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">conn</span><span class="o">.</span><span class="n">notifications</span><span class="o">.</span><span class="n">list</span><span class="p">(</span><span class="n">log_level</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="k">print</span> <span class="n">n</span><span class="o">.</span><span class="n">error_code</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="sms-mesages">
+<h2>SMS Mesages<a class="headerlink" href="#sms-mesages" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="sending-a-sms-message">
+<h3>Sending a SMS Message<a class="headerlink" href="#sending-a-sms-message" title="Permalink to this headline">¶</a></h3>
+<p>The <a class="reference internal" href="../api/rest.html#twilio.rest.resources.SmsMessages" title="twilio.rest.resources.SmsMessages"><tt class="xref py py-class docutils literal"><span class="pre">SmsMessages</span></tt></a> resource allows you to send outgoing text messages</p>
+<div class="highlight-python"><pre>import twilio
+
+conn = twilio.api.Client()
+t = "9991231234
+f ="9991231234"
+text = "Hello monkey!"
+message = conn.sms.messages.create(to=t, from_=f, body=text)
+print message.sid</pre>
+</div>
+</div>
+</div>
+<div class="section" id="transcriptions">
+<h2>Transcriptions<a class="headerlink" href="#transcriptions" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="show-all-transcribed-messagse">
+<h3>Show all Transcribed Messagse<a class="headerlink" href="#show-all-transcribed-messagse" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">twilio</span>
+
+<span class="n">conn</span> <span class="o">=</span> <span class="n">twilio</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">Client</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">conn</span><span class="o">.</span><span class="n">transcriptions</span><span class="o">.</span><span class="n">list</span><span class="p">():</span>
+    <span class="k">print</span> <span class="n">t</span><span class="o">.</span><span class="n">transcription_text</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">REST API Usage</a><ul>
+<li><a class="reference internal" href="#accounts">Accounts</a><ul>
+<li><a class="reference internal" href="#updating-account-information">Updating Account Information</a></li>
+<li><a class="reference internal" href="#creating-a-sub-account">Creating a Sub Account</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#phone-calls">Phone Calls</a><ul>
+<li><a class="reference internal" href="#making-a-phone-call">Making a Phone Call</a></li>
+<li><a class="reference internal" href="#accessing-resources-from-a-specific-call">Accessing Resources from a specific Call</a></li>
+<li><a class="reference internal" href="#retrieve-a-call-record">Retrieve a Call Record</a></li>
+<li><a class="reference internal" href="#modifying-live-calls">Modifying live calls</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#caller-ids">Caller Ids</a><ul>
+<li><a class="reference internal" href="#validate-a-phone-number">Validate a Phone Number</a></li>
+<li><a class="reference internal" href="#listing-all-validated-phone-numbers">Listing all Validated Phone Numbers</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#conferences">Conferences</a><ul>
+<li><a class="reference internal" href="#filter-conferences-by-status">Filter Conferences by Status</a></li>
+<li><a class="reference internal" href="#mute-all-participants">Mute all participants</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#notifications">Notifications</a><ul>
+<li><a class="reference internal" href="#filter-notifications-by-log-level">Filter Notifications by Log Level</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#sms-mesages">SMS Mesages</a><ul>
+<li><a class="reference internal" href="#sending-a-sms-message">Sending a SMS Message</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#transcriptions">Transcriptions</a><ul>
+<li><a class="reference internal" href="#show-all-transcribed-messagse">Show all Transcribed Messagse</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="../index.html"
+                        title="previous chapter">twilio-python</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="twiml.html"
+                        title="next chapter">TwiML Creation</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/usage/rest.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="twiml.html" title="TwiML Creation"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../index.html" title="twilio-python"
+             >previous</a> |</li>
+        <li><a href="../index.html">twilio-python2 v2.5.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2010, Kyle Conroy.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>
