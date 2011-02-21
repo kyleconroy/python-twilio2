@@ -59,8 +59,7 @@ class AvailablePhoneNumbers(core.ListResource):
         try:
             return [ self._create_instance(i) for i in page[self.key]]
         except KeyError:
-            raise core.TwilioException("Key {0} not present in response".format(
-                    self.key))
+            raise core.TwilioException("Key  % not present in response" % self.key)
 
 
 class Transcription(core.InstanceResource):
@@ -511,7 +510,7 @@ class Sms(object):
     key = "sms"
     
     def __init__(self, client, base_uri):
-        self.uri = "{0}/SMS".format(base_uri)
+        self.uri = "%s/SMS" % (base_uri)
         self.messages = SmsMessages(client, self.uri)
     
 class SmsMessage(core.InstanceResource):

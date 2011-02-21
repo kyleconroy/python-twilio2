@@ -24,7 +24,7 @@ class TwilioRestException(TwilioException):
         self.msg = msg
 
     def __str__(self):
-        return "HTTP ERROR {0}: {1} \n {2}".format(self.status, self.msg, self.uri)
+        return "HTTP ERROR %s: %s \n %s" % (self.status, self.msg, self.uri)
 
 def fparam(p):
     """
@@ -87,16 +87,16 @@ class Resource(object):
 
     def __init__(self, client, base_uri):
         self.client = client
-        self.uri = "{0}/{1}".format(base_uri, self.name)
+        self.uri = "%s/%s" % (base_uri, self.name)
 
     def _request(self, uri, fmt="json", query=None, **kwargs):
         """
         Send an HTTP request to uri+fmt+query
         """
-        furi = "{0}.{1}".format(uri, fmt)
+        furi = "%s.%s" % (uri, fmt)
 
         if query:
-            furi = "{0}?{1}".format(furi, urllib.urlencode(query))
+            furi = "%s?%s" % (furi, urllib.urlencode(query))
 
         resp, content = self.client.request(furi, **kwargs)
         logging.debug(resp)
@@ -139,7 +139,7 @@ class ListResource(Resource):
         
         body: string -- HTTP Body for the quest
         """
-        uri = "{0}/{1}".format(self.uri, sid)
+        uri = "%s/%s" % (self.uri, sid)
         resp, content =  self._request(uri, method="DELETE")
         return resp.status == 204
 
@@ -150,7 +150,7 @@ class ListResource(Resource):
         sid: string -- String identifier for the list resource
         body: string -- HTTP Body for the quest
         """
-        uri = "{0}/{1}".format(self.uri, sid)
+        uri = "%s/%s" % (self.uri, sid)
         hs = {'Content-type': 'application/x-www-form-urlencoded'}
         resp, content =  self._request(uri, method="POST", body=body, 
                                        headers=hs)
@@ -180,8 +180,7 @@ class ListResource(Resource):
         try:
             return [ self._create_instance(i) for i in page[self.key]]
         except KeyError:
-            raise TwilioException("Key {0} not present in response".format(
-                    self.key))
+            raise TwilioException("Key %s not present in response" % self.key)
 
     def iter(self, **kwargs):
         """
@@ -205,7 +204,7 @@ class ListResource(Resource):
         
     def get(self, sid):
         """Request the specified instance resource"""
-        uri = "{0}/{1}".format(self.uri, sid)
+        uri = "%s/%s" % (self.uri, sid)
         return self._get(uri)
 
     def _create_instance(self, content):
@@ -226,7 +225,7 @@ class InstanceResource(Resource):
         try:
             self.name = entries[self.id_key]
         except KeyError:
-            msg = "Key {0} not present in content".format(self.id_key)
+            msg = "Key %s not present in content" % (self.id_key)
             raise TwilioException(msg)
 
         super(InstanceResource, self).__init__(None, base_uri)
