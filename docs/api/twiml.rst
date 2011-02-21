@@ -1,8 +1,6 @@
-.. _api-twiml:
-
-===================
-TwiML Documentation
-===================
+====================
+:mod:`twilio.twiml`
+====================
 
 .. automodule:: twilio.twiml
 
