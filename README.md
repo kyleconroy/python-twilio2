@@ -30,4 +30,4 @@ We aren't on PyPi just yet, but you can install straight from github using pip
 
 ### Documentation
 
-http://derferman.github.com/python-twilio2/
+<http://derferman.github.com/python-twilio2/>
