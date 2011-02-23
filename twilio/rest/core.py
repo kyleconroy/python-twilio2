@@ -104,7 +104,12 @@ class Resource(object):
         
         # If the HTTP request errored, throw RestException
         if resp.status >= 400:
-            raise TwilioRestException(resp.status, furi, resp.reason)
+            try:
+                error = json.loads(content)
+                message = "%s: %s" % (error["code"], error["message"])
+            except:
+                message = resp.reason
+            raise TwilioRestException(resp.status, furi, message)
 
         return resp, content
 
