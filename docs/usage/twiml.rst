@@ -14,7 +14,7 @@ TwiML creation begins with the :class:`Response` verb. Each succesive verb is cr
 
     r = twiml.Response()
     r.say("Hello")
-    r.toxml() 
+    str(r)
     # returns <Response><Say>Hello</Say><Response>
 
 The verb methods (outlined in the complete reference) take the body (only text) of the verb as the first argument. All attributes are keyword arguements.
@@ -25,7 +25,7 @@ The verb methods (outlined in the complete reference) take the body (only text) 
 
     r = twiml.Response()
     r.play("monkey.mp3", loop=5)
-    r.toxml() 
+    str(r)
     # returns <Response><Play loop="3">monkey.mp3</Play><Response>
 
 Python 2.6+ added the :const:`with` statement for context management. Using :const:`with`, the module can *almost* emulate Ruby blocks.
@@ -38,7 +38,7 @@ Python 2.6+ added the :const:`with` statement for context management. Using :con
     r.say("hello")
     with r.gather(end_on_key=4) as g:
         g.say("world")
-    r.toxml() 
+    str(r)
 
 which returns
 

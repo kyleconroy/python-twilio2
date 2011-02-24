@@ -1,5 +1,5 @@
 =====================
-Accessings Resources
+Accessing Resources
 =====================
 
 Authentication
