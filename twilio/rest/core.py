@@ -78,7 +78,7 @@ def normalize_dates(myfunc):
         for k, v in kwargs.iteritems():
             res = [ True for s in ["after", "before", "on"] if s in k]
             if len(res):
-                kwargs[k] = parse_date(v)                    
+                kwargs[k] = parse_date(v)
         return myfunc(*args, **kwargs)
     return inner_func
 
@@ -98,10 +98,14 @@ class Resource(object):
         if query:
             furi = "%s?%s" % (furi, urllib.urlencode(query))
 
+        headers = kwargs.get("headers", {})
+        headers["User-Agent"] = "twilio-python/3.0.0"
+        kwargs["headers"] = headers
+
         resp, content = self.client.request(furi, **kwargs)
         logging.debug(resp)
         logging.debug(content)
-        
+
         # If the HTTP request errored, throw RestException
         if resp.status >= 400:
             try:
@@ -125,11 +129,11 @@ class ListResource(Resource):
     def _create(self, body):
         """
         Create an InstanceResource via a POST to the List Resource
-        
+
         body: string -- HTTP Body for the quest
         """
         hs = {'Content-type': 'application/x-www-form-urlencoded'}
-        resp, content =  self._request(self.uri, method="POST", body=body, 
+        resp, content =  self._request(self.uri, method="POST", body=body,
                                        headers=hs)
 
         if resp.status != 201:
@@ -141,7 +145,7 @@ class ListResource(Resource):
     def _delete(self, sid):
         """
         Delete an InstanceResource via DELETE
-        
+
         body: string -- HTTP Body for the quest
         """
         uri = "%s/%s" % (self.uri, sid)
@@ -151,13 +155,13 @@ class ListResource(Resource):
     def _update(self, sid, body):
         """
         Update an InstanceResource via a POST
-        
+
         sid: string -- String identifier for the list resource
         body: string -- HTTP Body for the quest
         """
         uri = "%s/%s" % (self.uri, sid)
         hs = {'Content-type': 'application/x-www-form-urlencoded'}
-        resp, content =  self._request(uri, method="POST", body=body, 
+        resp, content =  self._request(uri, method="POST", body=body,
                                        headers=hs)
         entries = json.loads(content)
         return self._create_instance(entries)
@@ -200,13 +204,13 @@ class ListResource(Resource):
                 p += 1
         except TwilioRestException:
             pass
-        
+
 
     def _get(self, uri):
         """Request the specified instance resource"""
         resp, content =  self._request(uri, method="GET")
         return self._create_instance(json.loads(content))
-        
+
     def get(self, sid):
         """Request the specified instance resource"""
         uri = "%s/%s" % (self.uri, sid)
@@ -224,7 +228,7 @@ class InstanceResource(Resource):
     subresources = []
 
     def __init__(self, list_resource, base_uri, entries):
-        
+
         self.list_resource = list_resource
 
         try:
@@ -234,7 +238,7 @@ class InstanceResource(Resource):
             raise TwilioException(msg)
 
         super(InstanceResource, self).__init__(None, base_uri)
-        
+
         # Delete conflicting parameter names
         self._load(entries)
         self._load_subresources()
@@ -243,7 +247,7 @@ class InstanceResource(Resource):
         if "from" in entries.keys():
             entries["from_"] = entries["from"]
             del entries["from"]
-            
+
         if "uri" in entries.keys():
             del entries["uri"]
 
@@ -254,7 +258,7 @@ class InstanceResource(Resource):
         for r in self.subresources:
             ir = r(client, self.uri)
             self.__dict__[ir.key] = ir
-            
+
     def _update(self, **kwargs):
         a = self.list_resource.update(self.name, **kwargs)
         self._load(a.__dict__)

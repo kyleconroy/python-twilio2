@@ -17,7 +17,14 @@ AUTH_TOKEN  = "AUTH_TOKEN"
 BASE_URI    = "https://api.twilio.com/2010-04-01/"
 ACCOUNT_URI = "{0}Accounts/{1}/".format(BASE_URI, ACCOUNT_SID)
 
-FORM_CONTENT_TYPE = {'Content-type': 'application/x-www-form-urlencoded'}
+DEFAULT_HEADERS = {
+    'User-Agent': 'twilio-python/3.0.0',
+    }
+
+FORM_CONTENT_TYPE = {
+    'Content-type': 'application/x-www-form-urlencoded',
+    'User-Agent': 'twilio-python/3.0.0',
+    }
 
 def create_mock_request(status=200, content="{}"):
     request = Mock()
@@ -47,36 +54,40 @@ class ListResourceTest(GeneralResourceTest):
         body = '{"%s":[]}' % resource.key
         request = self.mock_request(content=body)
         resource.list(**kwargs)
-        request.assert_called_with(e_uri, method="GET")
+        request.assert_called_with(e_uri, method="GET",
+                                   headers=DEFAULT_HEADERS)
 
     def check_delete_uri(self, resource, sid, e_uri):
         request = self.mock_request()
         resource.delete(sid)
-        request.assert_called_with(e_uri, method="DELETE")
+        request.assert_called_with(e_uri, method="DELETE",
+                                   headers=DEFAULT_HEADERS)
 
     def check_update_uri(self, resource, sid, e_uri, body, **kwargs):
         request = self.mock_request(content='{"sid":"hey"}')
         resource.update(sid, **kwargs)
-        request.assert_called_with(e_uri, method="POST", body=body, 
+        request.assert_called_with(e_uri, method="POST", body=body,
                                    headers=FORM_CONTENT_TYPE)
 
     def check_paging(self, resource, response, uri):
         request = self.mock_request(content=response)
         resource.list(page=2)
-        request.assert_called_with(uri, method="GET")
+        request.assert_called_with(uri, method="GET",
+                                   headers=DEFAULT_HEADERS)
 
 class InstanceResourceTest(GeneralResourceTest):
 
     def check_update_uri(self, resource, e_uri, body, **kwargs):
         request = self.mock_request(content='{"sid":"hey"}')
         resource.update(**kwargs)
-        request.assert_called_with(e_uri, method="POST", body=body, 
+        request.assert_called_with(e_uri, method="POST", body=body,
                                    headers=FORM_CONTENT_TYPE)
 
     def check_delete_uri(self, resource, e_uri):
         request = self.mock_request(content='{"sid":"hey"}')
         resource.delete()
-        request.assert_called_with(e_uri, method="DELETE")
+        request.assert_called_with(e_uri, method="DELETE",
+                                   headers=DEFAULT_HEADERS)
 
 class ClientTest(unittest.TestCase):
 
@@ -185,7 +196,8 @@ class AccountsTest(ListResourceTest):
         with self.assertRaises(TwilioException) as cm:
             c = self.c.accounts.get(account_sid)
 
-        request.assert_called_with(expected_uri, method="GET")
+        request.assert_called_with(expected_uri, method="GET",
+                                   headers=DEFAULT_HEADERS)
 
     def test_list_uri(self):
 
@@ -197,7 +209,8 @@ class AccountsTest(ListResourceTest):
         with self.assertRaises(TwilioException) as cm:
             c = self.c.accounts.list()
 
-        request.assert_called_with(expected_uri, method="GET")
+        request.assert_called_with(expected_uri, method="GET",
+                                   headers=DEFAULT_HEADERS)
 
     def test_list_uri_filter(self):
 
@@ -209,7 +222,8 @@ class AccountsTest(ListResourceTest):
         with self.assertRaises(TwilioException) as cm:
             c = self.c.accounts.list(friendly_name="You", status="active")
 
-        request.assert_called_with(expected_uri, method="GET")
+        request.assert_called_with(expected_uri, method="GET",
+                                   headers=DEFAULT_HEADERS)
 
     def test_update_uri(self):
         account_sid = "AC4bf2dafb92341f7caf8650403e422d23"
@@ -221,9 +235,8 @@ class AccountsTest(ListResourceTest):
             c = self.c.accounts.update(account_sid, friendly_name="You")
 
         body = "FriendlyName=You"
-        hs = {'Content-type': 'application/x-www-form-urlencoded'}
         request.assert_called_with(expected_uri, method="POST", body=body,
-                                   headers=hs)
+                                   headers=FORM_CONTENT_TYPE)
 
     def test_instance_update_uri(self):
         account_sid = "AC4bf2dafb92341f7caf8650403e422d23"
@@ -238,9 +251,8 @@ class AccountsTest(ListResourceTest):
             c = a.update(friendly_name="You")
 
         body = "FriendlyName=You"
-        hs = {'Content-type': 'application/x-www-form-urlencoded'}
         request.assert_called_with(expected_uri, method="POST", body=body,
-                                   headers=hs)
+                                   headers=FORM_CONTENT_TYPE)
 
         with open("tests/resources/accounts_instance.json") as f:
             content = f.read()
@@ -255,9 +267,8 @@ class AccountsTest(ListResourceTest):
             c = self.c.accounts.close(account_sid)
 
         body = "Status=closed"
-        hs = {'Content-type': 'application/x-www-form-urlencoded'}
         request.assert_called_with(expected_uri, method="POST", body=body,
-                                   headers=hs)
+                                   headers=FORM_CONTENT_TYPE)
 
     def test_request(self):
         request = create_mock_request(status=201)
@@ -268,8 +279,8 @@ class AccountsTest(ListResourceTest):
 
         uri = "{0}.json".format(self.c.accounts.uri)
         body = "FriendlyName=MyNewAccount"
-        hs = {'Content-type': 'application/x-www-form-urlencoded'}
-        request.assert_called_with(uri, method="POST", body=body, headers=hs)
+        request.assert_called_with(uri, method="POST", body=body,
+                                   headers=FORM_CONTENT_TYPE)
 
     def test_instance_creation(self):
 
@@ -292,7 +303,7 @@ class AccountsTest(ListResourceTest):
 
 class AccountTest(unittest.TestCase):
 
-    ct = {'Content-type': 'application/x-www-form-urlencoded'}
+    ct = FORM_CONTENT_TYPE
 
     def setUp(self):
         self.mock_http = Mock()
@@ -349,7 +360,8 @@ class CallsTest(ListResourceTest):
         with self.assertRaises(TwilioException) as cm:
             c = self.c.calls.get(csid)
 
-        request.assert_called_with(e_uri, method="GET")
+        request.assert_called_with(e_uri, method="GET",
+                                   headers=DEFAULT_HEADERS)
 
     def test_list_uri(self):
         query = "EndTime%3C=2009-01-31&StartTime%3E=2009-01-01&EndTime=2009-12-12"
@@ -360,7 +372,9 @@ class CallsTest(ListResourceTest):
             c = self.c.calls.list(ended=date(2009,12,12),
                                   started_after="2009-01-01",
                                   ended_before=datetime(2009,1,31))
-        request.assert_called_with(e_uri, method="GET")
+
+        request.assert_called_with(e_uri, method="GET",
+                                   headers=DEFAULT_HEADERS)
 
     def test_create_uri(self):
         e_uri = "{0}Accounts/{1}/Calls.json".format(BASE_URI, ACCOUNT_SID)
@@ -453,7 +467,7 @@ class CallerIdsTest(ListResourceTest):
                 "PhoneNumber": 5551231234,
                 })
         request = self.mock_request(status=201, content=content)
-        
+
         c = self.c.caller_ids.validate(5551231234)
         print c
 
@@ -468,11 +482,12 @@ class CallerIdsTest(ListResourceTest):
                 })
         e_uri = "{}OutgoingCallerIds.json?{}".format(ACCOUNT_URI,body)
         request = self.mock_request()
-        
+
         with self.assertRaises(TwilioException) as cm:
             c = self.c.caller_ids.list(phone_number=5551231234)
 
-        request.assert_called_with(e_uri, method="GET")
+        request.assert_called_with(e_uri, method="GET",
+                                   headers=DEFAULT_HEADERS)
 
     def test_list_uri(self):
         uri =  "{}OutgoingCallerIds.json".format(ACCOUNT_URI)
@@ -502,7 +517,7 @@ class CallerIdTest(InstanceResourceTest):
     def test_hangup(self):
         request = self.mock_request(content='{"sid":"asdh"}')
         self.check_update_uri(self.callerid, self.uri,
-                              "FriendlyName=MyFriendlyName", 
+                              "FriendlyName=MyFriendlyName",
                               friendly_name="MyFriendlyName")
 
     def test_delete(self):
@@ -546,7 +561,8 @@ class NotificationTest(InstanceResourceTest):
             uri =  "{}.json?Page=2".format(self.base_uri)
             request = self.mock_request(content=f.read())
             self.c.notifications.list(page=2)
-            request.assert_called_with(uri, method="GET")
+            request.assert_called_with(uri, method="GET",
+                                       headers=DEFAULT_HEADERS)
 
 
 class TranscriptionsTest(ListResourceTest):
@@ -560,7 +576,8 @@ class TranscriptionsTest(ListResourceTest):
             uri =  "{}Transcriptions.json?Page=2".format(ACCOUNT_URI)
             request = self.mock_request(content=f.read())
             self.c.transcriptions.list(page=2)
-            request.assert_called_with(uri, method="GET")
+            request.assert_called_with(uri, method="GET",
+                                       headers=DEFAULT_HEADERS)
 
 class PhoneNumbersTest(ListResourceTest):
 
@@ -609,14 +626,16 @@ class AvailableNumbersTest(ListResourceTest):
         body = '{"available_phone_numbers":[]}'
         request = self.mock_request(content=body)
         self.c.phone_numbers.search()
-        request.assert_called_with(uri, method="GET")
+        request.assert_called_with(uri, method="GET",
+                                   headers=DEFAULT_HEADERS)
 
     def test_search_local_uri(self):
         uri =  "{}AvailablePhoneNumbers/US/TollFree.json".format(ACCOUNT_URI)
         body = '{"available_phone_numbers":[]}'
         request = self.mock_request(content=body)
         self.c.phone_numbers.search(type="TOLLFREE")
-        request.assert_called_with(uri, method="GET")
+        request.assert_called_with(uri, method="GET",
+                                   headers=DEFAULT_HEADERS)
 
 
 class RecordingsTest(ListResourceTest):
