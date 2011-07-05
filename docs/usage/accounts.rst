@@ -13,7 +13,7 @@ Use the :meth:`Account.update` to modify one of your accounts. Right now the onl
 
 .. code-block:: python
 
-    from twilio.rest.client import TwilioClient
+    from twilio.rest import TwilioClient
 
     conn = TwilioClient()
     account = conn.accounts.get()
@@ -26,7 +26,7 @@ Subaccounts are easy to make.
 
 .. code-block:: python
 
-    from twilio.rest.client import TwilioClient
+    from twilio.rest import TwilioClient
 
     conn = TwilioClient()
     subaccount = conn.accounts.create(name="My Awesome SubAccount")

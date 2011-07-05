@@ -29,9 +29,9 @@ Adding a new phone number to your validated numbers is quick and easy
 
 .. code-block:: python
 
-    import twilio
+    from twilio.rest import TwilioClient
 
-    conn = twilio.api.Client()
+    conn = TwilioClient()
     response = conn.caller_ids.validate("+9876543212")
     print response["validation_code"]
 

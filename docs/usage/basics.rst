@@ -9,17 +9,17 @@ Authentication
 
 Here we look for the credentials in the enviroment
 
-.. code-block:: python 
-    
-    from twilio.rest.client import TwilioClient
+.. code-block:: python
+
+    from twilio.rest import TwilioClient
 
     conn = TwilioClient()
 
 Where as here we pass the credentials into the constructor.
 
-.. code-block:: python 
-    
-    from twilio.rest.client import TwilioClient
+.. code-block:: python
+
+    from twilio.rest import TwilioClient
 
     ACCOUT_SID = "AXXXXXXXXXXXXXXXXX"
     AUTH_TOKEN = "YYYYYYYYYYYYYYYYYY"

@@ -25,6 +25,7 @@ def fparam(p):
     """
     return dict([(d,p[d]) for d in p if p[d] is not None])
 
+
 def parse_date(d):
     """
     Return a string representation of a date that the Twilio API understands
@@ -36,6 +37,7 @@ def parse_date(d):
         return str(d)
     elif isinstance(d, str):
         return d
+
 
 def convert_case(s):
     """
