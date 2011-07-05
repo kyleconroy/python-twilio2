@@ -1,16 +1,15 @@
 import json
 import os
 import unittest
+
 from datetime import datetime
 from datetime import date
-
 from mock import patch
 from mock import Mock
+from twilio import TwilioException
+from twilio.rest import TwilioClient
+from twilio.rest import TwilioRestException
 from twilio.rest.resources import *
-from twilio.rest.client import TwilioClient
-from twilio.rest.core import TwilioException
-from twilio.rest.core import TwilioRestException
-from twilio.rest.core import InstanceResource
 
 ACCOUNT_SID = "AC111111111"
 AUTH_TOKEN  = "AUTH_TOKEN"
@@ -371,7 +370,7 @@ class CallsTest(ListResourceTest):
         with self.assertRaises(TwilioException) as cm:
             c = self.c.calls.list(ended=date(2009,12,12),
                                   started_after="2009-01-01",
-                                  ended_before=datetime(2009,1,31))
+                                  ended_before=datetime.datetime(2009,1,31))
 
         request.assert_called_with(e_uri, method="GET",
                                    headers=DEFAULT_HEADERS)
