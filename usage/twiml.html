@@ -1,5 +1,4 @@
 
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -7,13 +6,13 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>TwiML Creation &mdash; twilio-python2 v2.5.1 documentation</title>
-    <link rel="stylesheet" href="../static/default.css" type="text/css" />
+    <title>TwiML Creation &mdash; twilio-python2 v3.0.0a documentation</title>
+    <link rel="stylesheet" href="../static/flasky.css" type="text/css" />
     <link rel="stylesheet" href="../static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '2.5.1',
+        VERSION:     '3.0.0a',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -22,9 +21,13 @@
     <script type="text/javascript" src="../static/jquery.js"></script>
     <script type="text/javascript" src="../static/underscore.js"></script>
     <script type="text/javascript" src="../static/doctools.js"></script>
-    <link rel="top" title="twilio-python2 v2.5.1 documentation" href="../index.html" />
-    <link rel="next" title="REST Documentation" href="../api/rest.html" />
-    <link rel="prev" title="REST API Usage" href="rest.html" /> 
+    <link rel="top" title="twilio-python2 v3.0.0a documentation" href="../index.html" />
+    <link rel="next" title="Phone Calls" href="phone-calls.html" />
+    <link rel="prev" title="Accessing Resources" href="basics.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="../static/small_flask.css" type= "text/css" rel="stylesheet" />
+
   </head>
   <body>
     <div class="related">
@@ -37,12 +40,12 @@
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="../api/rest.html" title="REST Documentation"
+          <a href="phone-calls.html" title="Phone Calls"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="rest.html" title="REST API Usage"
+          <a href="basics.html" title="Accessing Resources"
              accesskey="P">previous</a> |</li>
-        <li><a href="../index.html">twilio-python2 v2.5.1 documentation</a> &raquo;</li> 
+        <li><a href="../index.html">twilio-python2 v3.0.0a documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -53,15 +56,12 @@
             
   <span class="target" id="module-twilio.twiml"><span id="usage-twiml"></span></span><div class="section" id="twiml-creation">
 <h1>TwiML Creation<a class="headerlink" href="#twiml-creation" title="Permalink to this headline">¶</a></h1>
-<p>The <tt class="xref py py-mod docutils literal"><span class="pre">twiml</span></tt> module is responsible for the creation and validation of TwiML. Configuration options also allow users to specift defaults for various verbs.</p>
-<div class="section" id="creation">
-<h2>Creation<a class="headerlink" href="#creation" title="Permalink to this headline">¶</a></h2>
 <p>TwiML creation begins with the <a class="reference internal" href="../api/twiml.html#twilio.twiml.Response" title="twilio.twiml.Response"><tt class="xref py py-class docutils literal"><span class="pre">Response</span></tt></a> verb. Each succesive verb is created by calling various methods on the response, such as <tt class="xref py py-meth docutils literal"><span class="pre">say()</span></tt> or <tt class="xref py py-meth docutils literal"><span class="pre">play()</span></tt>. These methods return the verbs they create to ease the creation of nested TwiML. To finish, call the <tt class="xref py py-meth docutils literal"><span class="pre">toxml()</span></tt> method on the <a class="reference internal" href="../api/twiml.html#twilio.twiml.Response" title="twilio.twiml.Response"><tt class="xref py py-class docutils literal"><span class="pre">Response</span></tt></a>, which returns raw TwiML.</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">twilio</span> <span class="kn">import</span> <span class="n">twiml</span>
 
 <span class="n">r</span> <span class="o">=</span> <span class="n">twiml</span><span class="o">.</span><span class="n">Response</span><span class="p">()</span>
 <span class="n">r</span><span class="o">.</span><span class="n">say</span><span class="p">(</span><span class="s">&quot;Hello&quot;</span><span class="p">)</span>
-<span class="n">r</span><span class="o">.</span><span class="n">toxml</span><span class="p">()</span>
+<span class="nb">str</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
 <span class="c"># returns &lt;Response&gt;&lt;Say&gt;Hello&lt;/Say&gt;&lt;Response&gt;</span>
 </pre></div>
 </div>
@@ -70,7 +70,7 @@
 
 <span class="n">r</span> <span class="o">=</span> <span class="n">twiml</span><span class="o">.</span><span class="n">Response</span><span class="p">()</span>
 <span class="n">r</span><span class="o">.</span><span class="n">play</span><span class="p">(</span><span class="s">&quot;monkey.mp3&quot;</span><span class="p">,</span> <span class="n">loop</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
-<span class="n">r</span><span class="o">.</span><span class="n">toxml</span><span class="p">()</span>
+<span class="nb">str</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
 <span class="c"># returns &lt;Response&gt;&lt;Play loop=&quot;3&quot;&gt;monkey.mp3&lt;/Play&gt;&lt;Response&gt;</span>
 </pre></div>
 </div>
@@ -81,7 +81,7 @@
 <span class="n">r</span><span class="o">.</span><span class="n">say</span><span class="p">(</span><span class="s">&quot;hello&quot;</span><span class="p">)</span>
 <span class="k">with</span> <span class="n">r</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="n">end_on_key</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span> <span class="k">as</span> <span class="n">g</span><span class="p">:</span>
     <span class="n">g</span><span class="o">.</span><span class="n">say</span><span class="p">(</span><span class="s">&quot;world&quot;</span><span class="p">)</span>
-<span class="n">r</span><span class="o">.</span><span class="n">toxml</span><span class="p">()</span>
+<span class="nb">str</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>which returns</p>
@@ -92,40 +92,19 @@
 </pre></div>
 </div>
 </div>
-<div class="section" id="configuration">
-<h2>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h2>
-<p><strong>THIS SECTION STILL TBD</strong></p>
-<p>Usres may want to configure TwiML creation at a global scope. For example, make all <a class="reference internal" href="../api/twiml.html#twilio.twiml.Redirect" title="twilio.twiml.Redirect"><tt class="xref py py-class docutils literal"><span class="pre">Redirect</span></tt></a> use the POST method by default. The <tt class="xref py py-func docutils literal"><span class="pre">config()</span></tt> function allows for easy custimization. Each verb also has a config method. See the complete reference for all the configuration options.:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">twilio</span> <span class="kn">import</span> <span class="n">twiml</span>
-
-<span class="n">twiml</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">validation</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
-<span class="n">twiml</span><span class="o">.</span><span class="n">redirect</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="n">POST</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-</div>
 
 
           </div>
         </div>
       </div>
       <div class="sphinxsidebar">
-        <div class="sphinxsidebarwrapper">
-  <h3><a href="../index.html">Table Of Contents</a></h3>
-  <ul>
-<li><a class="reference internal" href="#">TwiML Creation</a><ul>
-<li><a class="reference internal" href="#creation">Creation</a></li>
-<li><a class="reference internal" href="#configuration">Configuration</a></li>
+        <div class="sphinxsidebarwrapper"><h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="basics.html" title="previous chapter">Accessing Resources</a></li>
+      <li>Next: <a href="phone-calls.html" title="next chapter">Phone Calls</a></li>
+  </ul></li>
 </ul>
-</li>
-</ul>
-
-  <h4>Previous topic</h4>
-  <p class="topless"><a href="rest.html"
-                        title="previous chapter">REST API Usage</a></p>
-  <h4>Next topic</h4>
-  <p class="topless"><a href="../api/rest.html"
-                        title="next chapter">REST Documentation</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="../sources/usage/twiml.txt"
@@ -148,27 +127,40 @@
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../genindex.html" title="General Index"
-             >index</a></li>
-        <li class="right" >
-          <a href="../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="right" >
-          <a href="../api/rest.html" title="REST Documentation"
-             >next</a> |</li>
-        <li class="right" >
-          <a href="rest.html" title="REST API Usage"
-             >previous</a> |</li>
-        <li><a href="../index.html">twilio-python2 v2.5.1 documentation</a> &raquo;</li> 
-      </ul>
-    </div>
     <div class="footer">
-        &copy; Copyright 2010, Kyle Conroy.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+      &copy; Copyright 2010, Kyle Conroy.
     </div>
+    <a href="https://github.com/kennethreitz/requests">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" />
+    </a>
+    <script type="text/javascript">
+
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-8742933-11']);
+      _gaq.push(['_setDomainName', 'none']);
+      _gaq.push(['_setAllowLinker', true]);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+
+    </script>
+
+    <script type="text/javascript">
+      (function() {
+        var t   = document.createElement('script');
+        t.type  = 'text/javascript';
+        t.async = true;
+        t.id    = 'gauges-tracker';
+        t.setAttribute('data-site-id',
+                       '4ddc27f6613f5d186d000007');
+        t.src = '//secure.gaug.es/track.js';
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(t, s);
+      })();
+    </script>
   </body>
 </html>

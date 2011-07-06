@@ -1,0 +1,196 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Phone Numbers &mdash; twilio-python2 v3.0.0a documentation</title>
+    <link rel="stylesheet" href="../static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="../static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '3.0.0a',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../static/jquery.js"></script>
+    <script type="text/javascript" src="../static/underscore.js"></script>
+    <script type="text/javascript" src="../static/doctools.js"></script>
+    <link rel="top" title="twilio-python2 v3.0.0a documentation" href="../index.html" />
+    <link rel="next" title="SMS Messages" href="messages.html" />
+    <link rel="prev" title="Phone Calls" href="phone-calls.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="../static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="messages.html" title="SMS Messages"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="phone-calls.html" title="Phone Calls"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">twilio-python2 v3.0.0a documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <span class="target" id="module-twilio.rest.resources"></span><div class="section" id="phone-numbers">
+<h1>Phone Numbers<a class="headerlink" href="#phone-numbers" title="Permalink to this headline">¶</a></h1>
+<p>With Twilio you can search and buy real phones numbers, just using the API.</p>
+<div class="section" id="search">
+<h2>Search<a class="headerlink" href="#search" title="Permalink to this headline">¶</a></h2>
+<p>Finding numbers to buy couldn&#8217;t be easier. We first search for a number in area code 530. Once we find one, we&#8217;ll purchase it for our account.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">twilio.rest</span> <span class="kn">import</span> <span class="n">TwilioClient</span>
+
+<span class="n">conn</span> <span class="o">=</span> <span class="n">TwilioClient</span><span class="p">()</span>
+<span class="n">numbers</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">phone_numbers</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">area_code</span><span class="o">=</span><span class="mi">530</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">numbers</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="n">numbers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">purchase</span><span class="p">()</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="k">print</span> <span class="s">&quot;No numbers in 530 available&quot;</span>
+</pre></div>
+</div>
+<div class="section" id="toll-free-numbers">
+<h3>Toll Free Numbers<a class="headerlink" href="#toll-free-numbers" title="Permalink to this headline">¶</a></h3>
+<p>By default, <tt class="xref py py-meth docutils literal"><span class="pre">search()</span></tt> looks for local phone numbers. Set <tt class="xref py py-data docutils literal"><span class="pre">type</span></tt> to <tt class="docutils literal"><span class="pre">tollfree</span></tt> to search toll-free numbers instead.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">numbers</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">phone_numbers</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s">&quot;tollfree&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="numbers-containing-words">
+<h3>Numbers Containing Words<a class="headerlink" href="#numbers-containing-words" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">numbers</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">phone_numbers</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s">&quot;tollfree&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>You can search for numbers in other countries by passing the <a href="#id1"><span class="problematic" id="id2">`ISO Country Code &lt;&gt;`_</span></a> as <cite>country</cite>. Currently only <cite>US</cite> and <cite>CA</cite> are supported.</p>
+<p><a class="reference internal" href="../api/rest/resources.html#twilio.rest.resources.PhoneNumbers.search" title="twilio.rest.resources.PhoneNumbers.search"><tt class="xref py py-meth docutils literal"><span class="pre">PhoneNumbers.search()</span></tt></a> method has plenty of other options to augment your search. See the API documentation for all available parameters.</p>
+<p>Nothing really different, just talk about the things not supported</p>
+</div>
+</div>
+<div class="section" id="buying-a-number">
+<h2>Buying a Number<a class="headerlink" href="#buying-a-number" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="changing-urls">
+<h2>Changing URLS<a class="headerlink" href="#changing-urls" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="validate-caller-id">
+<h2>Validate Caller Id<a class="headerlink" href="#validate-caller-id" title="Permalink to this headline">¶</a></h2>
+<p>Twilio Adding a new phone number to your validated numbers is quick and easy</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">twilio.rest</span> <span class="kn">import</span> <span class="n">TwilioClient</span>
+
+<span class="n">conn</span> <span class="o">=</span> <span class="n">TwilioClient</span><span class="p">()</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">caller_ids</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="s">&quot;+9876543212&quot;</span><span class="p">)</span>
+<span class="k">print</span> <span class="n">response</span><span class="p">[</span><span class="s">&quot;validation_code&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Twilio will call the provided number and for the  validation code to be entered.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Phone Numbers</a><ul>
+<li><a class="reference internal" href="#search">Search</a><ul>
+<li><a class="reference internal" href="#toll-free-numbers">Toll Free Numbers</a></li>
+<li><a class="reference internal" href="#numbers-containing-words">Numbers Containing Words</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#buying-a-number">Buying a Number</a></li>
+<li><a class="reference internal" href="#changing-urls">Changing URLS</a></li>
+<li><a class="reference internal" href="#validate-caller-id">Validate Caller Id</a></li>
+</ul>
+</li>
+</ul>
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="phone-calls.html" title="previous chapter">Phone Calls</a></li>
+      <li>Next: <a href="messages.html" title="next chapter">SMS Messages</a></li>
+  </ul></li>
+</ul>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../sources/usage/phone-numbers.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy; Copyright 2010, Kyle Conroy.
+    </div>
+    <a href="https://github.com/kennethreitz/requests">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" />
+    </a>
+    <script type="text/javascript">
+
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-8742933-11']);
+      _gaq.push(['_setDomainName', 'none']);
+      _gaq.push(['_setAllowLinker', true]);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+
+    </script>
+
+    <script type="text/javascript">
+      (function() {
+        var t   = document.createElement('script');
+        t.type  = 'text/javascript';
+        t.async = true;
+        t.id    = 'gauges-tracker';
+        t.setAttribute('data-site-id',
+                       '4ddc27f6613f5d186d000007');
+        t.src = '//secure.gaug.es/track.js';
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(t, s);
+      })();
+    </script>
+  </body>
+</html>

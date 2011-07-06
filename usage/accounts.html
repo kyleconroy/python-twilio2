@@ -1,0 +1,162 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Accounts &mdash; twilio-python2 v3.0.0a documentation</title>
+    <link rel="stylesheet" href="../static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="../static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '3.0.0a',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../static/jquery.js"></script>
+    <script type="text/javascript" src="../static/underscore.js"></script>
+    <script type="text/javascript" src="../static/doctools.js"></script>
+    <link rel="top" title="twilio-python2 v3.0.0a documentation" href="../index.html" />
+    <link rel="next" title="Error Notifications" href="notifications.html" />
+    <link rel="prev" title="Conferences" href="conferences.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="../static/small_flask.css" type= "text/css" rel="stylesheet" />
+
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="notifications.html" title="Error Notifications"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="conferences.html" title="Conferences"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">twilio-python2 v3.0.0a documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <span class="target" id="module-twilio.rest"></span><div class="section" id="accounts">
+<h1>Accounts<a class="headerlink" href="#accounts" title="Permalink to this headline">¶</a></h1>
+<p>Managing multiple Twilio accounts is nice and easy for stuff.</p>
+<div class="section" id="updating-account-information">
+<h2>Updating Account Information<a class="headerlink" href="#updating-account-information" title="Permalink to this headline">¶</a></h2>
+<p>Use the <tt class="xref py py-meth docutils literal"><span class="pre">Account.update()</span></tt> to modify one of your accounts. Right now the only valid attribute is <cite>FriendlyName</cite>.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">twilio.rest</span> <span class="kn">import</span> <span class="n">TwilioClient</span>
+
+<span class="n">conn</span> <span class="o">=</span> <span class="n">TwilioClient</span><span class="p">()</span>
+<span class="n">account</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">accounts</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+<span class="n">account</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;My Awesome Account&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="creating-sub-accounts">
+<h2>Creating Sub-Accounts<a class="headerlink" href="#creating-sub-accounts" title="Permalink to this headline">¶</a></h2>
+<p>Subaccounts are easy to make.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">twilio.rest</span> <span class="kn">import</span> <span class="n">TwilioClient</span>
+
+<span class="n">conn</span> <span class="o">=</span> <span class="n">TwilioClient</span><span class="p">()</span>
+<span class="n">subaccount</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">accounts</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;My Awesome SubAccount&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Accounts</a><ul>
+<li><a class="reference internal" href="#updating-account-information">Updating Account Information</a></li>
+<li><a class="reference internal" href="#creating-sub-accounts">Creating Sub-Accounts</a></li>
+</ul>
+</li>
+</ul>
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="conferences.html" title="previous chapter">Conferences</a></li>
+      <li>Next: <a href="notifications.html" title="next chapter">Error Notifications</a></li>
+  </ul></li>
+</ul>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../sources/usage/accounts.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy; Copyright 2010, Kyle Conroy.
+    </div>
+    <a href="https://github.com/kennethreitz/requests">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" />
+    </a>
+    <script type="text/javascript">
+
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-8742933-11']);
+      _gaq.push(['_setDomainName', 'none']);
+      _gaq.push(['_setAllowLinker', true]);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+
+    </script>
+
+    <script type="text/javascript">
+      (function() {
+        var t   = document.createElement('script');
+        t.type  = 'text/javascript';
+        t.async = true;
+        t.id    = 'gauges-tracker';
+        t.setAttribute('data-site-id',
+                       '4ddc27f6613f5d186d000007');
+        t.src = '//secure.gaug.es/track.js';
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(t, s);
+      })();
+    </script>
+  </body>
+</html>

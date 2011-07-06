@@ -1,5 +1,4 @@
 
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -7,13 +6,13 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>REST API Usage &mdash; twilio-python2 v2.5.1 documentation</title>
-    <link rel="stylesheet" href="../static/default.css" type="text/css" />
+    <title>REST API Usage &mdash; twilio-python2 v3.0.0a documentation</title>
+    <link rel="stylesheet" href="../static/flasky.css" type="text/css" />
     <link rel="stylesheet" href="../static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '2.5.1',
+        VERSION:     '3.0.0a',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -22,9 +21,11 @@
     <script type="text/javascript" src="../static/jquery.js"></script>
     <script type="text/javascript" src="../static/underscore.js"></script>
     <script type="text/javascript" src="../static/doctools.js"></script>
-    <link rel="top" title="twilio-python2 v2.5.1 documentation" href="../index.html" />
-    <link rel="next" title="TwiML Creation" href="twiml.html" />
-    <link rel="prev" title="twilio-python" href="../index.html" /> 
+    <link rel="top" title="twilio-python2 v3.0.0a documentation" href="../index.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="../static/small_flask.css" type= "text/css" rel="stylesheet" />
+
   </head>
   <body>
     <div class="related">
@@ -36,13 +37,7 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="right" >
-          <a href="twiml.html" title="TwiML Creation"
-             accesskey="N">next</a> |</li>
-        <li class="right" >
-          <a href="../index.html" title="twilio-python"
-             accesskey="P">previous</a> |</li>
-        <li><a href="../index.html">twilio-python2 v2.5.1 documentation</a> &raquo;</li> 
+        <li><a href="../index.html">twilio-python2 v3.0.0a documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -57,7 +52,7 @@
 <h2>Accounts<a class="headerlink" href="#accounts" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="updating-account-information">
 <h3>Updating Account Information<a class="headerlink" href="#updating-account-information" title="Permalink to this headline">¶</a></h3>
-<p>Updating <a class="reference internal" href="../api/rest.html#twilio.rest.resources.Account" title="twilio.rest.resources.Account"><tt class="xref py py-class docutils literal"><span class="pre">Account</span></tt></a> information is really easy:</p>
+<p>Updating <a class="reference internal" href="../api/rest/resources.html#twilio.rest.resources.Account" title="twilio.rest.resources.Account"><tt class="xref py py-class docutils literal"><span class="pre">Account</span></tt></a> information is really easy:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">twilio</span>
 
 <span class="n">conn</span> <span class="o">=</span> <span class="n">twilio</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">Client</span><span class="p">()</span>
@@ -81,7 +76,7 @@
 <h2>Phone Calls<a class="headerlink" href="#phone-calls" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="making-a-phone-call">
 <h3>Making a Phone Call<a class="headerlink" href="#making-a-phone-call" title="Permalink to this headline">¶</a></h3>
-<p>The <a class="reference internal" href="../api/rest.html#twilio.rest.resources.Calls" title="twilio.rest.resources.Calls"><tt class="xref py py-class docutils literal"><span class="pre">Calls</span></tt></a> resource allows you to make outgoing calls:</p>
+<p>The <a class="reference internal" href="../api/rest/resources.html#twilio.rest.resources.Calls" title="twilio.rest.resources.Calls"><tt class="xref py py-class docutils literal"><span class="pre">Calls</span></tt></a> resource allows you to make outgoing calls:</p>
 <div class="highlight-python"><pre>import twilio
 
 conn = twilio.api.Client()
@@ -93,7 +88,7 @@ print call.sid</pre>
 </div>
 <div class="section" id="accessing-resources-from-a-specific-call">
 <h3>Accessing Resources from a specific Call<a class="headerlink" href="#accessing-resources-from-a-specific-call" title="Permalink to this headline">¶</a></h3>
-<p>The <a class="reference internal" href="../api/rest.html#twilio.rest.resources.Call" title="twilio.rest.resources.Call"><tt class="xref py py-class docutils literal"><span class="pre">Call</span></tt></a> resource has some sub resources you can access, such as notifications and recordings. If you have already have a <a class="reference internal" href="../api/rest.html#twilio.rest.resources.Call" title="twilio.rest.resources.Call"><tt class="xref py py-class docutils literal"><span class="pre">Call</span></tt></a> resource, they are easy to get.:</p>
+<p>The <a class="reference internal" href="../api/rest/resources.html#twilio.rest.resources.Call" title="twilio.rest.resources.Call"><tt class="xref py py-class docutils literal"><span class="pre">Call</span></tt></a> resource has some sub resources you can access, such as notifications and recordings. If you have already have a <a class="reference internal" href="../api/rest/resources.html#twilio.rest.resources.Call" title="twilio.rest.resources.Call"><tt class="xref py py-class docutils literal"><span class="pre">Call</span></tt></a> resource, they are easy to get.:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">twilio</span>
 
 <span class="n">conn</span> <span class="o">=</span> <span class="n">twilio</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">Client</span><span class="p">()</span>
@@ -117,7 +112,7 @@ print call.sid</pre>
 </div>
 <div class="section" id="retrieve-a-call-record">
 <h3>Retrieve a Call Record<a class="headerlink" href="#retrieve-a-call-record" title="Permalink to this headline">¶</a></h3>
-<p>If you already have a <a class="reference internal" href="../api/rest.html#twilio.rest.resources.Call" title="twilio.rest.resources.Call"><tt class="xref py py-class docutils literal"><span class="pre">Call</span></tt></a> sid, you can use the client to retrieve that record.:</p>
+<p>If you already have a <a class="reference internal" href="../api/rest/resources.html#twilio.rest.resources.Call" title="twilio.rest.resources.Call"><tt class="xref py py-class docutils literal"><span class="pre">Call</span></tt></a> sid, you can use the client to retrieve that record.:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">twilio</span>
 
 <span class="n">conn</span> <span class="o">=</span> <span class="n">twilio</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">Client</span><span class="p">()</span>
@@ -128,7 +123,7 @@ print call.sid</pre>
 </div>
 <div class="section" id="modifying-live-calls">
 <h3>Modifying live calls<a class="headerlink" href="#modifying-live-calls" title="Permalink to this headline">¶</a></h3>
-<p>The <a class="reference internal" href="../api/rest.html#twilio.rest.resources.Call" title="twilio.rest.resources.Call"><tt class="xref py py-class docutils literal"><span class="pre">Call</span></tt></a> resource makes it easy to find current live calls and redirect them as necessary:</p>
+<p>The <a class="reference internal" href="../api/rest/resources.html#twilio.rest.resources.Call" title="twilio.rest.resources.Call"><tt class="xref py py-class docutils literal"><span class="pre">Call</span></tt></a> resource makes it easy to find current live calls and redirect them as necessary:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">twilio</span>
 
 <span class="n">conn</span> <span class="o">=</span> <span class="n">twilio</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">Client</span><span class="p">()</span>
@@ -147,7 +142,7 @@ print call.sid</pre>
 </pre></div>
 </div>
 <p>Note that <tt class="xref py py-meth docutils literal"><span class="pre">hangup()</span></tt> will also cancel calls currently queued.</p>
-<p>If you already have a <a class="reference internal" href="../api/rest.html#twilio.rest.resources.Call" title="twilio.rest.resources.Call"><tt class="xref py py-class docutils literal"><span class="pre">Call</span></tt></a> sid, you can use the <a class="reference internal" href="../api/rest.html#twilio.rest.resources.Calls" title="twilio.rest.resources.Calls"><tt class="xref py py-class docutils literal"><span class="pre">Calls</span></tt></a> resource to update
+<p>If you already have a <a class="reference internal" href="../api/rest/resources.html#twilio.rest.resources.Call" title="twilio.rest.resources.Call"><tt class="xref py py-class docutils literal"><span class="pre">Call</span></tt></a> sid, you can use the <a class="reference internal" href="../api/rest/resources.html#twilio.rest.resources.Calls" title="twilio.rest.resources.Calls"><tt class="xref py py-class docutils literal"><span class="pre">Calls</span></tt></a> resource to update
 the record without having to use <tt class="xref py py-meth docutils literal"><span class="pre">get()</span></tt> first.:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">twilio</span>
 
@@ -233,7 +228,7 @@ the record without having to use <tt class="xref py py-meth docutils literal"><s
 <h2>SMS Mesages<a class="headerlink" href="#sms-mesages" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="sending-a-sms-message">
 <h3>Sending a SMS Message<a class="headerlink" href="#sending-a-sms-message" title="Permalink to this headline">¶</a></h3>
-<p>The <a class="reference internal" href="../api/rest.html#twilio.rest.resources.SmsMessages" title="twilio.rest.resources.SmsMessages"><tt class="xref py py-class docutils literal"><span class="pre">SmsMessages</span></tt></a> resource allows you to send outgoing text messages</p>
+<p>The <a class="reference internal" href="../api/rest/resources.html#twilio.rest.resources.SmsMessages" title="twilio.rest.resources.SmsMessages"><tt class="xref py py-class docutils literal"><span class="pre">SmsMessages</span></tt></a> resource allows you to send outgoing text messages</p>
 <div class="highlight-python"><pre>import twilio
 
 conn = twilio.api.Client()
@@ -306,13 +301,11 @@ print message.sid</pre>
 </ul>
 </li>
 </ul>
-
-  <h4>Previous topic</h4>
-  <p class="topless"><a href="../index.html"
-                        title="previous chapter">twilio-python</a></p>
-  <h4>Next topic</h4>
-  <p class="topless"><a href="twiml.html"
-                        title="next chapter">TwiML Creation</a></p>
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="../sources/usage/rest.txt"
@@ -335,27 +328,40 @@ print message.sid</pre>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../genindex.html" title="General Index"
-             >index</a></li>
-        <li class="right" >
-          <a href="../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="right" >
-          <a href="twiml.html" title="TwiML Creation"
-             >next</a> |</li>
-        <li class="right" >
-          <a href="../index.html" title="twilio-python"
-             >previous</a> |</li>
-        <li><a href="../index.html">twilio-python2 v2.5.1 documentation</a> &raquo;</li> 
-      </ul>
-    </div>
     <div class="footer">
-        &copy; Copyright 2010, Kyle Conroy.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+      &copy; Copyright 2010, Kyle Conroy.
     </div>
+    <a href="https://github.com/kennethreitz/requests">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" />
+    </a>
+    <script type="text/javascript">
+
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-8742933-11']);
+      _gaq.push(['_setDomainName', 'none']);
+      _gaq.push(['_setAllowLinker', true]);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+
+    </script>
+
+    <script type="text/javascript">
+      (function() {
+        var t   = document.createElement('script');
+        t.type  = 'text/javascript';
+        t.async = true;
+        t.id    = 'gauges-tracker';
+        t.setAttribute('data-site-id',
+                       '4ddc27f6613f5d186d000007');
+        t.src = '//secure.gaug.es/track.js';
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(t, s);
+      })();
+    </script>
   </body>
 </html>
