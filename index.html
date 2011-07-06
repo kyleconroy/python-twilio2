@@ -1,5 +1,4 @@
 
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -7,13 +6,13 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>twilio-python &mdash; twilio-python2 v2.5.1 documentation</title>
-    <link rel="stylesheet" href="static/default.css" type="text/css" />
+    <title>Twilio Python &mdash; twilio-python2 v3.0.0a documentation</title>
+    <link rel="stylesheet" href="static/flasky.css" type="text/css" />
     <link rel="stylesheet" href="static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '2.5.1',
+        VERSION:     '3.0.0a',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -22,8 +21,12 @@
     <script type="text/javascript" src="static/jquery.js"></script>
     <script type="text/javascript" src="static/underscore.js"></script>
     <script type="text/javascript" src="static/doctools.js"></script>
-    <link rel="top" title="twilio-python2 v2.5.1 documentation" href="#" />
-    <link rel="next" title="REST API Usage" href="usage/rest.html" /> 
+    <link rel="top" title="twilio-python2 v3.0.0a documentation" href="#" />
+    <link rel="next" title="Accessing REST Resources" href="usage/basics.html" />
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="static/small_flask.css" type= "text/css" rel="stylesheet" />
+
   </head>
   <body>
     <div class="related">
@@ -36,9 +39,9 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="usage/rest.html" title="REST API Usage"
+          <a href="usage/basics.html" title="Accessing REST Resources"
              accesskey="N">next</a> |</li>
-        <li><a href="#">twilio-python2 v2.5.1 documentation</a> &raquo;</li> 
+        <li><a href="#">twilio-python2 v3.0.0a documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -48,73 +51,91 @@
           <div class="body">
             
   <div class="section" id="twilio-python">
-<h1>twilio-python<a class="headerlink" href="#twilio-python" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="status">
-<h2>Status<a class="headerlink" href="#status" title="Permalink to this headline">¶</a></h2>
-<p>This documentation is for version 2.0 of the Twilio module. Please go here for documentation of the older versions</p>
-</div>
+<h1>Twilio Python<a class="headerlink" href="#twilio-python" title="Permalink to this headline">¶</a></h1>
+<p>Make requests to Twilio&#8217;s <a class="reference external" href="http://www.twilio.com/docs/api/twiml/">REST API</a> and create <a class="reference external" href="http://www.twilio.com/docs/api/twiml/">TwiML</a> without a hassle. And you thought Twilio couldn&#8217;t get any easier.</p>
 <div class="section" id="installation">
-<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
-<p>We&#8217;re listed on PyPi, so installation is one command away</p>
+<span id="id1"></span><h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<p>Latest version: <a href="#id4"><span class="problematic" id="id5">`3.0`_</span></a></p>
 <div class="highlight-bash"><div class="highlight"><pre>pip install twilio
 </pre></div>
 </div>
-<p>You can also download the source and install</p>
+<p>You can also download the source and install using <tt class="xref py py-data docutils literal"><span class="pre">setuptools</span></tt></p>
 <div class="highlight-bash"><div class="highlight"><pre>python setup.py install
 </pre></div>
 </div>
 </div>
-<div class="section" id="examples">
-<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="rest-api">
-<h3>REST API<a class="headerlink" href="#rest-api" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-python"><pre>import twilio
-
-conn = twilio.api.Client()
-call = conn.calls.make(to="9991231234, from_="9991231234",
-                       url="http://foo.com/call.xml")
-print call.length
-print call.sid</pre>
+<div class="section" id="getting-started">
+<h2>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h2>
+<p>The <a class="reference internal" href="getting-started.html"><em>Quickstart</em></a> will get you up and running in a few quick minutes. This guide assumes you understand the core concepts of Twilio. If you&#8217;ve never used Twilio before, don&#8217;t fret! Just read <a class="reference external" href="http://www.twilio.com/api/">about how Twilio works</a> and then jump in.</p>
+<p>For a more indepth guide to specific protions of the library, check out the User Guide below.</p>
 </div>
-</div>
-<div class="section" id="twiml">
-<h3>Twiml<a class="headerlink" href="#twiml" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">twilio</span> <span class="kn">import</span> <span class="n">twiml</span>
-
-<span class="n">r</span> <span class="o">=</span> <span class="n">twiml</span><span class="o">.</span><span class="n">Response</span><span class="p">()</span>
-<span class="n">r</span><span class="o">.</span><span class="n">play</span><span class="p">(</span><span class="s">&quot;monkey.mp3&quot;</span><span class="p">,</span> <span class="n">loop</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
-<span class="n">r</span><span class="o">.</span><span class="n">toxml</span><span class="p">()</span>
-<span class="c"># returns &lt;Response&gt;&lt;Play loop=&quot;3&quot;&gt;monkey.mp3&lt;/Play&gt;&lt;Response&gt;</span>
-</pre></div>
-</div>
-<p>This module works great with various web frameworks
-* Django
-* AppEngine
-* Flask</p>
-</div>
-</div>
-<div class="section" id="tutorial-and-overview">
-<h2>Tutorial and Overview<a class="headerlink" href="#tutorial-and-overview" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li>Twiml Creation</li>
-<li>REST API Usage</li>
-<li>Integration with common web frameworks</li>
-</ul>
+<div class="section" id="user-guide">
+<h2>User Guide<a class="headerlink" href="#user-guide" title="Permalink to this headline">¶</a></h2>
+<p>Functionality is split over three different subpackages within <strong>twilio-python</strong></p>
+<div class="section" id="id2">
+<h3>REST API<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<p>Query the Twilio REST API to create phone calls, send SMS messages and so much more</p>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="usage/rest.html">REST API Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage/basics.html">Accessing REST Resources</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage/phone-calls.html">Phone Calls</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage/phone-numbers.html">Phone Numbers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage/messages.html">SMS Messages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage/conferences.html">Conferences</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage/accounts.html">Accounts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage/notifications.html">Notifications</a></li>
+</ul>
+</div>
+</div>
+<div class="section" id="id3">
+<h3>TwiML<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<p>Generates valid TwiML for controlling and manipulating phone calls.</p>
+<div class="toctree-wrapper compound">
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="usage/twiml.html">TwiML Creation</a></li>
 </ul>
 </div>
 </div>
-<div class="section" id="api-documentation">
-<h2>API Documentation<a class="headerlink" href="#api-documentation" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="utilites">
+<h3>Utilites<a class="headerlink" href="#utilites" title="Permalink to this headline">¶</a></h3>
+<p>Small functions useful for validating requests are coming from Twilio</p>
+</div>
+</div>
+<div class="section" id="upgrade-plan">
+<h2>Upgrade Plan<a class="headerlink" href="#upgrade-plan" title="Permalink to this headline">¶</a></h2>
+<p><cite>twilio-python</cite> 3.0 introduced backwards-incompatible changes to the API. However, a backwards-compatible API is still offered. See the <cite>Upgrade Guide</cite> for step-by-step instructions for migrating to 3.0.</p>
+</div>
+<div class="section" id="api-reference">
+<h2>API Reference<a class="headerlink" href="#api-reference" title="Permalink to this headline">¶</a></h2>
+<p>A complete guide to all public APIs found in <cite>twilio-python</cite>. Autogenerated, so only use when you really need to dive deep into the library.</p>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="api/rest.html">REST Documentation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api/twiml.html">TwiML Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/rest/index.html"><tt class="docutils literal"><span class="pre">twilio.rest</span></tt></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/rest/resources.html"><tt class="docutils literal"><span class="pre">twilio.rest.resources</span></tt></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/twiml.html"><tt class="docutils literal"><span class="pre">twilio.twiml</span></tt></a></li>
+</ul>
+</li>
 </ul>
 </div>
+</div>
+<div class="section" id="support-and-development">
+<h2>Support and Development<a class="headerlink" href="#support-and-development" title="Permalink to this headline">¶</a></h2>
+<p>All development occurs over on <a class="reference external" href="https://github.com/twilio/twilio-python">Github</a>. To checkout the source,</p>
+<div class="highlight-bash"><div class="highlight"><pre>git clone git@github.com:twilio/twilio-python.git
+</pre></div>
+</div>
+<p>Report bugs using the Github <a class="reference external" href="https://github.com/twilio/twilio-python/issues">issue tracker</a>.</p>
+<p>If you’ve got questions that aren’t answered by this documentation, ask the <a class="reference external" href="irc://irc.freenode.net/#twilio">#twilio IRC channel</a></p>
+</div>
+<div class="section" id="changelog">
+<h2>Changelog<a class="headerlink" href="#changelog" title="Permalink to this headline">¶</a></h2>
+<p>Current stable version is 3.0.0.</p>
+<div class="toctree-wrapper compound">
+<ul class="simple">
+</ul>
+</div>
+<p>This project uses <a class="reference external" href="http://semver.org/">semantic versioning</a>.</p>
 </div>
 </div>
 
@@ -126,27 +147,36 @@ print call.sid</pre>
         <div class="sphinxsidebarwrapper">
   <h3><a href="#">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">twilio-python</a><ul>
-<li><a class="reference internal" href="#status">Status</a></li>
+<li><a class="reference internal" href="#">Twilio Python</a><ul>
 <li><a class="reference internal" href="#installation">Installation</a></li>
-<li><a class="reference internal" href="#examples">Examples</a><ul>
-<li><a class="reference internal" href="#rest-api">REST API</a></li>
-<li><a class="reference internal" href="#twiml">Twiml</a></li>
+<li><a class="reference internal" href="#getting-started">Getting Started</a></li>
+<li><a class="reference internal" href="#user-guide">User Guide</a><ul>
+<li><a class="reference internal" href="#id2">REST API</a><ul>
 </ul>
 </li>
-<li><a class="reference internal" href="#tutorial-and-overview">Tutorial and Overview</a><ul>
+<li><a class="reference internal" href="#id3">TwiML</a><ul>
 </ul>
 </li>
-<li><a class="reference internal" href="#api-documentation">API Documentation</a><ul>
+<li><a class="reference internal" href="#utilites">Utilites</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#upgrade-plan">Upgrade Plan</a></li>
+<li><a class="reference internal" href="#api-reference">API Reference</a><ul>
+</ul>
+</li>
+<li><a class="reference internal" href="#support-and-development">Support and Development</a></li>
+<li><a class="reference internal" href="#changelog">Changelog</a><ul>
 </ul>
 </li>
 </ul>
 </li>
 </ul>
-
-  <h4>Next topic</h4>
-  <p class="topless"><a href="usage/rest.html"
-                        title="next chapter">REST API Usage</a></p>
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="#">Documentation overview</a><ul>
+      <li>Next: <a href="usage/basics.html" title="next chapter">Accessing REST Resources</a></li>
+  </ul></li>
+</ul>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="sources/index.txt"
@@ -169,24 +199,40 @@ print call.sid</pre>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="genindex.html" title="General Index"
-             >index</a></li>
-        <li class="right" >
-          <a href="py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="right" >
-          <a href="usage/rest.html" title="REST API Usage"
-             >next</a> |</li>
-        <li><a href="#">twilio-python2 v2.5.1 documentation</a> &raquo;</li> 
-      </ul>
-    </div>
     <div class="footer">
-        &copy; Copyright 2010, Kyle Conroy.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+      &copy; Copyright 2010, Kyle Conroy.
     </div>
+    <a href="https://github.com/kennethreitz/requests">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" />
+    </a>
+    <script type="text/javascript">
+
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-8742933-11']);
+      _gaq.push(['_setDomainName', 'none']);
+      _gaq.push(['_setAllowLinker', true]);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+
+    </script>
+
+    <script type="text/javascript">
+      (function() {
+        var t   = document.createElement('script');
+        t.type  = 'text/javascript';
+        t.async = true;
+        t.id    = 'gauges-tracker';
+        t.setAttribute('data-site-id',
+                       '4ddc27f6613f5d186d000007');
+        t.src = '//secure.gaug.es/track.js';
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(t, s);
+      })();
+    </script>
   </body>
 </html>
