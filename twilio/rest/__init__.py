@@ -14,7 +14,7 @@ except ImportError:
 
 class TwilioClient(object):
     """
-
+    A client for accessing the Twilio REST API
     """
 
     def _credentials_lookup(self):
@@ -30,6 +30,9 @@ class TwilioClient(object):
 
     def __init__(self, account=None, token=None, base="https://api.twilio.com",
                  version="2010-04-01", client=None):
+        """
+        Create a Twilio REST API client.
+        """
 
         # Get account credentials
         if not account or not token:

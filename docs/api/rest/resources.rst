@@ -4,6 +4,13 @@
 :mod:`twilio.rest.resources`
 =============================
 
+.. autoclass:: InstanceResource
+   :members:
+
+.. autoclass:: ListResource
+   :members:
+
+
 Accounts
 >>>>>>>>>
 
@@ -53,7 +60,7 @@ Calls
 
       A 34 character string that uniquely identifies this resource.
 
-   .. attribute:: parent_call_sid 
+   .. attribute:: parent_call_sid
 
       A 34 character string that uniquely identifies the call that created this leg.
 
@@ -73,7 +80,7 @@ Calls
 
       The phone number that received this call. e.g., +16175551212 (E.164 format)
 
-   .. attribute:: from_ 
+   .. attribute:: from_
 
       The phone number that made this call. e.g., +16175551212 (E.164 format)
 
@@ -90,19 +97,19 @@ Calls
       The start time of the call, given as GMT in RFC 2822 format. Empty if the call has not yet been dialed.
 
    .. attribute:: end_time
-   
+
       The end time of the call, given as GMT in RFC 2822 format. Empty if the call did not complete successfully.
 
    .. attribute:: duration
 
       The length of the call in seconds. This value is empty for busy, failed, unanswered or ongoing calls.
 
-   .. attribute:: price 
-   
+   .. attribute:: price
+
       The charge for this call in USD. Populated after the call is completed. May not be immediately available.
 
    .. attribute:: direction
-   
+
       A string describing the direction of the call. inbound for inbound calls, outbound-api for calls initiated via the REST API or outbound-dial for calls initiated by a <Dial> verb.
 
    .. attribute:: answered_by
@@ -640,7 +647,7 @@ Transcriptions
       The date that this resource was last updated, given in RFC 2822 format.
 
    .. attribute:: account_sid
-   
+
       The unique id of the Account responsible for this transcription.
 
    .. attribute:: status

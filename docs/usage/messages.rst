@@ -1,5 +1,5 @@
 ============
-Messages
+SMS Messages
 ============
 
 Sending a Text Message

@@ -320,7 +320,6 @@ class AvailablePhoneNumbers(ListResource):
 
 
 class Transcription(InstanceResource):
-
     pass
 
 
@@ -683,8 +682,13 @@ class PhoneNumbers(ListResource):
 
     def search(self, **kwargs):
         """
-        :param type: Either :data:`LOCAL` or :data:`TOLL_FREE`. Defaults to :data:`LOCAL`
-        :param integer area_code:
+        :param type: The type of phone number to search for. Either :data:`LOCAL` or :data:`TOLL_FREE`. Defaults to :data:`LOCAL`
+        :param integer country: Either :data:`US` or :data:`CA`. Defaults to :data:`US`
+        :param string region: If searching the US, only show numbers in this state
+        :param string postal_code: Only show numbers in this area code
+        :param string rate_center: US only.
+        :param tuple near_lat_long: Given a latitude/longitude tupe (lat,long) find geographically close numbers within Distance miles.
+        :param integer distance: Specifies the search radius for a Near- query in miles. Defaults to 25 miles.
         """
         return self.available_phone_numbers.list(**kwargs)
 
