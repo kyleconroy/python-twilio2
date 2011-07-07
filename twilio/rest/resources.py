@@ -8,6 +8,8 @@ import urllib
 
 from twilio import TwilioException
 from twilio import TwilioRestException
+from urllib import urlencode
+from urlparse import urlparse
 
 # import json
 try:
@@ -18,12 +20,20 @@ except ImportError:
     except ImportError:
         from django.utils import simplejson as json
 
+# import httplib2
+try:
+    import httplib2
+except ImportError:
+    from twilio.contrib import httplib2
 
-def fparam(p):
+
+def transform_params(p):
     """
-    Filter the parameters, throwing away any None values
+    Transform parameters, throwing away any None values
+    and convert False and True values to strings
     """
-    return dict([(d,p[d]) for d in p if p[d] is not None])
+    p = [(d,convert_boolean(p[d])) for d in p if p[d] is not None]
+    return dict(p)
 
 
 def parse_date(d):
@@ -38,12 +48,21 @@ def parse_date(d):
     elif isinstance(d, str):
         return d
 
+def convert_boolean(bool):
+    if bool == True:
+        return "true"
+    elif bool == False:
+        return "false"
+    else:
+        return bool
+
 
 def convert_case(s):
     """
     Given a string in snake case, conver to CamelCase
     """
     return ''.join([a.title() for a in s.split("_") if a])
+
 
 def convert_keys(d):
     """
@@ -66,7 +85,9 @@ def convert_keys(d):
             result[special[k]] = v
         else:
             result[convert_case(k)] = v
+
     return result
+
 
 def normalize_dates(myfunc):
     def inner_func(*args, **kwargs):
@@ -77,168 +98,114 @@ def normalize_dates(myfunc):
         return myfunc(*args, **kwargs)
     return inner_func
 
+
+class Response(object):
+    """
+    Take a httplib2 response and turn it into a requests response
+    """
+
+    def __init__(self, httplib_resp, content, url):
+        self.content = content
+        self.cached = False
+        self.status_code = int(httplib_resp.status)
+        self.ok = self.status_code < 400
+        self.url = url
+
+
+def make_request(method, url,
+    params=None, data=None, headers=None, cookies=None, files=None,
+    auth=None, timeout=None, allow_redirects=False, proxies=None):
+    """Sends an HTTP request Returns :class:`Response <models.Response>`
+
+    See the requests documentation for explanation of all these parameters
+
+    Currently timeout, allow_redirects, proxies, files, and cookies
+    are all ignored
+    """
+    http = httplib2.Http()
+
+    if auth is not None:
+        http.add_credentials(auth[0], auth[1])
+
+    if data is not None:
+        data = urlencode(data)
+
+    if params is not None:
+        enc_params = urlencode(params, doseq=True)
+        if urlparse(url).query:
+            url = '%s&%s' % (url, enc_params)
+        else:
+            url = '%s?%s' % (url, enc_params)
+
+    resp, content = http.request(url, method, headers=headers, body=data)
+
+    # Format httplib2 reqeusts as reqeusts objects
+    return Response(resp, content, url)
+
+
+def make_twilio_request(method, uri, **kwargs):
+    """
+    Make a request to Twilio. Throws an error
+    """
+    headers = kwargs.get("headers", {})
+    headers["User-Agent"] = "twilio-python"   #  Add user aggent string
+    headers["Accepts"] = "application/json"   #  Add accepts header
+
+    if method == "POST" and "Content-Type" not in headers:
+        headers["Content-Type"] = "application/x-www-form-urlencoded"
+
+    kwargs["headers"] = headers
+
+    resp = make_request(method, uri, **kwargs)
+
+    if not resp.ok:
+        try:
+            error = json.loads(content)
+            message = "%s: %s" % (error["code"], error["message"])
+        except:
+            message = content
+
+        raise TwilioRestException(resp.status_code, resp.uri, message)
+
+    return resp
+
+
 class Resource(object):
-    """An HTTP Resource"""
+    """A REST Resource"""
 
-    def __init__(self, client, base_uri):
-        self.client = client
-        self.uri = "%s/%s" % (base_uri, self.name)
+    name = "Resource"
 
-    def _request(self, uri, fmt="json", query=None, **kwargs):
+    def __init__(self, base_uri, version, auth):
+        self.auth = auth
+        self.base_uri = base_uri
+        self.version = version
+        self.auth = auth
+
+    def request(self, method, uri, **kwargs):
         """
-        Send an HTTP request to uri+fmt+query
+        Send an HTTP request to the resource.
+
+        Raise a TwilioRestException
         """
-        furi = "%s.%s" % (uri, fmt)
+        return make_twilio_request(method, uri, **kwargs)
 
-        if query:
-            furi = "%s?%s" % (furi, urllib.urlencode(query))
+    @property
+    def uri(self):
+        format = (self.base_uri, self.version, self.auth[0], self.name)
+        return "%s/%s/Accounts/%s/%s" % format
 
-        headers = kwargs.get("headers", {})
-        headers["User-Agent"] = "twilio-python/3.0.0"
-        kwargs["headers"] = headers
-
-        resp, content = self.client.request(furi, **kwargs)
-        logging.debug(resp)
-        logging.debug(content)
-
-        # If the HTTP request errored, throw RestException
-        if resp.status >= 400:
-            try:
-                error = json.loads(content)
-                message = "%s: %s" % (error["code"], error["message"])
-            except:
-                message = resp.reason
-            raise TwilioRestException(resp.status, furi, message)
-
-        return resp, content
-
-class ListResource(Resource):
-
-    def __init__(self, *args, **kwargs):
-        super(ListResource, self).__init__(*args, **kwargs)
-        try:
-            self.key
-        except AttributeError:
-            self.key = self.name.lower()
-
-    def _create(self, body):
-        """
-        Create an InstanceResource via a POST to the List Resource
-
-        body: string -- HTTP Body for the quest
-        """
-        hs = {'Content-type': 'application/x-www-form-urlencoded'}
-        resp, content =  self._request(self.uri, method="POST", body=body,
-                                       headers=hs)
-
-        if resp.status != 201:
-            raise TwilioRestException(resp.status, self.uri, "Resource not created")
-
-        entries = json.loads(content)
-        return self._create_instance(entries)
-
-    def _delete(self, sid):
-        """
-        Delete an InstanceResource via DELETE
-
-        body: string -- HTTP Body for the quest
-        """
-        uri = "%s/%s" % (self.uri, sid)
-        resp, content =  self._request(uri, method="DELETE")
-        return resp.status == 204
-
-    def _update(self, sid, body):
-        """
-        Update an InstanceResource via a POST
-
-        sid: string -- String identifier for the list resource
-        body: string -- HTTP Body for the quest
-        """
-        uri = "%s/%s" % (self.uri, sid)
-        hs = {'Content-type': 'application/x-www-form-urlencoded'}
-        resp, content =  self._request(uri, method="POST", body=body,
-                                       headers=hs)
-        entries = json.loads(content)
-        return self._create_instance(entries)
-
-    def count(self):
-        """
-        Return the number of instance resources contained in this list resource
-        """
-        resp, content =  self._request(self.uri, method="GET")
-        page = json.loads(content)
-        return page["total"]
-
-    def _list(self, params={}, page=None, page_size=None):
-        # Get the items
-        if page is not None:
-            params["Page"] = page
-        if page_size is not None:
-            params["PageSize"] = page_size
-        resp, content =  self._request(self.uri, method="GET", query=params)
-        page = json.loads(content)
-
-        # Get key for the array of items
-
-        # Turn all those items into objects
-        try:
-            return [ self._create_instance(i) for i in page[self.key]]
-        except KeyError:
-            raise TwilioException("Key %s not present in response" % self.key)
-
-    def iter(self, **kwargs):
-        """
-        Return all instance resources using an iterator
-        Can only be called on classes which implement list()
-        """
-        p = 0
-        try:
-            while True:
-                for r in self.list(page=p, **kwargs):
-                    yield r
-                p += 1
-        except TwilioRestException:
-            pass
-
-
-    def _get(self, uri):
-        """Request the specified instance resource"""
-        resp, content =  self._request(uri, method="GET")
-        return self._create_instance(json.loads(content))
-
-    def get(self, sid):
-        """Request the specified instance resource"""
-        uri = "%s/%s" % (self.uri, sid)
-        return self._get(uri)
-
-    def _create_instance(self, content):
-        try:
-            return self.instance(self, self.uri, content)
-        except AttributeError:
-            raise TwilioException("%s missing self.instance" % self.name)
 
 class InstanceResource(Resource):
 
-    id_key = "sid"
     subresources = []
 
-    def __init__(self, list_resource, base_uri, entries):
+    def __init__(self, parent, sid):
+        self.parent = parent
+        self.name = sid
+        super(InstanceResource, self).__init__(parent.base_uri,
+            parent.version, parent.auth)
 
-        self.list_resource = list_resource
-
-        try:
-            self.name = entries[self.id_key]
-        except KeyError:
-            msg = "Key %s not present in content" % (self.id_key)
-            raise TwilioException(msg)
-
-        super(InstanceResource, self).__init__(None, base_uri)
-
-        # Delete conflicting parameter names
-        self._load(entries)
-        self._load_subresources()
-
-    def _load(self, entries):
+    def load(self, entries):
         if "from" in entries.keys():
             entries["from_"] = entries["from"]
             del entries["from"]
@@ -249,17 +216,122 @@ class InstanceResource(Resource):
         self.__dict__.update(entries)
 
     def _load_subresources(self):
+        """
+        ???
+        """
         client = self.list_resource.client
         for r in self.subresources:
             ir = r(client, self.uri)
             self.__dict__[ir.key] = ir
 
-    def _update(self, **kwargs):
-        a = self.list_resource.update(self.name, **kwargs)
-        self._load(a.__dict__)
+    def update_instance(self, **kwargs):
+        a = self.parent.update(self.name, **kwargs)
+        self.load(a.__dict__)
 
-    def _delete(self, **kwargs):
-        self.list_resource.delete(self.name, **kwargs)
+    def delete_instance(self, **kwargs):
+        return self.parent.delete(self.name, **kwargs)
+
+    @property
+    def uri(self):
+        return "%s/%s" % (self.parent.uri, self.name)
+
+
+class ListResource(Resource):
+
+    name = "Resources"
+    instance = InstanceResource
+
+    def __init__(self, *args, **kwargs):
+        super(ListResource, self).__init__(*args, **kwargs)
+
+    @property
+    def key(self):
+        return self.name.lower()
+
+    def get_instance(self, sid):
+        """Request the specified instance resource"""
+        uri = "%s/%s" % (self.uri, sid)
+        return self._create_instance(json.loads(content))
+
+    def get_instances(self, params=None, page=None, page_size=None):
+        """
+        Query the list resource for a list of InstanceResources
+        """
+        params = params or {}
+
+        if page is not None:
+            params["Page"] = page
+
+        if page_size is not None:
+            params["PageSize"] = page_size
+
+        page = self.request("GET", self.uri, params=params)
+
+        if self.key not in page:
+            raise TwilioException("Key %s not present in response" % self.key)
+
+        return [self.load_instance(ir) for ir in page[self.key]]
+
+    def create_instance(self, body):
+        """
+        Create an InstanceResource via a POST to the List Resource
+
+        :param dict body: Dictoionary of POST data
+        """
+        resp, instance = self.request("POST", self.uri, data=body)
+
+        if resp.status != 201:
+            raise TwilioRestException(resp.status,
+                                      self.uri, "Resource not created")
+
+        return self.load_instance(instance)
+
+    def delete_instance(self, sid):
+        """
+        Delete an InstanceResource via DELETE
+
+        body: string -- HTTP Body for the quest
+        """
+        uri = "%s/%s" % (self.uri, sid)
+        resp, instance = self.request("DELETE", uri)
+        return resp.status == 204
+
+    def update_instance(self, sid, body):
+        """
+        Update an InstanceResource via a POST
+
+        sid: string -- String identifier for the list resource
+        body: string -- Dict of items to POST
+        """
+        uri = "%s/%s" % (self.uri, sid)
+        resp, entry = self.request("POST", uri, data=body)
+        return self.load_instance(entry)
+
+    def count(self):
+        """
+        Return the number of instance resources contained in this list resource
+        """
+        resp, page =  self.request("GET", self.uri)
+        return page["total"]
+
+    def iter(self, **kwargs):
+        """
+        Return all instance resources using an iterator
+        Can only be called on classes which implement list()
+
+        TODO Make this use the next_url instead
+        """
+        p = 0
+        try:
+            while True:
+                for r in self.list(page=p, **kwargs):
+                    yield r
+                p += 1
+        except TwilioRestException:
+            pass
+
+    def load_instance(self, content):
+        return self.instance(self, self.uri, content)
 
 
 class AvailablePhoneNumber(InstanceResource):
@@ -355,7 +427,8 @@ class Recordings(ListResource):
 
     def list(self, call_sid=None, before=None, after=None, **kwargs):
         """
-        Returns a page of :class:`Recording` resources as a list. For paging informtion see :class:`ListResource`.
+        Returns a page of :class:`Recording` resources as a list.
+        For paging informtion see :class:`ListResource`.
 
         :param date after: Only list recordings logged after this datetime
         :param date before: Only list recordings logger before this datetime

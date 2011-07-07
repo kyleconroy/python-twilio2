@@ -2,28 +2,28 @@ import logging
 import os
 
 from twilio import TwilioException
-from twilio.rest.resources import *
+from twilio.rest.resources import Accounts
+from twilio.rest.resources import Calls
 from urllib import urlencode
 from urlparse import urljoin
 
-try:
-    import httplib2
-except ImportError:
-    from twilio.contrib import httplib2
+
+def find_credentials(self):
+    """
+    Look in the current environment for Twilio credentails
+    """
+    try:
+        account = os.environ["TWILIO_ACCOUNT_SID"]
+        token   = os.environ["TWILIO_AUTH_TOKEN"]
+        return account, token
+    except KeyError:
+        return None, None
 
 
-class TwilioClient(object):
+class TwilioRestClient(object):
     """
     A client for accessing the Twilio REST API
     """
-
-    def _credentials_lookup(self):
-        try:
-            account = os.environ["TWILIO_ACCOUNT_SID"]
-            token   = os.environ["TWILIO_AUTH_TOKEN"]
-            return account, token
-        except KeyError:
-            return None, None
 
     def request(self, *args, **kwargs):
         return self.client.request(*args, **kwargs)
@@ -36,7 +36,7 @@ class TwilioClient(object):
 
         # Get account credentials
         if not account or not token:
-            account, token = self._credentials_lookup()
+            account, token = find_credentials()
             if not account or not token:
                 raise TwilioException("Could not find account credentials")
 
