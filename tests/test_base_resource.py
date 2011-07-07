@@ -17,6 +17,10 @@ def test_resource_init():
     auth = (account_sid, "token")
     r = Resource(base_uri, version, auth)
     uri = "{}/{}/Accounts/{}/{}".format(base_uri, version, account_sid, r.name)
+
+    assert_equals(r.base_uri, base_uri)
+    assert_equals(r.auth, auth)
+    assert_equals(r.version, version)
     assert_equals(r.uri, uri)
 
 def test_list_resource_init():

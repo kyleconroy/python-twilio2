@@ -187,7 +187,8 @@ class Resource(object):
 
         Raise a TwilioRestException
         """
-        return make_twilio_request(method, uri, **kwargs)
+        resp = make_twilio_request(method, uri, **kwargs)
+        return resp, json.loads(resp.content)
 
     @property
     def uri(self):
