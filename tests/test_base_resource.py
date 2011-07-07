@@ -31,7 +31,7 @@ def test_list_resource_init():
     assert_equals(r.uri, uri)
     assert_equals(r.key, r.name.lower())
 
-def test_list_resource_init():
+def test_instance_resource_init():
     parent = ListResource(base_uri, version, auth)
     r = InstanceResource(parent, "123")
     uri = "%s/%s" % (parent.uri, "123")
