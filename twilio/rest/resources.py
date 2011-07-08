@@ -224,14 +224,15 @@ class InstanceResource(Resource):
         Load all subresources
         """
         for resource in self.subresources:
-            self.__dict__[resource.key] = resource(self.uri, self.parent.auth)
+            list_resource = resource(self.uri, self.parent.auth)
+            self.__dict__[list_resource.key] = list_resource
 
     def update_instance(self, **kwargs):
         a = self.parent.update(self.name, **kwargs)
         self.load(a.__dict__)
 
-    def delete_instance(self, **kwargs):
-        return self.parent.delete(self.name, **kwargs)
+    def delete_instance(self):
+        return self.parent.delete(self.name)
 
 
 class ListResource(Resource):
@@ -246,6 +247,10 @@ class ListResource(Resource):
             self.key
         except AttributeError:
             self.key = self.name.lower()
+
+    def get(self, sid):
+        """Return an instance resource """
+        return self.get_instance(sid)
 
     def get_instance(self, sid):
         """Request the specified instance resource"""
@@ -280,7 +285,7 @@ class ListResource(Resource):
         """
         resp, instance = self.request("POST", self.uri, data=body)
 
-        if resp.status != 201:
+        if resp.status_code != 201:
             raise TwilioRestException(resp.status,
                                       self.uri, "Resource not created")
 
@@ -294,7 +299,7 @@ class ListResource(Resource):
         """
         uri = "%s/%s" % (self.uri, sid)
         resp, instance = self.request("DELETE", uri)
-        return resp.status == 204
+        return resp.status_code == 204
 
     def update_instance(self, sid, body):
         """
@@ -361,7 +366,10 @@ class AvailablePhoneNumbers(ListResource):
         super(AvailablePhoneNumbers,self).__init__(base_uri, auth)
         self.phone_numbers = phone_numbers
 
-    def create_instance(self, content):
+    def get(self, sid):
+        raise TwilioException("You can't get individual available phone numbers")
+
+    def load_instance(self, content):
         return self.instance(self.phone_numbers, self.uri, content)
 
     def list(self, type="LOCAL", country="US", region=None, area_code=None,
@@ -403,12 +411,6 @@ class Transcriptions(ListResource):
         """
         return self.get_instances(**kwargs)
 
-    def get(self, sid):
-        """
-        Return a list of :class:`Transcription` resources
-        """
-        return self.get_instance(sid)
-
 
 class Recording(InstanceResource):
 
@@ -420,7 +422,7 @@ class Recording(InstanceResource):
         """
         Delete this recording
         """
-        self._delete()
+        return self.delete_instance()
 
 
 class Recordings(ListResource):
@@ -428,6 +430,7 @@ class Recordings(ListResource):
     name = "Recordings"
     instance = Recording
 
+    @normalize_dates
     def list(self, call_sid=None, before=None, after=None, **kwargs):
         """
         Returns a page of :class:`Recording` resources as a list.
@@ -437,18 +440,18 @@ class Recordings(ListResource):
         :param date before: Only list recordings logger before this datetime
         :param call_sid: Only list recordings from this :class:`Call`
         """
-        params = fparam({
+        params = transform_params({
             "CallSid": call_sid,
             "DateCreated<": before,
             "DateCreated>": after,
             })
-        return self._list(params, **kwargs)
+        return self.get_instances(params=params)
 
     def delete(self, sid):
         """
         Delete the given recording
         """
-        self._delete(sid)
+        return self.delete_instance(sid)
 
 
 class Notification(InstanceResource):
