@@ -156,6 +156,10 @@ def make_twilio_request(method, uri, **kwargs):
 
     kwargs["headers"] = headers
 
+    if "Accepts" not in headers:
+        headers["Accpets"] = "application/json"
+        uri = uri + ".json"
+
     resp = make_request(method, uri, **kwargs)
 
     if not resp.ok:
@@ -175,10 +179,8 @@ class Resource(object):
 
     name = "Resource"
 
-    def __init__(self, base_uri, version, auth):
-        self.auth = auth
+    def __init__(self, base_uri, auth):
         self.base_uri = base_uri
-        self.version = version
         self.auth = auth
 
     def request(self, method, uri, **kwargs):
@@ -192,8 +194,8 @@ class Resource(object):
 
     @property
     def uri(self):
-        format = (self.base_uri, self.version, self.auth[0], self.name)
-        return "%s/%s/Accounts/%s/%s" % format
+        format = (self.base_uri, self.name)
+        return "%s/%s" % format
 
 
 class InstanceResource(Resource):
@@ -203,8 +205,8 @@ class InstanceResource(Resource):
     def __init__(self, parent, sid):
         self.parent = parent
         self.name = sid
-        super(InstanceResource, self).__init__(parent.base_uri,
-            parent.version, parent.auth)
+        super(InstanceResource, self).__init__(parent.uri,
+            parent.auth)
 
     def load(self, entries):
         if "from" in entries.keys():
@@ -216,14 +218,13 @@ class InstanceResource(Resource):
 
         self.__dict__.update(entries)
 
-    def _load_subresources(self):
+
+    def load_subresources(self):
         """
-        ???
+        Load all subresources
         """
-        client = self.list_resource.client
-        for r in self.subresources:
-            ir = r(client, self.uri)
-            self.__dict__[ir.key] = ir
+        for resource in self.subresources:
+            self.__dict__[resource.key] = resource(self.uri, self.parent.auth)
 
     def update_instance(self, **kwargs):
         a = self.parent.update(self.name, **kwargs)
@@ -231,10 +232,6 @@ class InstanceResource(Resource):
 
     def delete_instance(self, **kwargs):
         return self.parent.delete(self.name, **kwargs)
-
-    @property
-    def uri(self):
-        return "%s/%s" % (self.parent.uri, self.name)
 
 
 class ListResource(Resource):
@@ -245,14 +242,16 @@ class ListResource(Resource):
     def __init__(self, *args, **kwargs):
         super(ListResource, self).__init__(*args, **kwargs)
 
-    @property
-    def key(self):
-        return self.name.lower()
+        try:
+            self.key
+        except AttributeError:
+            self.key = self.name.lower()
 
     def get_instance(self, sid):
         """Request the specified instance resource"""
         uri = "%s/%s" % (self.uri, sid)
-        return self._create_instance(json.loads(content))
+        resp, item = self.request("GET", uri)
+        return self.load_instance(item)
 
     def get_instances(self, params=None, page=None, page_size=None):
         """
@@ -266,7 +265,7 @@ class ListResource(Resource):
         if page_size is not None:
             params["PageSize"] = page_size
 
-        page = self.request("GET", self.uri, params=params)
+        resp, page = self.request("GET", self.uri, params=params)
 
         if self.key not in page:
             raise TwilioException("Key %s not present in response" % self.key)
@@ -331,12 +330,16 @@ class ListResource(Resource):
         except TwilioRestException:
             pass
 
-    def load_instance(self, content):
-        return self.instance(self, self.uri, content)
+    def load_instance(self, data):
+        instance = self.instance(self, data["sid"])
+        instance.load(data)
+        instance.load_subresources()
+        return instance
 
 
 class AvailablePhoneNumber(InstanceResource):
     """ An available phone number resource """
+
     def __init__(self, list_resource, base_uri, entries):
         self.list_resource = list_resource
         self.name = ""
@@ -354,23 +357,20 @@ class AvailablePhoneNumbers(ListResource):
 
     types = {"LOCAL": "Local", "TOLLFREE": "TollFree"}
 
-    def __init__(self, client, base_uri, phone_numbers):
+    def __init__(self, base_uri, auth, phone_numbers):
+        super(AvailablePhoneNumbers,self).__init__(base_uri, auth)
         self.phone_numbers = phone_numbers
-        super(AvailablePhoneNumbers,self).__init__(client, base_uri)
 
-    def _create_instance(self, content):
-        try:
-            return self.instance(self.phone_numbers, self.uri, content)
-        except AttributeError:
-            raise TwilioException("ListResource missing self.instance")
+    def create_instance(self, content):
+        return self.instance(self.phone_numbers, self.uri, content)
 
     def list(self, type="LOCAL", country="US", region=None, area_code=None,
-               postal_code=None, near_number=None, near_lat_long=None, lata=None,
-               rate_center=None, distance=None, contains=None):
+             postal_code=None, near_number=None, near_lat_long=None, lata=None,
+             rate_center=None, distance=None, contains=None):
         """
         Search for phone numbers
         """
-        params = fparam({
+        params = transform_param({
                "InRegion": region,
                "InPostalCode": postal_code,
                "Contains": contains,
@@ -383,13 +383,9 @@ class AvailablePhoneNumbers(ListResource):
                })
 
         uri = "%s/%s/%s" % (self.uri, country, self.types[type])
-        resp, content =  self._request(uri, method="GET", query=params)
-        page = json.loads(content)
+        resp, page =  self.request("GET", uri, params=params)
 
-        try:
-            return [ self._create_instance(i) for i in page[self.key]]
-        except KeyError:
-            raise TwilioException("Key  % not present in response" % self.key)
+        return [self.load_instance(i) for i in page[self.key]]
 
 
 class Transcription(InstanceResource):
@@ -405,7 +401,13 @@ class Transcriptions(ListResource):
         """
         Return a list of :class:`Transcription` resources
         """
-        return self._list({}, **kwargs)
+        return self.get_instances(**kwargs)
+
+    def get(self, sid):
+        """
+        Return a list of :class:`Transcription` resources
+        """
+        return self.get_instance(sid)
 
 
 class Recording(InstanceResource):
