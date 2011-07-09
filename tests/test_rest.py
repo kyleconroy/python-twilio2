@@ -306,14 +306,13 @@ class AccountTest(unittest.TestCase):
 
     def setUp(self):
         self.mock_http = Mock()
-        self.c = TwilioClient(account=ACCOUNT_SID, token=AUTH_TOKEN,
-                              client=self.mock_http)
+        self.c = TwilioClient(account=ACCOUNT_SID, token=AUTH_TOKEN)
 
         self.account_sid = "AC4bf2dafb92341f7caf8650403e422d23"
         self.base_uri = "{0}Accounts".format(BASE_URI)
         self.expected_uri = "{0}Accounts/{1}.json".format(BASE_URI,
                                                           self.account_sid)
-        self.account =  Account(self.c.accounts, self.base_uri, {"sid": self.account_sid})
+        self.account =  Account(self.c.accounts, {"sid": self.account_sid})
 
 
     def _validate(self, func, content_path, status):
