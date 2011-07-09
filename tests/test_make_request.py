@@ -8,6 +8,8 @@ import json
 from nose.tools import assert_equals
 from nose.tools import raises
 from mock import patch
+from mock import Mock
+from twilio import TwilioRestException
 from twilio.rest.resources import make_request
 from twilio.rest.resources import make_twilio_request
 
@@ -36,9 +38,27 @@ def check_get_params(url, params):
     assert_equals(body["args"]["hey"], "you")
     assert_equals(body["args"]["foo"], "bar")
 
+def test_resp_uri():
+    resp = make_request("GET", "http://httpbin.org/get")
+    assert_equals(resp.url, "http://httpbin.org/get")
+
+def test_twilio_resp_uri():
+    resp = make_twilio_request("GET", "http://httpbin.org/get")
+    assert_equals(resp.url, "http://httpbin.org/get")
+
 @patch('twilio.rest.resources.make_request')
 def test_make_twilio_request_headers(mock):
     url = "http://random/url"
     make_twilio_request("POST", url)
     mock.assert_called_with("POST", url, headers=post_headers)
 
+@raises(TwilioRestException)
+@patch('twilio.rest.resources.make_request')
+def test_make_twilio_request_bad_data(mock):
+    resp = Mock()
+    resp.ok = False
+    mock.return_value = resp
+
+    url = "http://random/url"
+    make_twilio_request("POST", url)
+    mock.assert_called_with("POST", url, headers=post_headers)

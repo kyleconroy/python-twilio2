@@ -156,20 +156,20 @@ def make_twilio_request(method, uri, **kwargs):
 
     kwargs["headers"] = headers
 
-    if "Accepts" not in headers:
-        headers["Accpets"] = "application/json"
+    if "Accept" not in headers:
+        headers["Accept"] = "application/json"
         uri = uri + ".json"
 
     resp = make_request(method, uri, **kwargs)
 
     if not resp.ok:
         try:
-            error = json.loads(content)
+            error = json.loads(resp.content)
             message = "%s: %s" % (error["code"], error["message"])
         except:
-            message = content
+            message = resp.content
 
-        raise TwilioRestException(resp.status_code, resp.uri, message)
+        raise TwilioRestException(resp.status_code, resp.url, message)
 
     return resp
 
@@ -183,13 +183,20 @@ class Resource(object):
         self.base_uri = base_uri
         self.auth = auth
 
+    def __eq__(self, other):
+        return (isinstance(other, self.__class__)
+                and self.__dict__ == other.__dict__)
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
     def request(self, method, uri, **kwargs):
         """
         Send an HTTP request to the resource.
 
         Raise a TwilioRestException
         """
-        resp = make_twilio_request(method, uri, **kwargs)
+        resp = make_twilio_request(method, uri, auth=self.auth, **kwargs)
         return resp, json.loads(resp.content)
 
     @property
@@ -345,14 +352,13 @@ class ListResource(Resource):
 class AvailablePhoneNumber(InstanceResource):
     """ An available phone number resource """
 
-    def __init__(self, list_resource, base_uri, entries):
-        self.list_resource = list_resource
+    def __init__(self, parent):
+        super(AvailablePhoneNumber, self).__init__(parent, "")
         self.name = ""
-        self._load(entries)
 
     def purchase(self, **kwargs):
-        return self.list_resource.purchase(phone_number=self.phone_number,
-                                           **kwargs)
+        return self.parent.purchase(phone_number=self.phone_number,
+                                    **kwargs)
 
 class AvailablePhoneNumbers(ListResource):
 
@@ -362,15 +368,11 @@ class AvailablePhoneNumbers(ListResource):
 
     types = {"LOCAL": "Local", "TOLLFREE": "TollFree"}
 
-    def __init__(self, base_uri, auth, phone_numbers):
+    def __init__(self, base_uri, auth):
         super(AvailablePhoneNumbers,self).__init__(base_uri, auth)
-        self.phone_numbers = phone_numbers
 
     def get(self, sid):
         raise TwilioException("You can't get individual available phone numbers")
-
-    def load_instance(self, content):
-        return self.instance(self.phone_numbers, self.uri, content)
 
     def list(self, type="LOCAL", country="US", region=None, area_code=None,
              postal_code=None, near_number=None, near_lat_long=None, lata=None,
@@ -460,35 +462,39 @@ class Notification(InstanceResource):
         """
         Delete this notification
         """
-        self._delete()
+        return self.delete_instance()
 
 class Notifications(ListResource):
 
     name = "Notifications"
     instance = Notification
 
+    @normalize_dates
     def list(self, before=None, after=None, log_level=None, **kwargs):
         """
-        Returns a page of :class:`Notification` resources as a list. For paging informtion see :class:`ListResource`.
+        Returns a page of :class:`Notification` resources as a list.
+        For paging informtion see :class:`ListResource`.
 
-        **NOTE**: Due to the potentially voluminous amount of data in a notification, the full HTTP request and response data is only returned in the Notification instance resource representation.
+        **NOTE**: Due to the potentially voluminous amount of data in a notification,
+        the full HTTP request and response data is only returned in the
+        Notification instance resource representation.
 
         :param date after: Only list notifications logged after this datetime
         :param date before: Only list notifications logger before this datetime
         :param log_level: If 1, only shows errors. If 0, only show warnings
         """
-        params = fparam({
+        params = transform_params({
                 "MessageDate<": before,
                 "MessageDate>": after,
                 "LogLevel": log_level,
                 })
-        return self._list(params, **kwargs)
+        return self.get_instances(params=params, **kwargs)
 
     def delete(self, sid):
         """
         Delete a given Notificiation
         """
-        self._delete(sid)
+        return self.delete_instance(sid)
 
 class Call(InstanceResource):
     """ A call resource """
@@ -512,8 +518,8 @@ class Call(InstanceResource):
         If this call is scheduled to be made, remove the call
         from the queue
         """
-        a = self.list_resource.hangup(self.sid)
-        self._load(a.__dict__)
+        a = self.parent.hangup(self.name)
+        self.load(a.__dict__)
 
     def route(self, **kwargs):
         """Route the specified :class:`Call` to another url.
@@ -521,8 +527,8 @@ class Call(InstanceResource):
         :param url: A valid URL that returns TwiML. Twilio will immediately redirect the call to the new TwiML.
         :param method: The HTTP method Twilio should use when requesting the above URL. Defaults to POST.
         """
-        a = self.list_resource.route(self.sid, **kwargs)
-        self._load(a.__dict__)
+        a = self.parent.route(self.name, **kwargs)
+        self.load(a.__dict__)
 
 class Calls(ListResource):
     """ A list of Call resources """
@@ -541,7 +547,7 @@ class Calls(ListResource):
         :param date after: Only list calls started after this datetime
         :param date before: Only list calls started before this datetime
         """
-        params = fparam({
+        params = transform_params({
             "To": to,
             "From": from_,
             "Status": status,
@@ -552,7 +558,7 @@ class Calls(ListResource):
             "EndTime>": ended_after,
             "EndTime": ended,
             })
-        return self._list(params, **kwargs)
+        return self.get_instances(params=params, **kwargs)
 
     def create(self, to, from_, url, method=None, fallback_url=None,
              fallback_method=None, status_callback=None, status_method=None,
@@ -560,7 +566,7 @@ class Calls(ListResource):
         """
         Really just a wrapper for :meth:`create`
         """
-        params = fparam({
+        params = transform_params({
             "To": to,
             "From": from_,
             "Url": url,
@@ -573,7 +579,15 @@ class Calls(ListResource):
             "Timeout": timeout,
             "IfMachine": if_machine,
             })
-        return self._create(urllib.urlencode(params))
+        return self.create_instance(params)
+
+    def update(self, sid, status=None, method=None, url=None):
+        params = transform_params({
+            "Status": status,
+            "Url": url,
+            "Method": method,
+            })
+        return self.update_instance(sid, params)
 
     def hangup(self, sid):
         """ If this call is currenlty active, hang up the call.
@@ -583,8 +597,7 @@ class Calls(ListResource):
         :param sid: A Call Sid for a specific call
         :returns: Updated :class:`Call` resource
         """
-        body = urllib.urlencode({"Status": Call.CANCELED})
-        return self._update(sid, body)
+        return self.update(sid, status=Call.CANCELED)
 
     def route(self, sid, url, method="POST"):
         """Route the specified :class:`Call` to another url.
@@ -594,8 +607,8 @@ class Calls(ListResource):
         :param method: The HTTP method Twilio should use when requesting the above URL. Defaults to POST.
         :returns: Updated :class:`Call` resource
         """
-        body = urllib.urlencode({"Url": url, "Method": method})
-        return self._update(sid, body)
+        return self.update(sid, url=url, method=method)
+
 
 class CallerId(InstanceResource):
 
@@ -603,13 +616,13 @@ class CallerId(InstanceResource):
        """
        Deletes this caller ID from the account.
        """
-       self._delete()
+       return self.delete_instance()
 
    def update(self, **kwargs):
        """
        Update the CallerId
        """
-       self._update(**kwargs)
+       self.update_instance(**kwargs)
 
 
 class CallerIds(ListResource):
@@ -623,27 +636,27 @@ class CallerIds(ListResource):
         """
         Deletes a specific :class:`CallerId` from the account.
         """
-        self._delete(sid)
+        self.delete_instance(sid)
 
     def list(self, phone_number=None, friendly_name=None, **kwargs):
         """
-        :param phone_number: Only show the caller id resource that exactly matches this phone number.
-        :param friendly_name: Only show the caller id resource that exactly  matches this name.
+        :param phone_number: Show caller ids with this phone number.
+        :param friendly_name: Show caller ids with this friendly name.
         """
-        params = fparam({
+        params = transform_params({
             "PhoneNumber": phone_number,
             "FrienldyName": friendly_name,
             })
-        return self._list(params, **kwargs)
+        return self.get_instances(params=params, **kwargs)
 
     def update(self, sid, friendly_name=None):
         """
         Update a specific :class:`CallerId`
         """
-        params = fparam({
+        params = transform_params({
             "FriendlyName": friendly_name,
             })
-        return self._update(sid, urllib.urlencode(params))
+        return self.update_instance(sid, params)
 
     def validate(self, phone_number, friendly_name=None, call_delay=None,
                  extension=None):
@@ -652,35 +665,39 @@ class CallerIds(ListResource):
 
         Returns a dictionary with the following keys
 
-        * **account_sid**: The unique id of the Account to which the Validation Request belongs.
-        * **phone_number**: The incoming phone number being validated, formatted with a '+' and country code e.g., +16175551212 (E.164 format).
+        * **account_sid**:
+        The unique id of the Account to which the Validation Request belongs.
+
+        * **phone_number**: The incoming phone number being validated,
+        formatted with a '+' and country code e.g., +16175551212 (E.164 format).
+
         * **friendly_name**: The friendly name you provided, if any.
-        * **validation_code**: The 6 digit validation code that must be entered via the phone to validate this phone number for Caller ID.
+
+        * **validation_code**: The 6 digit validation code that must be entered
+        via the phone to validate this phone number for Caller ID.
 
         :param phone_number: The phone number to call and validate
-        :param friendly_name: A human readable description for the new caller ID with maximum length 64 characters. Defaults to a nicely formatted version of the number.
-        :param call_delay: The number of seconds, between 0 and 60, to delay before initiating the validation call.
+        :param friendly_name: A description for the new caller ID
+        :param call_delay: Number of seconds to delay the validation call.
         :param extension: Digits to dial after connecting the validation call.
         :returns: A response dictionary
         """
-        params = fparam({
+        params = transform_params({
                 "PhoneNumber": phone_number,
                 "FriendlyName": friendly_name,
                 "CallDelay": call_delay,
                 "Extension": extension,
                 })
 
-        hs = {'Content-type': 'application/x-www-form-urlencoded'}
-        body = urllib.urlencode(params)
-        resp, content =  self._request(self.uri, method="POST", body=body,
-                                       headers=hs)
-        return json.loads(content)
+        resp, validation = self.request("POST", self.uri, params=params)
+        return validation
 
 class PhoneNumber(InstanceResource):
 
     def trasfer(self, account_sid):
         """
-        Transfer the phone number with sid from the current account to another identified by account_sid
+        Transfer the phone number with sid from the current account to another
+        identified by account_sid
         """
         pass
 
@@ -688,43 +705,53 @@ class PhoneNumber(InstanceResource):
         """
         Update this phone number instance
         """
-        a = self.list_resource.update(self.sid, **kwargs)
-        self._load(a.__dict__)
+        a = self.parent.update(self.name, **kwargs)
+        self.load(a.__dict__)
 
     def delete(self):
         """
-        Release this phone number from your account. Twilio will no longer answer calls to this number, and you will stop being billed the monthly phone number fees. The phone number will eventually be recycled and potentially given to another customer, so use with care. If you make a mistake, contact us... we may be able to give you the number back.
+        Release this phone number from your account. Twilio will no longer
+        answer calls to this number, and you will stop being billed the monthly
+        phone number fees. The phone number will eventually be recycled and
+        potentially given to another customer, so use with care. If you make a
+        mistake, contact us... we may be able to give you the number back.
         """
-        a = self.list_resource.delete(self.sid)
+        return self.parent.delete(self.name)
 
 
 class PhoneNumbers(ListResource):
-
 
     name ="IncomingPhoneNumbers"
     key = "incoming_phone_numbers"
     instance = PhoneNumber
 
-    def __init__(self, client, base_uri):
-        super(PhoneNumbers,self).__init__(client, base_uri)
-        self.available_phone_numbers = AvailablePhoneNumbers(client, base_uri, self)
+    def __init__(self, base_uri, auth):
+        super(PhoneNumbers,self).__init__(base_uri, auth)
+        self.available_phone_numbers = AvailablePhoneNumbers(base_uri, auth)
 
     def delete(self, sid):
         """
-        Release this phone number from your account. Twilio will no longer answer calls to this number, and you will stop being billed the monthly phone number fees. The phone number will eventually be recycled and potentially given to another customer, so use with care. If you make a mistake, contact us... we may be able to give you the number back.
+        Release this phone number from your account. Twilio will no longer
+        answer calls to this number, and you will stop being billed the
+        monthly phone number fees. The phone number will eventually be
+        recycled and potentially given to another customer, so use with care.
+        If you make a mistake, contact us... we may be able to give you the
+        number back.
         """
-        return self._delete(sid)
+        return self.delete_instance(sid)
 
     def list(self, phone_number=None, friendly_name=None, **kwargs):
         """
-        :param phone_number: Only return phone numbers that match this pattern. You can specify partial numbers and use '*' as a wildcard for any digit.
-        :param friendly_name: Only return phone numbers with friendly names that exactly match this name.
+        :param phone_number: Show phone numbers that match this pattern.
+        :param friendly_name: Show phone numbers with this friendly name
+
+        You can specify partial numbers and use '*' as a wildcard for any digit.
         """
-        params = fparam({
+        params = transform_params({
                "PhoneNumber": phone_number,
                "FriendlyName": friendly_name,
                })
-        return self._list(params, **kwargs)
+        return self.get_instances(params=params, **kwargs)
 
     def purchase(self, phone_number=None, area_code=None, voice_url=None,
                  voice_method=None, voice_fallback_url=None,
@@ -733,11 +760,13 @@ class PhoneNumbers(ListResource):
                  sms_fallback_method=None, voice_caller_id_lookup=None,
                  account_sid=None):
         """
-        Attempt to purchase the specified number. The only required parameters are **either** phone_number or area_code
+        Attempt to purchase the specified number. The only required parameters
+        are **either** phone_number or area_code
 
-        :returns: Returns a :class:`PhoneNumber` instance on success, :data:`False` on failure
+        :returns: Returns a :class:`PhoneNumber` instance on success,
+        :data:`False` on failure
         """
-        params = fparam({
+        params = transform_params({
                 "VoiceUrl": voice_url,
                 "VoiceMethod": voice_method,
                 "VoiceFallbackUrl": voice_fallback_url,
@@ -757,13 +786,13 @@ class PhoneNumbers(ListResource):
         else:
             raise TypeError("phone_number or area_code is required")
 
-        return self._create(urllib.urlencode(params))
+        return self.create_instance(params)
 
     def search(self, **kwargs):
         """
         :param type: The type of phone number to search for. Either :data:`LOCAL` or :data:`TOLL_FREE`. Defaults to :data:`LOCAL`
-        :param integer country: Either :data:`US` or :data:`CA`. Defaults to :data:`US`
-        :param string region: If searching the US, only show numbers in this state
+        :param integer country: Either "US" or "CA". Defaults to "US"
+        :param string region: When searching the US, show numbers in this state
         :param string postal_code: Only show numbers in this area code
         :param string rate_center: US only.
         :param tuple near_lat_long: Given a latitude/longitude tupe (lat,long) find geographically close numbers within Distance miles.
@@ -773,10 +802,10 @@ class PhoneNumbers(ListResource):
 
     def trasfer(self, sid, account_sid):
         """
-        Transfer the phone number with sid from the current account to another identified by account_sid
+        Transfer the phone number with sid from the current account to another
+        identified by account_sid
         """
-        body = urllib.urlencode({"Url": url, "Method": method})
-        return self._update(sid, body)
+        return self.update_instance(sid, {"Url": url, "Method": method})
 
     def update(self, sid, api_version=None, voice_url=None, voice_method=None,
                voice_fallback_url=None, voice_fallback_method=None,
@@ -786,7 +815,7 @@ class PhoneNumbers(ListResource):
         """
         Update this phone number instance
         """
-        params = fparam({
+        params = transform_params({
                 "ApiVersion": api_version,
                 "VoiceUrl": voice_url,
                 "VoiceMethod": voice_method,
@@ -800,7 +829,8 @@ class PhoneNumbers(ListResource):
                 "VoiceCallerIdLookup": voice_caller_id_lookup,
                 "AccountSid": account_sid,
                 })
-        return self._update(sid, urllib.urlencode(params))
+        return self.update_instance(sid, params)
+
 
 class Sandbox(InstanceResource):
 
@@ -810,8 +840,8 @@ class Sandbox(InstanceResource):
         """
         Update your Twilio Sandbox
         """
-        a = self.list_resource.update(**kwargs)
-        self._load(a.__dict__)
+        a = self.parent.update(**kwargs)
+        self.load(a.__dict__)
 
 
 class Sandboxes(ListResource):
@@ -821,24 +851,21 @@ class Sandboxes(ListResource):
 
     def get(self):
         """Request the specified instance resource"""
-        return self._get(self.uri)
+        return self.get_instance(self.uri)
 
     def update(self, voice_url=None, voice_method=None, sms_url=None,
                sms_method=None):
         """
         Update your Twilio Sandbox
         """
-        body = urllib.urlencode(fparam({
+        data = transform_params({
                 "VoiceUrl": voice_url,
                 "VoiceMethod": voice_method,
                 "SmsUrl": sms_url,
                 "SmsMethod": sms_method,
-                }))
-        hs = {'Content-type': 'application/x-www-form-urlencoded'}
-        resp, content =  self._request(self.uri, method="POST", body=body,
-                                       headers=hs)
-        entries = json.loads(content)
-        return self._create_instance(entries)
+                })
+        resp, entry = self.request("POST", self.uri, body=body)
+        return self.create_instance(entry)
 
 
 class Sms(object):
@@ -849,12 +876,11 @@ class Sms(object):
     name = "SMS"
     key = "sms"
 
-    def __init__(self, client, base_uri):
-        self.uri = "%s/SMS" % (base_uri)
-        self.messages = SmsMessages(client, self.uri)
+    def __init__(self, base_uri, auth):
+        self.uri = "%s/SMS" % base_uri
+        self.messages = SmsMessages(self.uri, auth)
 
 class SmsMessage(InstanceResource):
-
     pass
 
 class SmsMessages(ListResource):
@@ -867,35 +893,36 @@ class SmsMessages(ListResource):
         """
         Create and send a SMS Message.
 
-        :param to: **Required** - The destination phone number.
-        :param from_: **Required** - Only show SMS message from this phone number.
-        :param body: **Required** - The text of the message you want to send, limited to 160 characters.
+        :param to: The destination phone number.
+        :param from_: The phone number sending this message.
+        :param body: The message you want to send, limited to 160 characters.
         :param status_callback: A URL that Twilio will POST to when your message is processed. Twilio will POST the SmsSid as well as SmsStatus=sent or SmsStatus=failed.
         """
-        params = fparam({
+        params = transform_params({
             "To": to,
             "From": from_,
             "Body": body,
             "StatusCallback": status_callback,
             })
-        return self._create(urllib.urlencode(params))
+        return self.create_instance(params)
 
     def list(self, to=None, from_=None, before=None, after=None, **kwargs):
         """
-        Returns a page of :class:`SMSMessage` resources as a list. For paging informtion see :class:`ListResource`.
+        Returns a page of :class:`SMSMessage` resources as a list. For
+        paging informtion see :class:`ListResource`.
 
         :param to: Only show SMS messages to this phone number.
         :param from_: Onlye show SMS message from this phone number.
         :param date after: Only list recordings logged after this datetime
         :param date before: Only list recordings logger before this datetime
         """
-        params = fparam({
+        params = transform_params({
             "To": to,
             "From": from_,
             "DateSent<": before,
             "DateSent>": after,
             })
-        return self._list(params, **kwargs)
+        return self.get_instances(params=params, **kwargs)
 
 class Participant(InstanceResource):
 
@@ -905,19 +932,19 @@ class Participant(InstanceResource):
         """
         Mute the participant
         """
-        self._update(muted="true")
+        self.update_instance(muted="true")
 
     def unmute(self):
         """
         Unmute the participant
         """
-        self._update(muted="false")
+        self.update_instance(muted="false")
 
     def kick(self):
         """
         Remove the participant from the given conference
         """
-        self._delete()
+        self.delete_instance()
 
 
 class Participants(ListResource):
@@ -932,10 +959,10 @@ class Participants(ListResource):
         :param conference_sid: Conference this participant is part of
         :param boolean muted: If True, only show participants who are muted
         """
-        params = fparam({
+        params = transform_params({
             "Muted": muted,
             })
-        return self._list(params, **kwargs)
+        return self.get_instances(params=params, **kwargs)
 
     def mute(self, call_sid):
         """
@@ -953,7 +980,7 @@ class Participants(ListResource):
         """
         Remove the participant from the given conference
         """
-        return self._delete(call_sid)
+        return self.delete(call_sid)
 
     def delete(self, call_sid):
         """
@@ -963,14 +990,13 @@ class Participants(ListResource):
 
     def update(self, sid, muted=None):
         """
-        :param sid: Account identifier
-        :param friendly_name: Update the human-readable description of this account.
-        :param status: Alter the status of this account: use :data:`CLOSED` to irreversibly close this account, :data:`SUSPENDED` to temporarily suspend it, or :data:`ACTIVE` to reactivate it.
+        :param sid: Paticipant identifier
+        :param boolean muted: If true, mute this participant
         """
-        params = fparam({
+        params = transform_params({
                 "Muted": muted
                 })
-        return self._update(sid, urllib.urlencode(params))
+        return self.update_instance(sid, params)
 
 
 class Conference(InstanceResource):
@@ -991,14 +1017,14 @@ class Conferences(ListResource):
         """
         Return a list of :class:`Conference` resources
 
-        :param status: Only show conferences with this status
-        :param frienldy_name: Onlye show conferences with this exact frienldy_name
-        :param date updated_after: Only list conferences updated after this datetime
-        :param date updated_before: Only list conferences updated before this datetime
-        :param date created_after: Only list conferences created after this datetime
-        :param date created_before: Only list conferences created before this datetime
+        :param status: Show conferences with this status
+        :param frienldy_name: Show conferences with this exact frienldy_name
+        :param date updated_after: List conferences updated after this date
+        :param date updated_before: List conferences updated before this date
+        :param date created_after: List conferences created after this date
+        :param date created_before: List conferences created before this date
         """
-        params = fparam({
+        params = transform_params({
             "Status": status,
             "FriendlyName": friendly_name,
             "DateUpdated<": updated_before,
@@ -1008,7 +1034,30 @@ class Conferences(ListResource):
             "DateCreated>": created_after,
             "DateCreated": created,
             })
-        return self._list(params, **kwargs)
+        return self.get_instance(params=params, **kwargs)
+
+
+class Application(InstanceResource):
+    pass
+
+
+class Applications(ListResource):
+
+    name = "Applications"
+    instance = Application
+
+    def list(self, friendly_name=None, **kwargs):
+        """
+        Returns a page of :class:`Application` resources as a list. For paging
+        informtion see :class:`ListResource`
+
+        :param date friendly_name: List applications with this friendly name
+        """
+        params = transform_params({
+                "FriendlyName": friendly_name,
+                })
+        return self.get_instances(params=params, **kwargs)
+
 
 class Account(InstanceResource):
     """ An Account resource """
@@ -1018,6 +1067,7 @@ class Account(InstanceResource):
     CLOSED    = "closed"
 
     subresources = [
+        Applications,
         Notifications,
         Transcriptions,
         Recordings,
@@ -1030,28 +1080,32 @@ class Account(InstanceResource):
 
     def update(self, **kwargs):
         """
-        :param friendly_name: Update the human-readable description of this account.
-        :param status: Alter the status of this account: use :data:`CLOSED` to irreversibly close this account, :data:`SUSPENDED` to temporarily suspend it, or :data:`ACTIVE` to reactivate it.
+        :param friendly_name: Update the description of this account.
+        :param status: Alter the status of this account
+
+        Use :data:`CLOSED` to irreversibly close this account,
+        :data:`SUSPENDED` to temporarily suspend it, or :data:`ACTIVE`
+        to reactivate it.
         """
-        self._update(**kwargs)
+        self.update_instance(**kwargs)
 
     def close(self):
          """
          Permenently deactivate an account, Alias to update
          """
-         return self._update(status=Account.CLOSED)
+         return self.update_instance(status=Account.CLOSED)
 
     def suspend(self):
         """
         Temporarily suspend an account, Alias to update
         """
-        return self._update(status=Account.SUSPENDED)
+        return self.update_instance(status=Account.SUSPENDED)
 
     def activate(self):
         """
         Reactivate an account, Alias to update
         """
-        return self._update(status=Account.ACTIVE)
+        return self.update_instance(status=Account.ACTIVE)
 
 
 class Accounts(ListResource):
@@ -1065,26 +1119,30 @@ class Accounts(ListResource):
         Returns a page of :class:`Account` resources as a list. For paging
         informtion see :class:`ListResource`
 
-        :param date after: Only list calls started after this datetime
-        :param date before: Only list calls started before this datetime
+        :param date friendly_name: Only list accounts with this friendly name
+        :param date status: Only list accounts with this status
         """
-        params = fparam({
+        params = transform_params({
                 "FriendlyName": friendly_name,
                 "Status": status,
                 })
-        return self._list(params, **kwargs)
+        return self.get_instances(params=params, **kwargs)
 
     def update(self, sid, friendly_name=None, status=None):
         """
         :param sid: Account identifier
-        :param friendly_name: Update the human-readable description of this account.
-        :param status: Alter the status of this account: use :data:`CLOSED` to irreversibly close this account, :data:`SUSPENDED` to temporarily suspend it, or :data:`ACTIVE` to reactivate it.
+        :param friendly_name: Update the description of this account.
+        :param status: Alter the status of this account
+
+        Use :data:`CLOSED` to irreversibly close this account,
+        :data:`SUSPENDED` to temporarily suspend it, or :data:`ACTIVE`
+        to reactivate it.
         """
-        params = fparam({
+        params = transform_params({
                 "FriendlyName": friendly_name,
                 "Status": status
                 })
-        return self._update(sid, urllib.urlencode(params))
+        return self.update_instance(sid, params)
 
     def close(self, sid):
         """
@@ -1104,12 +1162,13 @@ class Accounts(ListResource):
         """
         return self.update(sid, status=Account.ACTIVE)
 
-    def create(self, friendly_name):
+    def create(self, friendly_name=None):
         """
         Returns a newly created sub account resource.
 
-        :param friendly_name: Update the human-readable description of this account.
+        :param friendly_name: Update the description of this account.
         """
-        body = urllib.urlencode({ "FriendlyName":friendly_name })
-        return self._create(body)
-
+        params = transform_params({
+                "FriendlyName": friendly_name,
+                })
+        return self.create_instance(params)

@@ -15,13 +15,18 @@ auth = (account_sid, "token")
 
 
 def test_resource_init():
-    auth = (account_sid, "token")
     r = Resource(base_uri, auth)
     uri = "{}/{}".format(base_uri, r.name)
 
     assert_equals(r.base_uri, base_uri)
     assert_equals(r.auth, auth)
     assert_equals(r.uri, uri)
+
+def test_equivalence():
+    p = ListResource(base_uri, auth)
+    r1 = p.load_instance({"sid": "AC123"})
+    r2 = p.load_instance({"sid": "AC123"})
+    assert_equals(r1, r2)
 
 
 class ListResourceTest(unittest.TestCase):

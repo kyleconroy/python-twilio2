@@ -7,8 +7,8 @@ from datetime import date
 from mock import patch
 from mock import Mock
 from twilio import TwilioException
-from twilio.rest import TwilioClient
-from twilio.rest import TwilioRestException
+from twilio import TwilioRestException
+from twilio.rest import TwilioRestClient as TwilioClient
 from twilio.rest.resources import *
 
 ACCOUNT_SID = "AC111111111"
