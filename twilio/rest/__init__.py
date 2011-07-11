@@ -16,13 +16,14 @@ from twilio.rest.resources import Sandboxes
 from urllib import urlencode
 from urlparse import urljoin
 
+
 def find_credentials():
     """
     Look in the current environment for Twilio credentails
     """
     try:
         account = os.environ["TWILIO_ACCOUNT_SID"]
-        token   = os.environ["TWILIO_AUTH_TOKEN"]
+        token = os.environ["TWILIO_AUTH_TOKEN"]
         return account, token
     except KeyError:
         return None, None
@@ -52,14 +53,14 @@ class TwilioRestClient(object):
         version_uri = "%s/%s" % (base, version)
         account_uri = "%s/%s/Accounts/%s" % (base, version, account)
 
-        self.accounts       = Accounts(version_uri, auth)
-        self.applications   = Applications(account_uri, auth)
-        self.calls          = Calls(account_uri, auth)
-        self.caller_ids     = CallerIds(account_uri, auth)
-        self.notifications  = Notifications(account_uri, auth)
-        self.recordings     = Recordings(account_uri, auth)
+        self.accounts = Accounts(version_uri, auth)
+        self.applications = Applications(account_uri, auth)
+        self.calls = Calls(account_uri, auth)
+        self.caller_ids = CallerIds(account_uri, auth)
+        self.notifications = Notifications(account_uri, auth)
+        self.recordings = Recordings(account_uri, auth)
         self.transcriptions = Transcriptions(account_uri, auth)
-        self.sms            = Sms(account_uri, auth)
-        self.phone_numbers  = PhoneNumbers(account_uri, auth)
-        self.conferences    = Conferences(account_uri, auth)
-        self.sandboxes      = Sandboxes(account_uri, auth)
+        self.sms = Sms(account_uri, auth)
+        self.phone_numbers = PhoneNumbers(account_uri, auth)
+        self.conferences = Conferences(account_uri, auth)
+        self.sandboxes = Sandboxes(account_uri, auth)

@@ -32,7 +32,7 @@ def transform_params(p):
     Transform parameters, throwing away any None values
     and convert False and True values to strings
     """
-    p = [(d,convert_boolean(p[d])) for d in p if p[d] is not None]
+    p = [(d, convert_boolean(p[d])) for d in p if p[d] is not None]
     return dict(p)
 
 
@@ -47,6 +47,7 @@ def parse_date(d):
         return str(d)
     elif isinstance(d, str):
         return d
+
 
 def convert_boolean(bool):
     if bool == True:
@@ -80,7 +81,7 @@ def convert_keys(d):
 
     result = {}
 
-    for k,v in d.iteritems():
+    for k, v in d.iteritems():
         if k in special:
             result[special[k]] = v
         else:
@@ -92,7 +93,7 @@ def convert_keys(d):
 def normalize_dates(myfunc):
     def inner_func(*args, **kwargs):
         for k, v in kwargs.iteritems():
-            res = [ True for s in ["after", "before", "on"] if s in k]
+            res = [True for s in ["after", "before", "on"] if s in k]
             if len(res):
                 kwargs[k] = parse_date(v)
         return myfunc(*args, **kwargs)
@@ -148,8 +149,8 @@ def make_twilio_request(method, uri, **kwargs):
     Make a request to Twilio. Throws an error
     """
     headers = kwargs.get("headers", {})
-    headers["User-Agent"] = "twilio-python"   #  Add user aggent string
-    headers["Accepts"] = "application/json"   #  Add accepts header
+    headers["User-Agent"] = "twilio-python"   # Add user aggent string
+    headers["Accepts"] = "application/json"   # Add accepts header
 
     if method == "POST" and "Content-Type" not in headers:
         headers["Content-Type"] = "application/x-www-form-urlencoded"
@@ -224,7 +225,6 @@ class InstanceResource(Resource):
             del entries["uri"]
 
         self.__dict__.update(entries)
-
 
     def load_subresources(self):
         """
@@ -323,7 +323,7 @@ class ListResource(Resource):
         """
         Return the number of instance resources contained in this list resource
         """
-        resp, page =  self.request("GET", self.uri)
+        resp, page = self.request("GET", self.uri)
         return page["total"]
 
     def iter(self, **kwargs):
@@ -360,6 +360,7 @@ class AvailablePhoneNumber(InstanceResource):
         return self.parent.purchase(phone_number=self.phone_number,
                                     **kwargs)
 
+
 class AvailablePhoneNumbers(ListResource):
 
     name = "AvailablePhoneNumbers"
@@ -369,10 +370,10 @@ class AvailablePhoneNumbers(ListResource):
     types = {"LOCAL": "Local", "TOLLFREE": "TollFree"}
 
     def __init__(self, base_uri, auth):
-        super(AvailablePhoneNumbers,self).__init__(base_uri, auth)
+        super(AvailablePhoneNumbers, self).__init__(base_uri, auth)
 
     def get(self, sid):
-        raise TwilioException("You can't get individual available phone numbers")
+        raise TwilioException("Individual AvailablePhoneNumbers have no sid")
 
     def list(self, type="LOCAL", country="US", region=None, area_code=None,
              postal_code=None, near_number=None, near_lat_long=None, lata=None,
@@ -393,7 +394,7 @@ class AvailablePhoneNumbers(ListResource):
                })
 
         uri = "%s/%s/%s" % (self.uri, country, self.types[type])
-        resp, page =  self.request("GET", uri, params=params)
+        resp, page = self.request("GET", uri, params=params)
 
         return [self.load_instance(i) for i in page[self.key]]
 
@@ -464,6 +465,7 @@ class Notification(InstanceResource):
         """
         return self.delete_instance()
 
+
 class Notifications(ListResource):
 
     name = "Notifications"
@@ -475,9 +477,9 @@ class Notifications(ListResource):
         Returns a page of :class:`Notification` resources as a list.
         For paging informtion see :class:`ListResource`.
 
-        **NOTE**: Due to the potentially voluminous amount of data in a notification,
-        the full HTTP request and response data is only returned in the
-        Notification instance resource representation.
+        **NOTE**: Due to the potentially voluminous amount of data in a
+        notification, the full HTTP request and response data is only returned
+        in the Notification instance resource representation.
 
         :param date after: Only list notifications logged after this datetime
         :param date before: Only list notifications logger before this datetime
@@ -496,17 +498,18 @@ class Notifications(ListResource):
         """
         return self.delete_instance(sid)
 
+
 class Call(InstanceResource):
     """ A call resource """
 
-    BUSY        = "busy"
-    CANCELED    = "canceled"
-    COMPLETED   = "completed"
-    FAILED      = "failed"
+    BUSY = "busy"
+    CANCELED = "canceled"
+    COMPLETED = "completed"
+    FAILED = "failed"
     IN_PROGRESS = "in-progress"
-    NO_ANSWER   = "no-answer"
-    QUEUED      = "queued"
-    RINGING     = "ringing"
+    NO_ANSWER = "no-answer"
+    QUEUED = "queued"
+    RINGING = "ringing"
 
     subresources = [
         Notifications,
@@ -524,11 +527,12 @@ class Call(InstanceResource):
     def route(self, **kwargs):
         """Route the specified :class:`Call` to another url.
 
-        :param url: A valid URL that returns TwiML. Twilio will immediately redirect the call to the new TwiML.
-        :param method: The HTTP method Twilio should use when requesting the above URL. Defaults to POST.
+        :param url: A valid URL that returns TwiML.
+        :param method: HTTP method Twilio uses when requesting the above URL.
         """
         a = self.parent.route(self.name, **kwargs)
         self.load(a.__dict__)
+
 
 class Calls(ListResource):
     """ A list of Call resources """
@@ -603,8 +607,8 @@ class Calls(ListResource):
         """Route the specified :class:`Call` to another url.
 
         :param sid: A Call Sid for a specific call
-        :param url: A valid URL that returns TwiML. Twilio will immediately redirect the call to the new TwiML.
-        :param method: The HTTP method Twilio should use when requesting the above URL. Defaults to POST.
+        :param url: A valid URL that returns TwiML.
+        :param method: The HTTP method Twilio uses when requesting the URL.
         :returns: Updated :class:`Call` resource
         """
         return self.update(sid, url=url, method=method)
@@ -612,17 +616,17 @@ class Calls(ListResource):
 
 class CallerId(InstanceResource):
 
-   def delete(self):
-       """
-       Deletes this caller ID from the account.
-       """
-       return self.delete_instance()
+    def delete(self):
+        """
+        Deletes this caller ID from the account.
+        """
+        return self.delete_instance()
 
-   def update(self, **kwargs):
-       """
-       Update the CallerId
-       """
-       self.update_instance(**kwargs)
+    def update(self, **kwargs):
+        """
+        Update the CallerId
+        """
+        self.update_instance(**kwargs)
 
 
 class CallerIds(ListResource):
@@ -669,7 +673,7 @@ class CallerIds(ListResource):
         The unique id of the Account to which the Validation Request belongs.
 
         * **phone_number**: The incoming phone number being validated,
-        formatted with a '+' and country code e.g., +16175551212 (E.164 format).
+        formatted with a '+' and country code e.g., +16175551212
 
         * **friendly_name**: The friendly name you provided, if any.
 
@@ -691,6 +695,7 @@ class CallerIds(ListResource):
 
         resp, validation = self.request("POST", self.uri, params=params)
         return validation
+
 
 class PhoneNumber(InstanceResource):
 
@@ -721,12 +726,12 @@ class PhoneNumber(InstanceResource):
 
 class PhoneNumbers(ListResource):
 
-    name ="IncomingPhoneNumbers"
+    name = "IncomingPhoneNumbers"
     key = "incoming_phone_numbers"
     instance = PhoneNumber
 
     def __init__(self, base_uri, auth):
-        super(PhoneNumbers,self).__init__(base_uri, auth)
+        super(PhoneNumbers, self).__init__(base_uri, auth)
         self.available_phone_numbers = AvailablePhoneNumbers(base_uri, auth)
 
     def delete(self, sid):
@@ -745,7 +750,7 @@ class PhoneNumbers(ListResource):
         :param phone_number: Show phone numbers that match this pattern.
         :param friendly_name: Show phone numbers with this friendly name
 
-        You can specify partial numbers and use '*' as a wildcard for any digit.
+        You can specify partial numbers and use '*' as a wildcard.
         """
         params = transform_params({
                "PhoneNumber": phone_number,
@@ -880,8 +885,10 @@ class Sms(object):
         self.uri = "%s/SMS" % base_uri
         self.messages = SmsMessages(self.uri, auth)
 
+
 class SmsMessage(InstanceResource):
     pass
+
 
 class SmsMessages(ListResource):
 
@@ -924,6 +931,7 @@ class SmsMessages(ListResource):
             })
         return self.get_instances(params=params, **kwargs)
 
+
 class Participant(InstanceResource):
 
     id_key = "call_sid"
@@ -954,7 +962,8 @@ class Participants(ListResource):
 
     def list(self, muted=None, **kwargs):
         """
-        Returns a list of :class:`Participant` resources in the given conference
+        Returns a list of :class:`Participant` resources in the given
+        conference
 
         :param conference_sid: Conference this participant is part of
         :param boolean muted: If True, only show participants who are muted
@@ -1062,9 +1071,9 @@ class Applications(ListResource):
 class Account(InstanceResource):
     """ An Account resource """
 
-    ACTIVE    = "active"
+    ACTIVE = "active"
     SUSPENDED = "suspended"
-    CLOSED    = "closed"
+    CLOSED = "closed"
 
     subresources = [
         Applications,
@@ -1090,10 +1099,10 @@ class Account(InstanceResource):
         self.update_instance(**kwargs)
 
     def close(self):
-         """
-         Permenently deactivate an account, Alias to update
-         """
-         return self.update_instance(status=Account.CLOSED)
+        """
+        Permenently deactivate an account, Alias to update
+        """
+        return self.update_instance(status=Account.CLOSED)
 
     def suspend(self):
         """
