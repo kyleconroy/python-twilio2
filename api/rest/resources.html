@@ -59,11 +59,6 @@
   <span class="target" id="module-twilio.rest.resources"></span><div class="section" id="twilio-rest-resources">
 <h1><a class="reference internal" href="#module-twilio.rest.resources" title="twilio.rest.resources"><tt class="xref py py-mod docutils literal"><span class="pre">twilio.rest.resources</span></tt></a><a class="headerlink" href="#twilio-rest-resources" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
-<dt id="twilio.rest.resources.InstanceResource">
-<em class="property">class </em><tt class="descclassname">twilio.rest.resources.</tt><tt class="descname">InstanceResource</tt><big>(</big><em>list_resource</em>, <em>base_uri</em>, <em>entries</em><big>)</big><a class="headerlink" href="#twilio.rest.resources.InstanceResource" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="class">
 <dt id="twilio.rest.resources.ListResource">
 <em class="property">class </em><tt class="descclassname">twilio.rest.resources.</tt><tt class="descname">ListResource</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#twilio.rest.resources.ListResource" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
@@ -75,7 +70,7 @@
 <dl class="method">
 <dt id="twilio.rest.resources.ListResource.get">
 <tt class="descname">get</tt><big>(</big><em>sid</em><big>)</big><a class="headerlink" href="#twilio.rest.resources.ListResource.get" title="Permalink to this definition">¶</a></dt>
-<dd><p>Request the specified instance resource</p>
+<dd><p>Return an instance resource</p>
 </dd></dl>
 
 <dl class="method">
@@ -83,6 +78,7 @@
 <tt class="descname">iter</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#twilio.rest.resources.ListResource.iter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return all instance resources using an iterator
 Can only be called on classes which implement list()</p>
+<p>TODO Make this use the next_url instead</p>
 </dd></dl>
 
 </dd></dl>
@@ -106,42 +102,17 @@ Can only be called on classes which implement list()</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="twilio.rest.resources.Accounts.count">
-<tt class="descname">count</tt><big>(</big><big>)</big><a class="headerlink" href="#twilio.rest.resources.Accounts.count" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the number of instance resources contained in this list resource</p>
-</dd></dl>
-
-<dl class="method">
 <dt id="twilio.rest.resources.Accounts.create">
-<tt class="descname">create</tt><big>(</big><em>friendly_name</em><big>)</big><a class="headerlink" href="#twilio.rest.resources.Accounts.create" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">create</tt><big>(</big><em>friendly_name=None</em><big>)</big><a class="headerlink" href="#twilio.rest.resources.Accounts.create" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a newly created sub account resource.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><strong>friendly_name</strong> &#8211; Update the human-readable description of this account.</td>
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><strong>friendly_name</strong> &#8211; Update the description of this account.</td>
 </tr>
 </tbody>
 </table>
-</dd></dl>
-
-<dl class="method">
-<dt id="twilio.rest.resources.Accounts.get">
-<tt class="descname">get</tt><big>(</big><em>sid</em><big>)</big><a class="headerlink" href="#twilio.rest.resources.Accounts.get" title="Permalink to this definition">¶</a></dt>
-<dd><p>Request the specified instance resource</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="twilio.rest.resources.Accounts.instance">
-<tt class="descname">instance</tt><a class="headerlink" href="#twilio.rest.resources.Accounts.instance" title="Permalink to this definition">¶</a></dt>
-<dd><p>alias of <a class="reference internal" href="#twilio.rest.resources.Account" title="twilio.rest.resources.Account"><tt class="xref py py-class docutils literal"><span class="pre">Account</span></tt></a></p>
-</dd></dl>
-
-<dl class="method">
-<dt id="twilio.rest.resources.Accounts.iter">
-<tt class="descname">iter</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#twilio.rest.resources.Accounts.iter" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return all instance resources using an iterator
-Can only be called on classes which implement list()</p>
 </dd></dl>
 
 <dl class="method">
@@ -154,8 +125,8 @@ informtion see <a class="reference internal" href="#twilio.rest.resources.ListRe
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>after</strong> (<em>date</em>) &#8211; Only list calls started after this datetime</li>
-<li><strong>before</strong> (<em>date</em>) &#8211; Only list calls started before this datetime</li>
+<li><strong>friendly_name</strong> (<em>date</em>) &#8211; Only list accounts with this friendly name</li>
+<li><strong>status</strong> (<em>date</em>) &#8211; Only list accounts with this status</li>
 </ul>
 </td>
 </tr>
@@ -178,20 +149,23 @@ informtion see <a class="reference internal" href="#twilio.rest.resources.ListRe
 <tbody valign="top">
 <tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>sid</strong> &#8211; Account identifier</li>
-<li><strong>friendly_name</strong> &#8211; Update the human-readable description of this account.</li>
-<li><strong>status</strong> &#8211; Alter the status of this account: use <tt class="xref py py-data docutils literal"><span class="pre">CLOSED</span></tt> to irreversibly close this account, <tt class="xref py py-data docutils literal"><span class="pre">SUSPENDED</span></tt> to temporarily suspend it, or <tt class="xref py py-data docutils literal"><span class="pre">ACTIVE</span></tt> to reactivate it.</li>
+<li><strong>friendly_name</strong> &#8211; Update the description of this account.</li>
+<li><strong>status</strong> &#8211; Alter the status of this account</li>
 </ul>
 </td>
 </tr>
 </tbody>
 </table>
+<p>Use <tt class="xref py py-data docutils literal"><span class="pre">CLOSED</span></tt> to irreversibly close this account,
+<tt class="xref py py-data docutils literal"><span class="pre">SUSPENDED</span></tt> to temporarily suspend it, or <tt class="xref py py-data docutils literal"><span class="pre">ACTIVE</span></tt>
+to reactivate it.</p>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="class">
 <dt id="twilio.rest.resources.Account">
-<em class="property">class </em><tt class="descclassname">twilio.rest.resources.</tt><tt class="descname">Account</tt><big>(</big><em>list_resource</em>, <em>base_uri</em>, <em>entries</em><big>)</big><a class="headerlink" href="#twilio.rest.resources.Account" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">twilio.rest.resources.</tt><tt class="descname">Account</tt><big>(</big><em>parent</em>, <em>sid</em><big>)</big><a class="headerlink" href="#twilio.rest.resources.Account" title="Permalink to this definition">¶</a></dt>
 <dd><p>An Account resource</p>
 <dl class="attribute">
 <dt id="twilio.rest.resources.Account.sid">
@@ -232,19 +206,19 @@ informtion see <a class="reference internal" href="#twilio.rest.resources.ListRe
 <dl class="method">
 <dt id="twilio.rest.resources.Account.activate">
 <tt class="descname">activate</tt><big>(</big><big>)</big><a class="headerlink" href="#twilio.rest.resources.Account.activate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Reactivate an account, Alias to update</p>
+<dd><p>Reactivate this account</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="twilio.rest.resources.Account.close">
 <tt class="descname">close</tt><big>(</big><big>)</big><a class="headerlink" href="#twilio.rest.resources.Account.close" title="Permalink to this definition">¶</a></dt>
-<dd><p>Permenently deactivate an account, Alias to update</p>
+<dd><p>Permenently deactivate this account</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="twilio.rest.resources.Account.suspend">
 <tt class="descname">suspend</tt><big>(</big><big>)</big><a class="headerlink" href="#twilio.rest.resources.Account.suspend" title="Permalink to this definition">¶</a></dt>
-<dd><p>Temporarily suspend an account, Alias to update</p>
+<dd><p>Temporarily suspend this account</p>
 </dd></dl>
 
 <dl class="method">
@@ -255,13 +229,16 @@ informtion see <a class="reference internal" href="#twilio.rest.resources.ListRe
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>friendly_name</strong> &#8211; Update the human-readable description of this account.</li>
-<li><strong>status</strong> &#8211; Alter the status of this account: use <tt class="xref py py-data docutils literal"><span class="pre">CLOSED</span></tt> to irreversibly close this account, <tt class="xref py py-data docutils literal"><span class="pre">SUSPENDED</span></tt> to temporarily suspend it, or <tt class="xref py py-data docutils literal"><span class="pre">ACTIVE</span></tt> to reactivate it.</li>
+<li><strong>friendly_name</strong> &#8211; Update the description of this account.</li>
+<li><strong>status</strong> &#8211; Alter the status of this account</li>
 </ul>
 </td>
 </tr>
 </tbody>
 </table>
+<p>Use <tt class="xref py py-data docutils literal"><span class="pre">CLOSED</span></tt> to irreversibly close this account,
+<tt class="xref py py-data docutils literal"><span class="pre">SUSPENDED</span></tt> to temporarily suspend it, or <tt class="xref py py-data docutils literal"><span class="pre">ACTIVE</span></tt>
+to reactivate it.</p>
 </dd></dl>
 
 </dd></dl>
@@ -274,21 +251,9 @@ informtion see <a class="reference internal" href="#twilio.rest.resources.ListRe
 <em class="property">class </em><tt class="descclassname">twilio.rest.resources.</tt><tt class="descname">Calls</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#twilio.rest.resources.Calls" title="Permalink to this definition">¶</a></dt>
 <dd><p>A list of Call resources</p>
 <dl class="method">
-<dt id="twilio.rest.resources.Calls.count">
-<tt class="descname">count</tt><big>(</big><big>)</big><a class="headerlink" href="#twilio.rest.resources.Calls.count" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the number of instance resources contained in this list resource</p>
-</dd></dl>
-
-<dl class="method">
 <dt id="twilio.rest.resources.Calls.create">
 <tt class="descname">create</tt><big>(</big><em>to</em>, <em>from_</em>, <em>url</em>, <em>method=None</em>, <em>fallback_url=None</em>, <em>fallback_method=None</em>, <em>status_callback=None</em>, <em>status_method=None</em>, <em>if_machine=None</em>, <em>send_digits=None</em>, <em>timeout=None</em><big>)</big><a class="headerlink" href="#twilio.rest.resources.Calls.create" title="Permalink to this definition">¶</a></dt>
 <dd><p>Really just a wrapper for <a class="reference internal" href="#twilio.rest.resources.Calls.create" title="twilio.rest.resources.Calls.create"><tt class="xref py py-meth docutils literal"><span class="pre">create()</span></tt></a></p>
-</dd></dl>
-
-<dl class="method">
-<dt id="twilio.rest.resources.Calls.get">
-<tt class="descname">get</tt><big>(</big><em>sid</em><big>)</big><a class="headerlink" href="#twilio.rest.resources.Calls.get" title="Permalink to this definition">¶</a></dt>
-<dd><p>Request the specified instance resource</p>
 </dd></dl>
 
 <dl class="method">
@@ -309,19 +274,6 @@ from the queue</p>
 </table>
 </dd></dl>
 
-<dl class="attribute">
-<dt id="twilio.rest.resources.Calls.instance">
-<tt class="descname">instance</tt><a class="headerlink" href="#twilio.rest.resources.Calls.instance" title="Permalink to this definition">¶</a></dt>
-<dd><p>alias of <a class="reference internal" href="#twilio.rest.resources.Call" title="twilio.rest.resources.Call"><tt class="xref py py-class docutils literal"><span class="pre">Call</span></tt></a></p>
-</dd></dl>
-
-<dl class="method">
-<dt id="twilio.rest.resources.Calls.iter">
-<tt class="descname">iter</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#twilio.rest.resources.Calls.iter" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return all instance resources using an iterator
-Can only be called on classes which implement list()</p>
-</dd></dl>
-
 <dl class="method">
 <dt id="twilio.rest.resources.Calls.route">
 <tt class="descname">route</tt><big>(</big><em>sid</em>, <em>url</em>, <em>method='POST'</em><big>)</big><a class="headerlink" href="#twilio.rest.resources.Calls.route" title="Permalink to this definition">¶</a></dt>
@@ -332,8 +284,8 @@ Can only be called on classes which implement list()</p>
 <tbody valign="top">
 <tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>sid</strong> &#8211; A Call Sid for a specific call</li>
-<li><strong>url</strong> &#8211; A valid URL that returns TwiML. Twilio will immediately redirect the call to the new TwiML.</li>
-<li><strong>method</strong> &#8211; The HTTP method Twilio should use when requesting the above URL. Defaults to POST.</li>
+<li><strong>url</strong> &#8211; A valid URL that returns TwiML.</li>
+<li><strong>method</strong> &#8211; The HTTP method Twilio uses when requesting the URL.</li>
 </ul>
 </td>
 </tr>
@@ -348,7 +300,7 @@ Can only be called on classes which implement list()</p>
 
 <dl class="class">
 <dt id="twilio.rest.resources.Call">
-<em class="property">class </em><tt class="descclassname">twilio.rest.resources.</tt><tt class="descname">Call</tt><big>(</big><em>list_resource</em>, <em>base_uri</em>, <em>entries</em><big>)</big><a class="headerlink" href="#twilio.rest.resources.Call" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">twilio.rest.resources.</tt><tt class="descname">Call</tt><big>(</big><em>parent</em>, <em>sid</em><big>)</big><a class="headerlink" href="#twilio.rest.resources.Call" title="Permalink to this definition">¶</a></dt>
 <dd><p>A call resource</p>
 <dl class="attribute">
 <dt id="twilio.rest.resources.Call.sid">
@@ -469,8 +421,8 @@ from the queue</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>url</strong> &#8211; A valid URL that returns TwiML. Twilio will immediately redirect the call to the new TwiML.</li>
-<li><strong>method</strong> &#8211; The HTTP method Twilio should use when requesting the above URL. Defaults to POST.</li>
+<li><strong>url</strong> &#8211; A valid URL that returns TwiML.</li>
+<li><strong>method</strong> &#8211; HTTP method Twilio uses when requesting the above URL.</li>
 </ul>
 </td>
 </tr>
@@ -488,28 +440,9 @@ from the queue</p>
 <em class="property">class </em><tt class="descclassname">twilio.rest.resources.</tt><tt class="descname">CallerIds</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#twilio.rest.resources.CallerIds" title="Permalink to this definition">¶</a></dt>
 <dd><p>A list of <a class="reference internal" href="#twilio.rest.resources.CallerId" title="twilio.rest.resources.CallerId"><tt class="xref py py-class docutils literal"><span class="pre">CallerId</span></tt></a> resources</p>
 <dl class="method">
-<dt id="twilio.rest.resources.CallerIds.count">
-<tt class="descname">count</tt><big>(</big><big>)</big><a class="headerlink" href="#twilio.rest.resources.CallerIds.count" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the number of instance resources contained in this list resource</p>
-</dd></dl>
-
-<dl class="method">
 <dt id="twilio.rest.resources.CallerIds.delete">
 <tt class="descname">delete</tt><big>(</big><em>sid</em><big>)</big><a class="headerlink" href="#twilio.rest.resources.CallerIds.delete" title="Permalink to this definition">¶</a></dt>
 <dd><p>Deletes a specific <a class="reference internal" href="#twilio.rest.resources.CallerId" title="twilio.rest.resources.CallerId"><tt class="xref py py-class docutils literal"><span class="pre">CallerId</span></tt></a> from the account.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="twilio.rest.resources.CallerIds.get">
-<tt class="descname">get</tt><big>(</big><em>sid</em><big>)</big><a class="headerlink" href="#twilio.rest.resources.CallerIds.get" title="Permalink to this definition">¶</a></dt>
-<dd><p>Request the specified instance resource</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="twilio.rest.resources.CallerIds.iter">
-<tt class="descname">iter</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#twilio.rest.resources.CallerIds.iter" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return all instance resources using an iterator
-Can only be called on classes which implement list()</p>
 </dd></dl>
 
 <dl class="method">
@@ -520,8 +453,8 @@ Can only be called on classes which implement list()</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>phone_number</strong> &#8211; Only show the caller id resource that exactly matches this phone number.</li>
-<li><strong>friendly_name</strong> &#8211; Only show the caller id resource that exactly  matches this name.</li>
+<li><strong>phone_number</strong> &#8211; Show caller ids with this phone number.</li>
+<li><strong>friendly_name</strong> &#8211; Show caller ids with this friendly name.</li>
 </ul>
 </td>
 </tr>
@@ -540,20 +473,21 @@ Can only be called on classes which implement list()</p>
 <tt class="descname">validate</tt><big>(</big><em>phone_number</em>, <em>friendly_name=None</em>, <em>call_delay=None</em>, <em>extension=None</em><big>)</big><a class="headerlink" href="#twilio.rest.resources.CallerIds.validate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Begin the validation procress for the given number.</p>
 <p>Returns a dictionary with the following keys</p>
-<ul class="simple">
-<li><strong>account_sid</strong>: The unique id of the Account to which the Validation Request belongs.</li>
-<li><strong>phone_number</strong>: The incoming phone number being validated, formatted with a &#8216;+&#8217; and country code e.g., +16175551212 (E.164 format).</li>
-<li><strong>friendly_name</strong>: The friendly name you provided, if any.</li>
-<li><strong>validation_code</strong>: The 6 digit validation code that must be entered via the phone to validate this phone number for Caller ID.</li>
-</ul>
+<p><strong>account_sid</strong>:
+The unique id of the Account to which the Validation Request belongs.</p>
+<p><strong>phone_number</strong>: The incoming phone number being validated,
+formatted with a &#8216;+&#8217; and country code e.g., +16175551212</p>
+<p><strong>friendly_name</strong>: The friendly name you provided, if any.</p>
+<p><strong>validation_code</strong>: The 6 digit validation code that must be entered
+via the phone to validate this phone number for Caller ID.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>phone_number</strong> &#8211; The phone number to call and validate</li>
-<li><strong>friendly_name</strong> &#8211; A human readable description for the new caller ID with maximum length 64 characters. Defaults to a nicely formatted version of the number.</li>
-<li><strong>call_delay</strong> &#8211; The number of seconds, between 0 and 60, to delay before initiating the validation call.</li>
+<li><strong>friendly_name</strong> &#8211; A description for the new caller ID</li>
+<li><strong>call_delay</strong> &#8211; Number of seconds to delay the validation call.</li>
 <li><strong>extension</strong> &#8211; Digits to dial after connecting the validation call.</li>
 </ul>
 </td>
@@ -569,7 +503,7 @@ Can only be called on classes which implement list()</p>
 
 <dl class="class">
 <dt id="twilio.rest.resources.CallerId">
-<em class="property">class </em><tt class="descclassname">twilio.rest.resources.</tt><tt class="descname">CallerId</tt><big>(</big><em>list_resource</em>, <em>base_uri</em>, <em>entries</em><big>)</big><a class="headerlink" href="#twilio.rest.resources.CallerId" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">twilio.rest.resources.</tt><tt class="descname">CallerId</tt><big>(</big><em>parent</em>, <em>sid</em><big>)</big><a class="headerlink" href="#twilio.rest.resources.CallerId" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="attribute">
 <dt id="twilio.rest.resources.CallerId.sid">
 <tt class="descname">sid</tt><a class="headerlink" href="#twilio.rest.resources.CallerId.sid" title="Permalink to this definition">¶</a></dt>
@@ -633,25 +567,6 @@ Can only be called on classes which implement list()</p>
 <dt id="twilio.rest.resources.Conferences">
 <em class="property">class </em><tt class="descclassname">twilio.rest.resources.</tt><tt class="descname">Conferences</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#twilio.rest.resources.Conferences" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
-<dt id="twilio.rest.resources.Conferences.count">
-<tt class="descname">count</tt><big>(</big><big>)</big><a class="headerlink" href="#twilio.rest.resources.Conferences.count" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the number of instance resources contained in this list resource</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="twilio.rest.resources.Conferences.get">
-<tt class="descname">get</tt><big>(</big><em>sid</em><big>)</big><a class="headerlink" href="#twilio.rest.resources.Conferences.get" title="Permalink to this definition">¶</a></dt>
-<dd><p>Request the specified instance resource</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="twilio.rest.resources.Conferences.iter">
-<tt class="descname">iter</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#twilio.rest.resources.Conferences.iter" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return all instance resources using an iterator
-Can only be called on classes which implement list()</p>
-</dd></dl>
-
-<dl class="method">
 <dt id="twilio.rest.resources.Conferences.list">
 <tt class="descname">list</tt><big>(</big><em>status=None</em>, <em>friendly_name=None</em>, <em>updated_before=None</em>, <em>updated_after=None</em>, <em>created_after=None</em>, <em>created_before=None</em>, <em>updated=None</em>, <em>created=None</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#twilio.rest.resources.Conferences.list" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a list of <a class="reference internal" href="#twilio.rest.resources.Conference" title="twilio.rest.resources.Conference"><tt class="xref py py-class docutils literal"><span class="pre">Conference</span></tt></a> resources</p>
@@ -660,12 +575,12 @@ Can only be called on classes which implement list()</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>status</strong> &#8211; Only show conferences with this status</li>
-<li><strong>frienldy_name</strong> &#8211; Onlye show conferences with this exact frienldy_name</li>
-<li><strong>updated_after</strong> (<em>date</em>) &#8211; Only list conferences updated after this datetime</li>
-<li><strong>updated_before</strong> (<em>date</em>) &#8211; Only list conferences updated before this datetime</li>
-<li><strong>created_after</strong> (<em>date</em>) &#8211; Only list conferences created after this datetime</li>
-<li><strong>created_before</strong> (<em>date</em>) &#8211; Only list conferences created before this datetime</li>
+<li><strong>status</strong> &#8211; Show conferences with this status</li>
+<li><strong>frienldy_name</strong> &#8211; Show conferences with this exact frienldy_name</li>
+<li><strong>updated_after</strong> (<em>date</em>) &#8211; List conferences updated after this date</li>
+<li><strong>updated_before</strong> (<em>date</em>) &#8211; List conferences updated before this date</li>
+<li><strong>created_after</strong> (<em>date</em>) &#8211; List conferences created after this date</li>
+<li><strong>created_before</strong> (<em>date</em>) &#8211; List conferences created before this date</li>
 </ul>
 </td>
 </tr>
@@ -677,7 +592,7 @@ Can only be called on classes which implement list()</p>
 
 <dl class="class">
 <dt id="twilio.rest.resources.Conference">
-<em class="property">class </em><tt class="descclassname">twilio.rest.resources.</tt><tt class="descname">Conference</tt><big>(</big><em>list_resource</em>, <em>base_uri</em>, <em>entries</em><big>)</big><a class="headerlink" href="#twilio.rest.resources.Conference" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">twilio.rest.resources.</tt><tt class="descname">Conference</tt><big>(</big><em>parent</em>, <em>sid</em><big>)</big><a class="headerlink" href="#twilio.rest.resources.Conference" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="attribute">
 <dt id="twilio.rest.resources.Conference.sid">
 <tt class="descname">sid</tt><a class="headerlink" href="#twilio.rest.resources.Conference.sid" title="Permalink to this definition">¶</a></dt>
@@ -735,55 +650,16 @@ Can only be called on classes which implement list()</p>
 <dt id="twilio.rest.resources.Notifications">
 <em class="property">class </em><tt class="descclassname">twilio.rest.resources.</tt><tt class="descname">Notifications</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#twilio.rest.resources.Notifications" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
-<dt id="twilio.rest.resources.Notifications.count">
-<tt class="descname">count</tt><big>(</big><big>)</big><a class="headerlink" href="#twilio.rest.resources.Notifications.count" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the number of instance resources contained in this list resource</p>
-</dd></dl>
-
-<dl class="method">
 <dt id="twilio.rest.resources.Notifications.delete">
 <tt class="descname">delete</tt><big>(</big><em>sid</em><big>)</big><a class="headerlink" href="#twilio.rest.resources.Notifications.delete" title="Permalink to this definition">¶</a></dt>
 <dd><p>Delete a given Notificiation</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="twilio.rest.resources.Notifications.get">
-<tt class="descname">get</tt><big>(</big><em>sid</em><big>)</big><a class="headerlink" href="#twilio.rest.resources.Notifications.get" title="Permalink to this definition">¶</a></dt>
-<dd><p>Request the specified instance resource</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="twilio.rest.resources.Notifications.iter">
-<tt class="descname">iter</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#twilio.rest.resources.Notifications.iter" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return all instance resources using an iterator
-Can only be called on classes which implement list()</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="twilio.rest.resources.Notifications.list">
-<tt class="descname">list</tt><big>(</big><em>before=None</em>, <em>after=None</em>, <em>log_level=None</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#twilio.rest.resources.Notifications.list" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a page of <a class="reference internal" href="#twilio.rest.resources.Notification" title="twilio.rest.resources.Notification"><tt class="xref py py-class docutils literal"><span class="pre">Notification</span></tt></a> resources as a list. For paging informtion see <a class="reference internal" href="#twilio.rest.resources.ListResource" title="twilio.rest.resources.ListResource"><tt class="xref py py-class docutils literal"><span class="pre">ListResource</span></tt></a>.</p>
-<p><strong>NOTE</strong>: Due to the potentially voluminous amount of data in a notification, the full HTTP request and response data is only returned in the Notification instance resource representation.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>after</strong> (<em>date</em>) &#8211; Only list notifications logged after this datetime</li>
-<li><strong>before</strong> (<em>date</em>) &#8211; Only list notifications logger before this datetime</li>
-<li><strong>log_level</strong> &#8211; If 1, only shows errors. If 0, only show warnings</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="class">
 <dt id="twilio.rest.resources.Notification">
-<em class="property">class </em><tt class="descclassname">twilio.rest.resources.</tt><tt class="descname">Notification</tt><big>(</big><em>list_resource</em>, <em>base_uri</em>, <em>entries</em><big>)</big><a class="headerlink" href="#twilio.rest.resources.Notification" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">twilio.rest.resources.</tt><tt class="descname">Notification</tt><big>(</big><em>parent</em>, <em>sid</em><big>)</big><a class="headerlink" href="#twilio.rest.resources.Notification" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="attribute">
 <dt id="twilio.rest.resources.Notification.sid">
 <tt class="descname">sid</tt><a class="headerlink" href="#twilio.rest.resources.Notification.sid" title="Permalink to this definition">¶</a></dt>
@@ -901,28 +777,9 @@ Can only be called on classes which implement list()</p>
 <dt id="twilio.rest.resources.Participants">
 <em class="property">class </em><tt class="descclassname">twilio.rest.resources.</tt><tt class="descname">Participants</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#twilio.rest.resources.Participants" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
-<dt id="twilio.rest.resources.Participants.count">
-<tt class="descname">count</tt><big>(</big><big>)</big><a class="headerlink" href="#twilio.rest.resources.Participants.count" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the number of instance resources contained in this list resource</p>
-</dd></dl>
-
-<dl class="method">
 <dt id="twilio.rest.resources.Participants.delete">
 <tt class="descname">delete</tt><big>(</big><em>call_sid</em><big>)</big><a class="headerlink" href="#twilio.rest.resources.Participants.delete" title="Permalink to this definition">¶</a></dt>
 <dd><p>Remove the participant from the given conference</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="twilio.rest.resources.Participants.get">
-<tt class="descname">get</tt><big>(</big><em>sid</em><big>)</big><a class="headerlink" href="#twilio.rest.resources.Participants.get" title="Permalink to this definition">¶</a></dt>
-<dd><p>Request the specified instance resource</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="twilio.rest.resources.Participants.iter">
-<tt class="descname">iter</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#twilio.rest.resources.Participants.iter" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return all instance resources using an iterator
-Can only be called on classes which implement list()</p>
 </dd></dl>
 
 <dl class="method">
@@ -934,7 +791,8 @@ Can only be called on classes which implement list()</p>
 <dl class="method">
 <dt id="twilio.rest.resources.Participants.list">
 <tt class="descname">list</tt><big>(</big><em>muted=None</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#twilio.rest.resources.Participants.list" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a list of <a class="reference internal" href="#twilio.rest.resources.Participant" title="twilio.rest.resources.Participant"><tt class="xref py py-class docutils literal"><span class="pre">Participant</span></tt></a> resources in the given conference</p>
+<dd><p>Returns a list of <a class="reference internal" href="#twilio.rest.resources.Participant" title="twilio.rest.resources.Participant"><tt class="xref py py-class docutils literal"><span class="pre">Participant</span></tt></a> resources in the given
+conference</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -969,9 +827,8 @@ Can only be called on classes which implement list()</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>sid</strong> &#8211; Account identifier</li>
-<li><strong>friendly_name</strong> &#8211; Update the human-readable description of this account.</li>
-<li><strong>status</strong> &#8211; Alter the status of this account: use <tt class="xref py py-data docutils literal"><span class="pre">CLOSED</span></tt> to irreversibly close this account, <tt class="xref py py-data docutils literal"><span class="pre">SUSPENDED</span></tt> to temporarily suspend it, or <tt class="xref py py-data docutils literal"><span class="pre">ACTIVE</span></tt> to reactivate it.</li>
+<li><strong>sid</strong> &#8211; Paticipant identifier</li>
+<li><strong>muted</strong> (<em>boolean</em>) &#8211; If true, mute this participant</li>
 </ul>
 </td>
 </tr>
@@ -983,7 +840,7 @@ Can only be called on classes which implement list()</p>
 
 <dl class="class">
 <dt id="twilio.rest.resources.Participant">
-<em class="property">class </em><tt class="descclassname">twilio.rest.resources.</tt><tt class="descname">Participant</tt><big>(</big><em>list_resource</em>, <em>base_uri</em>, <em>entries</em><big>)</big><a class="headerlink" href="#twilio.rest.resources.Participant" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">twilio.rest.resources.</tt><tt class="descname">Participant</tt><big>(</big><em>parent</em>, <em>sid</em><big>)</big><a class="headerlink" href="#twilio.rest.resources.Participant" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="attribute">
 <dt id="twilio.rest.resources.Participant.call_sid">
 <tt class="descname">call_sid</tt><a class="headerlink" href="#twilio.rest.resources.Participant.call_sid" title="Permalink to this definition">¶</a></dt>
@@ -1063,30 +920,16 @@ Can only be called on classes which implement list()</p>
 <h2>Phone Numbers<a class="headerlink" href="#phone-numbers" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="twilio.rest.resources.PhoneNumbers">
-<em class="property">class </em><tt class="descclassname">twilio.rest.resources.</tt><tt class="descname">PhoneNumbers</tt><big>(</big><em>client</em>, <em>base_uri</em><big>)</big><a class="headerlink" href="#twilio.rest.resources.PhoneNumbers" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">twilio.rest.resources.</tt><tt class="descname">PhoneNumbers</tt><big>(</big><em>base_uri</em>, <em>auth</em><big>)</big><a class="headerlink" href="#twilio.rest.resources.PhoneNumbers" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
-<dt id="twilio.rest.resources.PhoneNumbers.count">
-<tt class="descname">count</tt><big>(</big><big>)</big><a class="headerlink" href="#twilio.rest.resources.PhoneNumbers.count" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the number of instance resources contained in this list resource</p>
-</dd></dl>
-
-<dl class="method">
 <dt id="twilio.rest.resources.PhoneNumbers.delete">
 <tt class="descname">delete</tt><big>(</big><em>sid</em><big>)</big><a class="headerlink" href="#twilio.rest.resources.PhoneNumbers.delete" title="Permalink to this definition">¶</a></dt>
-<dd><p>Release this phone number from your account. Twilio will no longer answer calls to this number, and you will stop being billed the monthly phone number fees. The phone number will eventually be recycled and potentially given to another customer, so use with care. If you make a mistake, contact us... we may be able to give you the number back.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="twilio.rest.resources.PhoneNumbers.get">
-<tt class="descname">get</tt><big>(</big><em>sid</em><big>)</big><a class="headerlink" href="#twilio.rest.resources.PhoneNumbers.get" title="Permalink to this definition">¶</a></dt>
-<dd><p>Request the specified instance resource</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="twilio.rest.resources.PhoneNumbers.iter">
-<tt class="descname">iter</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#twilio.rest.resources.PhoneNumbers.iter" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return all instance resources using an iterator
-Can only be called on classes which implement list()</p>
+<dd><p>Release this phone number from your account. Twilio will no longer
+answer calls to this number, and you will stop being billed the
+monthly phone number fees. The phone number will eventually be
+recycled and potentially given to another customer, so use with care.
+If you make a mistake, contact us... we may be able to give you the
+number back.</p>
 </dd></dl>
 
 <dl class="method">
@@ -1097,27 +940,30 @@ Can only be called on classes which implement list()</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>phone_number</strong> &#8211; Only return phone numbers that match this pattern. You can specify partial numbers and use &#8216;*&#8217; as a wildcard for any digit.</li>
-<li><strong>friendly_name</strong> &#8211; Only return phone numbers with friendly names that exactly match this name.</li>
+<li><strong>phone_number</strong> &#8211; Show phone numbers that match this pattern.</li>
+<li><strong>friendly_name</strong> &#8211; Show phone numbers with this friendly name</li>
 </ul>
 </td>
 </tr>
 </tbody>
 </table>
+<p>You can specify partial numbers and use &#8216;*&#8217; as a wildcard.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="twilio.rest.resources.PhoneNumbers.purchase">
 <tt class="descname">purchase</tt><big>(</big><em>phone_number=None</em>, <em>area_code=None</em>, <em>voice_url=None</em>, <em>voice_method=None</em>, <em>voice_fallback_url=None</em>, <em>voice_fallback_method=None</em>, <em>status_callback_method=None</em>, <em>sms_url=None</em>, <em>sms_method=None</em>, <em>sms_fallback_url=None</em>, <em>sms_fallback_method=None</em>, <em>voice_caller_id_lookup=None</em>, <em>account_sid=None</em><big>)</big><a class="headerlink" href="#twilio.rest.resources.PhoneNumbers.purchase" title="Permalink to this definition">¶</a></dt>
-<dd><p>Attempt to purchase the specified number. The only required parameters are <strong>either</strong> phone_number or area_code</p>
+<dd><p>Attempt to purchase the specified number. The only required parameters
+are <strong>either</strong> phone_number or area_code</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field"><th class="field-name">Returns:</th><td class="field-body">Returns a <a class="reference internal" href="#twilio.rest.resources.PhoneNumber" title="twilio.rest.resources.PhoneNumber"><tt class="xref py py-class docutils literal"><span class="pre">PhoneNumber</span></tt></a> instance on success, <tt class="xref py py-data xref docutils literal"><span class="pre">False</span></tt> on failure</td>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body">Returns a <a class="reference internal" href="#twilio.rest.resources.PhoneNumber" title="twilio.rest.resources.PhoneNumber"><tt class="xref py py-class docutils literal"><span class="pre">PhoneNumber</span></tt></a> instance on success,</td>
 </tr>
 </tbody>
 </table>
+<p><tt class="xref py py-data xref docutils literal"><span class="pre">False</span></tt> on failure</p>
 </dd></dl>
 
 <dl class="method">
@@ -1128,13 +974,13 @@ Can only be called on classes which implement list()</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>type</strong> &#8211; The type of phone number to search for. Either <tt class="xref py py-data docutils literal"><span class="pre">LOCAL</span></tt> or <tt class="xref py py-data docutils literal"><span class="pre">TOLL_FREE</span></tt>. Defaults to <tt class="xref py py-data docutils literal"><span class="pre">LOCAL</span></tt></li>
-<li><strong>country</strong> (<em>integer</em>) &#8211; Either <tt class="xref py py-data docutils literal"><span class="pre">US</span></tt> or <tt class="xref py py-data docutils literal"><span class="pre">CA</span></tt>. Defaults to <tt class="xref py py-data docutils literal"><span class="pre">US</span></tt></li>
-<li><strong>region</strong> (<em>string</em>) &#8211; If searching the US, only show numbers in this state</li>
+<li><strong>type</strong> &#8211; The type of phone number to search for.</li>
+<li><strong>country</strong> (<em>integer</em>) &#8211; Either &#8220;US&#8221; or &#8220;CA&#8221;. Defaults to &#8220;US&#8221;</li>
+<li><strong>region</strong> (<em>string</em>) &#8211; When searching the US, show numbers in this state</li>
 <li><strong>postal_code</strong> (<em>string</em>) &#8211; Only show numbers in this area code</li>
 <li><strong>rate_center</strong> (<em>string</em>) &#8211; US only.</li>
-<li><strong>near_lat_long</strong> (<em>tuple</em>) &#8211; Given a latitude/longitude tupe (lat,long) find geographically close numbers within Distance miles.</li>
-<li><strong>distance</strong> (<em>integer</em>) &#8211; Specifies the search radius for a Near- query in miles. Defaults to 25 miles.</li>
+<li><strong>near_lat_long</strong> (<em>tuple</em>) &#8211; Find close numbers within Distance miles.</li>
+<li><strong>distance</strong> (<em>integer</em>) &#8211; Search radius for a Near- query in miles.</li>
 </ul>
 </td>
 </tr>
@@ -1145,7 +991,8 @@ Can only be called on classes which implement list()</p>
 <dl class="method">
 <dt id="twilio.rest.resources.PhoneNumbers.trasfer">
 <tt class="descname">trasfer</tt><big>(</big><em>sid</em>, <em>account_sid</em><big>)</big><a class="headerlink" href="#twilio.rest.resources.PhoneNumbers.trasfer" title="Permalink to this definition">¶</a></dt>
-<dd><p>Transfer the phone number with sid from the current account to another identified by account_sid</p>
+<dd><p>Transfer the phone number with sid from the current account to another
+identified by account_sid</p>
 </dd></dl>
 
 <dl class="method">
@@ -1158,7 +1005,7 @@ Can only be called on classes which implement list()</p>
 
 <dl class="class">
 <dt id="twilio.rest.resources.PhoneNumber">
-<em class="property">class </em><tt class="descclassname">twilio.rest.resources.</tt><tt class="descname">PhoneNumber</tt><big>(</big><em>list_resource</em>, <em>base_uri</em>, <em>entries</em><big>)</big><a class="headerlink" href="#twilio.rest.resources.PhoneNumber" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">twilio.rest.resources.</tt><tt class="descname">PhoneNumber</tt><big>(</big><em>parent</em>, <em>sid</em><big>)</big><a class="headerlink" href="#twilio.rest.resources.PhoneNumber" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="attribute">
 <dt id="twilio.rest.resources.PhoneNumber.sid">
 <tt class="descname">sid</tt><a class="headerlink" href="#twilio.rest.resources.PhoneNumber.sid" title="Permalink to this definition">¶</a></dt>
@@ -1276,13 +1123,18 @@ Can only be called on classes which implement list()</p>
 <dl class="method">
 <dt id="twilio.rest.resources.PhoneNumber.delete">
 <tt class="descname">delete</tt><big>(</big><big>)</big><a class="headerlink" href="#twilio.rest.resources.PhoneNumber.delete" title="Permalink to this definition">¶</a></dt>
-<dd><p>Release this phone number from your account. Twilio will no longer answer calls to this number, and you will stop being billed the monthly phone number fees. The phone number will eventually be recycled and potentially given to another customer, so use with care. If you make a mistake, contact us... we may be able to give you the number back.</p>
+<dd><p>Release this phone number from your account. Twilio will no longer
+answer calls to this number, and you will stop being billed the monthly
+phone number fees. The phone number will eventually be recycled and
+potentially given to another customer, so use with care. If you make a
+mistake, contact us... we may be able to give you the number back.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="twilio.rest.resources.PhoneNumber.trasfer">
 <tt class="descname">trasfer</tt><big>(</big><em>account_sid</em><big>)</big><a class="headerlink" href="#twilio.rest.resources.PhoneNumber.trasfer" title="Permalink to this definition">¶</a></dt>
-<dd><p>Transfer the phone number with sid from the current account to another identified by account_sid</p>
+<dd><p>Transfer the phone number with sid from the current account to another
+identified by account_sid</p>
 </dd></dl>
 
 <dl class="method">
@@ -1295,7 +1147,7 @@ Can only be called on classes which implement list()</p>
 
 <dl class="class">
 <dt id="twilio.rest.resources.AvailablePhoneNumber">
-<em class="property">class </em><tt class="descclassname">twilio.rest.resources.</tt><tt class="descname">AvailablePhoneNumber</tt><big>(</big><em>list_resource</em>, <em>base_uri</em>, <em>entries</em><big>)</big><a class="headerlink" href="#twilio.rest.resources.AvailablePhoneNumber" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">twilio.rest.resources.</tt><tt class="descname">AvailablePhoneNumber</tt><big>(</big><em>parent</em><big>)</big><a class="headerlink" href="#twilio.rest.resources.AvailablePhoneNumber" title="Permalink to this definition">¶</a></dt>
 <dd><p>An available phone number resource</p>
 <dl class="attribute">
 <dt id="twilio.rest.resources.AvailablePhoneNumber.friendly_name">
@@ -1359,54 +1211,16 @@ Can only be called on classes which implement list()</p>
 <dt id="twilio.rest.resources.Recordings">
 <em class="property">class </em><tt class="descclassname">twilio.rest.resources.</tt><tt class="descname">Recordings</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#twilio.rest.resources.Recordings" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
-<dt id="twilio.rest.resources.Recordings.count">
-<tt class="descname">count</tt><big>(</big><big>)</big><a class="headerlink" href="#twilio.rest.resources.Recordings.count" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the number of instance resources contained in this list resource</p>
-</dd></dl>
-
-<dl class="method">
 <dt id="twilio.rest.resources.Recordings.delete">
 <tt class="descname">delete</tt><big>(</big><em>sid</em><big>)</big><a class="headerlink" href="#twilio.rest.resources.Recordings.delete" title="Permalink to this definition">¶</a></dt>
 <dd><p>Delete the given recording</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="twilio.rest.resources.Recordings.get">
-<tt class="descname">get</tt><big>(</big><em>sid</em><big>)</big><a class="headerlink" href="#twilio.rest.resources.Recordings.get" title="Permalink to this definition">¶</a></dt>
-<dd><p>Request the specified instance resource</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="twilio.rest.resources.Recordings.iter">
-<tt class="descname">iter</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#twilio.rest.resources.Recordings.iter" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return all instance resources using an iterator
-Can only be called on classes which implement list()</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="twilio.rest.resources.Recordings.list">
-<tt class="descname">list</tt><big>(</big><em>call_sid=None</em>, <em>before=None</em>, <em>after=None</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#twilio.rest.resources.Recordings.list" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a page of <a class="reference internal" href="#twilio.rest.resources.Recording" title="twilio.rest.resources.Recording"><tt class="xref py py-class docutils literal"><span class="pre">Recording</span></tt></a> resources as a list. For paging informtion see <a class="reference internal" href="#twilio.rest.resources.ListResource" title="twilio.rest.resources.ListResource"><tt class="xref py py-class docutils literal"><span class="pre">ListResource</span></tt></a>.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>after</strong> (<em>date</em>) &#8211; Only list recordings logged after this datetime</li>
-<li><strong>before</strong> (<em>date</em>) &#8211; Only list recordings logger before this datetime</li>
-<li><strong>call_sid</strong> &#8211; Only list recordings from this <a class="reference internal" href="#twilio.rest.resources.Call" title="twilio.rest.resources.Call"><tt class="xref py py-class docutils literal"><span class="pre">Call</span></tt></a></li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="class">
 <dt id="twilio.rest.resources.Recording">
-<em class="property">class </em><tt class="descclassname">twilio.rest.resources.</tt><tt class="descname">Recording</tt><big>(</big><em>list_resource</em>, <em>base_uri</em>, <em>entries</em><big>)</big><a class="headerlink" href="#twilio.rest.resources.Recording" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">twilio.rest.resources.</tt><tt class="descname">Recording</tt><big>(</big><em>parent</em>, <em>sid</em><big>)</big><a class="headerlink" href="#twilio.rest.resources.Recording" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="attribute">
 <dt id="twilio.rest.resources.Recording.sid">
 <tt class="descname">sid</tt><a class="headerlink" href="#twilio.rest.resources.Recording.sid" title="Permalink to this definition">¶</a></dt>
@@ -1503,7 +1317,7 @@ Can only be called on classes which implement list()</p>
 
 <dl class="class">
 <dt id="twilio.rest.resources.Sandbox">
-<em class="property">class </em><tt class="descclassname">twilio.rest.resources.</tt><tt class="descname">Sandbox</tt><big>(</big><em>list_resource</em>, <em>base_uri</em>, <em>entries</em><big>)</big><a class="headerlink" href="#twilio.rest.resources.Sandbox" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">twilio.rest.resources.</tt><tt class="descname">Sandbox</tt><big>(</big><em>parent</em>, <em>sid</em><big>)</big><a class="headerlink" href="#twilio.rest.resources.Sandbox" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="attribute">
 <dt id="twilio.rest.resources.Sandbox.pin">
 <tt class="descname">pin</tt><a class="headerlink" href="#twilio.rest.resources.Sandbox.pin" title="Permalink to this definition">¶</a></dt>
@@ -1579,12 +1393,6 @@ Can only be called on classes which implement list()</p>
 <dt id="twilio.rest.resources.SmsMessages">
 <em class="property">class </em><tt class="descclassname">twilio.rest.resources.</tt><tt class="descname">SmsMessages</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#twilio.rest.resources.SmsMessages" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
-<dt id="twilio.rest.resources.SmsMessages.count">
-<tt class="descname">count</tt><big>(</big><big>)</big><a class="headerlink" href="#twilio.rest.resources.SmsMessages.count" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the number of instance resources contained in this list resource</p>
-</dd></dl>
-
-<dl class="method">
 <dt id="twilio.rest.resources.SmsMessages.create">
 <tt class="descname">create</tt><big>(</big><em>to=None</em>, <em>from_=None</em>, <em>body=None</em>, <em>status_callback=None</em><big>)</big><a class="headerlink" href="#twilio.rest.resources.SmsMessages.create" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create and send a SMS Message.</p>
@@ -1593,10 +1401,10 @@ Can only be called on classes which implement list()</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>to</strong> &#8211; <strong>Required</strong> - The destination phone number.</li>
-<li><strong>from</strong> &#8211; <strong>Required</strong> - Only show SMS message from this phone number.</li>
-<li><strong>body</strong> &#8211; <strong>Required</strong> - The text of the message you want to send, limited to 160 characters.</li>
-<li><strong>status_callback</strong> &#8211; A URL that Twilio will POST to when your message is processed. Twilio will POST the SmsSid as well as SmsStatus=sent or SmsStatus=failed.</li>
+<li><strong>to</strong> &#8211; The destination phone number.</li>
+<li><strong>from</strong> &#8211; The phone number sending this message.</li>
+<li><strong>body</strong> &#8211; The message you want to send, limited to 160 characters.</li>
+<li><strong>status_callback</strong> &#8211; URL that Twilio will update with message info</li>
 </ul>
 </td>
 </tr>
@@ -1605,22 +1413,10 @@ Can only be called on classes which implement list()</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="twilio.rest.resources.SmsMessages.get">
-<tt class="descname">get</tt><big>(</big><em>sid</em><big>)</big><a class="headerlink" href="#twilio.rest.resources.SmsMessages.get" title="Permalink to this definition">¶</a></dt>
-<dd><p>Request the specified instance resource</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="twilio.rest.resources.SmsMessages.iter">
-<tt class="descname">iter</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#twilio.rest.resources.SmsMessages.iter" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return all instance resources using an iterator
-Can only be called on classes which implement list()</p>
-</dd></dl>
-
-<dl class="method">
 <dt id="twilio.rest.resources.SmsMessages.list">
 <tt class="descname">list</tt><big>(</big><em>to=None</em>, <em>from_=None</em>, <em>before=None</em>, <em>after=None</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#twilio.rest.resources.SmsMessages.list" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a page of <tt class="xref py py-class docutils literal"><span class="pre">SMSMessage</span></tt> resources as a list. For paging informtion see <a class="reference internal" href="#twilio.rest.resources.ListResource" title="twilio.rest.resources.ListResource"><tt class="xref py py-class docutils literal"><span class="pre">ListResource</span></tt></a>.</p>
+<dd><p>Returns a page of <tt class="xref py py-class docutils literal"><span class="pre">SMSMessage</span></tt> resources as a list. For
+paging informtion see <a class="reference internal" href="#twilio.rest.resources.ListResource" title="twilio.rest.resources.ListResource"><tt class="xref py py-class docutils literal"><span class="pre">ListResource</span></tt></a>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -1641,7 +1437,7 @@ Can only be called on classes which implement list()</p>
 
 <dl class="class">
 <dt id="twilio.rest.resources.SmsMessage">
-<em class="property">class </em><tt class="descclassname">twilio.rest.resources.</tt><tt class="descname">SmsMessage</tt><big>(</big><em>list_resource</em>, <em>base_uri</em>, <em>entries</em><big>)</big><a class="headerlink" href="#twilio.rest.resources.SmsMessage" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">twilio.rest.resources.</tt><tt class="descname">SmsMessage</tt><big>(</big><em>parent</em>, <em>sid</em><big>)</big><a class="headerlink" href="#twilio.rest.resources.SmsMessage" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="attribute">
 <dt id="twilio.rest.resources.SmsMessage.sid">
 <tt class="descname">sid</tt><a class="headerlink" href="#twilio.rest.resources.SmsMessage.sid" title="Permalink to this definition">¶</a></dt>
@@ -1729,25 +1525,6 @@ Can only be called on classes which implement list()</p>
 <dt id="twilio.rest.resources.Transcriptions">
 <em class="property">class </em><tt class="descclassname">twilio.rest.resources.</tt><tt class="descname">Transcriptions</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#twilio.rest.resources.Transcriptions" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
-<dt id="twilio.rest.resources.Transcriptions.count">
-<tt class="descname">count</tt><big>(</big><big>)</big><a class="headerlink" href="#twilio.rest.resources.Transcriptions.count" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the number of instance resources contained in this list resource</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="twilio.rest.resources.Transcriptions.get">
-<tt class="descname">get</tt><big>(</big><em>sid</em><big>)</big><a class="headerlink" href="#twilio.rest.resources.Transcriptions.get" title="Permalink to this definition">¶</a></dt>
-<dd><p>Request the specified instance resource</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="twilio.rest.resources.Transcriptions.iter">
-<tt class="descname">iter</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#twilio.rest.resources.Transcriptions.iter" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return all instance resources using an iterator
-Can only be called on classes which implement list()</p>
-</dd></dl>
-
-<dl class="method">
 <dt id="twilio.rest.resources.Transcriptions.list">
 <tt class="descname">list</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#twilio.rest.resources.Transcriptions.list" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a list of <a class="reference internal" href="#twilio.rest.resources.Transcription" title="twilio.rest.resources.Transcription"><tt class="xref py py-class docutils literal"><span class="pre">Transcription</span></tt></a> resources</p>
@@ -1757,7 +1534,7 @@ Can only be called on classes which implement list()</p>
 
 <dl class="class">
 <dt id="twilio.rest.resources.Transcription">
-<em class="property">class </em><tt class="descclassname">twilio.rest.resources.</tt><tt class="descname">Transcription</tt><big>(</big><em>list_resource</em>, <em>base_uri</em>, <em>entries</em><big>)</big><a class="headerlink" href="#twilio.rest.resources.Transcription" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">twilio.rest.resources.</tt><tt class="descname">Transcription</tt><big>(</big><em>parent</em>, <em>sid</em><big>)</big><a class="headerlink" href="#twilio.rest.resources.Transcription" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="attribute">
 <dt id="twilio.rest.resources.Transcription.sid">
 <tt class="descname">sid</tt><a class="headerlink" href="#twilio.rest.resources.Transcription.sid" title="Permalink to this definition">¶</a></dt>
@@ -1880,7 +1657,7 @@ Can only be called on classes which implement list()</p>
     <div class="footer">
       &copy; Copyright 2010, Kyle Conroy.
     </div>
-    <a href="https://github.com/kennethreitz/requests">
+    <a href="https://github.com/twilio/twilio-python">
         <img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" />
     </a>
     <script type="text/javascript">

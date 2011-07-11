@@ -59,9 +59,23 @@
   <span class="target" id="module-twilio.rest"></span><div class="section" id="twilio-rest">
 <h1><a class="reference internal" href="#module-twilio.rest" title="twilio.rest"><tt class="xref py py-mod docutils literal"><span class="pre">twilio.rest</span></tt></a><a class="headerlink" href="#twilio-rest" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
-<dt id="twilio.rest.TwilioClient">
-<em class="property">class </em><tt class="descclassname">twilio.rest.</tt><tt class="descname">TwilioClient</tt><big>(</big><em>account=None</em>, <em>token=None</em>, <em>base='https://api.twilio.com'</em>, <em>version='2010-04-01'</em>, <em>client=None</em><big>)</big><a class="headerlink" href="#twilio.rest.TwilioClient" title="Permalink to this definition">¶</a></dt>
+<dt id="twilio.rest.TwilioRestClient">
+<em class="property">class </em><tt class="descclassname">twilio.rest.</tt><tt class="descname">TwilioRestClient</tt><big>(</big><em>account=None</em>, <em>token=None</em>, <em>base='https://api.twilio.com'</em>, <em>version='2010-04-01'</em>, <em>client=None</em><big>)</big><a class="headerlink" href="#twilio.rest.TwilioRestClient" title="Permalink to this definition">¶</a></dt>
 <dd><p>A client for accessing the Twilio REST API</p>
+<dl class="method">
+<dt id="twilio.rest.TwilioRestClient.request">
+<tt class="descname">request</tt><big>(</big><em>path</em>, <em>method=None</em>, <em>vars=None</em><big>)</big><a class="headerlink" href="#twilio.rest.TwilioRestClient.request" title="Permalink to this definition">¶</a></dt>
+<dd><p>sends a request and gets a response from the Twilio REST API</p>
+<p class="deprecated">
+<span class="versionmodified">Deprecated since version 3.0.</span></p>
+<p>path: the URL (relative to the endpoint URL, after the /v1
+url: the HTTP method to use, defaults to POST
+vars: for POST or PUT, a dict of data to send</p>
+<p>returns Twilio response in XML or raises an exception on error</p>
+<p>This method is only included for backwards compatability reasons.
+It will be removed in a future version</p>
+</dd></dl>
+
 </dd></dl>
 
 </div>
@@ -105,7 +119,7 @@
     <div class="footer">
       &copy; Copyright 2010, Kyle Conroy.
     </div>
-    <a href="https://github.com/kennethreitz/requests">
+    <a href="https://github.com/twilio/twilio-python">
         <img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" />
     </a>
     <script type="text/javascript">
