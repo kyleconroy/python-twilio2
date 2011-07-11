@@ -790,13 +790,13 @@ class PhoneNumbers(ListResource):
 
     def search(self, **kwargs):
         """
-        :param type: The type of phone number to search for. Either :data:`LOCAL` or :data:`TOLL_FREE`. Defaults to :data:`LOCAL`
+        :param type: The type of phone number to search for.
         :param integer country: Either "US" or "CA". Defaults to "US"
         :param string region: When searching the US, show numbers in this state
         :param string postal_code: Only show numbers in this area code
         :param string rate_center: US only.
-        :param tuple near_lat_long: Given a latitude/longitude tupe (lat,long) find geographically close numbers within Distance miles.
-        :param integer distance: Specifies the search radius for a Near- query in miles. Defaults to 25 miles.
+        :param tuple near_lat_long: Find close numbers within Distance miles.
+        :param integer distance: Search radius for a Near- query in miles.
         """
         return self.available_phone_numbers.list(**kwargs)
 
@@ -896,7 +896,7 @@ class SmsMessages(ListResource):
         :param to: The destination phone number.
         :param from_: The phone number sending this message.
         :param body: The message you want to send, limited to 160 characters.
-        :param status_callback: A URL that Twilio will POST to when your message is processed. Twilio will POST the SmsSid as well as SmsStatus=sent or SmsStatus=failed.
+        :param status_callback: URL that Twilio will update with message info
         """
         params = transform_params({
             "To": to,
