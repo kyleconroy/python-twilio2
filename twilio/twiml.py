@@ -113,6 +113,37 @@ class Response(Verb):
         :class:`Response` """
         return self.append(Sms(msg, **kwargs))
 
+    # All add* methods are deprecated
+    def addSay(self, *args, **kwargs):
+        return self.say(*args, **kwargs)
+
+    def addPlay(self, *args, **kwargs):
+        return self.play(*args, **kwargs)
+
+    def addPause(self, *args, **kwargs):
+        return self.pause(*args, **kwargs)
+
+    def addRedirect(self, *args, **kwargs):
+        return self.redirect(*args, **kwargs)
+
+    def addHangup(self, *args, **kwargs):
+        return self.hangup(*args, **kwargs)
+
+    def addReject(self, *args, **kwargs):
+        return self.reject(*args, **kwargs)
+
+    def addGather(self, *args, **kwargs):
+        return self.gather(*args, **kwargs)
+
+    def addDial(self, *args, **kwargs):
+        return self.dial(*args, **kwargs)
+
+    def addRecord(self, **kwargs):
+        return self.record(*args, **kwargs)
+
+    def addSms(self, *args, **kwargs):
+        return self.sms(*args, **kwargs)
+
 
 class Say(Verb):
     """The :class:`Say` verb converts text to speech that is read back to the

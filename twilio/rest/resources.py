@@ -669,15 +669,15 @@ class CallerIds(ListResource):
 
         Returns a dictionary with the following keys
 
-        * **account_sid**:
+        **account_sid**:
         The unique id of the Account to which the Validation Request belongs.
 
-        * **phone_number**: The incoming phone number being validated,
+        **phone_number**: The incoming phone number being validated,
         formatted with a '+' and country code e.g., +16175551212
 
-        * **friendly_name**: The friendly name you provided, if any.
+        **friendly_name**: The friendly name you provided, if any.
 
-        * **validation_code**: The 6 digit validation code that must be entered
+        **validation_code**: The 6 digit validation code that must be entered
         via the phone to validate this phone number for Caller ID.
 
         :param phone_number: The phone number to call and validate
@@ -1100,19 +1100,19 @@ class Account(InstanceResource):
 
     def close(self):
         """
-        Permenently deactivate an account, Alias to update
+        Permenently deactivate this account
         """
         return self.update_instance(status=Account.CLOSED)
 
     def suspend(self):
         """
-        Temporarily suspend an account, Alias to update
+        Temporarily suspend this account
         """
         return self.update_instance(status=Account.SUSPENDED)
 
     def activate(self):
         """
-        Reactivate an account, Alias to update
+        Reactivate this account
         """
         return self.update_instance(status=Account.ACTIVE)
 

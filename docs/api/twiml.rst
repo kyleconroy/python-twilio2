@@ -43,7 +43,7 @@ Seconday Verbs
 .. autoclass:: twilio.twiml.Sms
    :members:
 
-Nouns 
+Nouns
 ~~~~~~
 
 .. autoclass:: twilio.twiml.Conference

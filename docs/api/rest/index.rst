@@ -4,7 +4,7 @@
 :mod:`twilio.rest`
 ==============================
 
-.. autoclass:: TwilioClient
+.. autoclass:: TwilioRestClient
    :members:
    :inherited-members:
 

@@ -67,7 +67,7 @@ Small functions useful for validating requests are coming from Twilio
 Upgrade Plan
 ==================
 
-`twilio-python` 3.0 introduced backwards-incompatible changes to the API. However, a backwards-compatible API is still offered. See the `Upgrade Guide` for step-by-step instructions for migrating to 3.0.
+`twilio-python` 3.0 introduced backwards-incompatible changes to the API. See the :doc:`/upgrade-guide` for step-by-step instructions for migrating to 3.0. In many cases, the same methods are still offered, just in different locations.
 
 API Reference
 ==================
@@ -100,7 +100,3 @@ Current stable version is 3.0.0.
    :maxdepth: 1
 
    changelog
-
-This project uses `semantic versioning <http://semver.org/>`_.
-
-

@@ -4,11 +4,8 @@
 :mod:`twilio.rest.resources`
 =============================
 
-.. autoclass:: InstanceResource
-   :members:
-
 .. autoclass:: ListResource
-   :members:
+   :members: count, get, iter
 
 
 Accounts
@@ -16,7 +13,7 @@ Accounts
 
 .. autoclass:: Accounts
    :members:
-   :inherited-members:
+   :exclude-members: instance
 
 .. autoclass:: Account
    :members:
@@ -51,7 +48,7 @@ Calls
 
 .. autoclass:: twilio.rest.resources.Calls
    :members:
-   :inherited-members:
+   :exclude-members: instance
 
 .. autoclass:: twilio.rest.resources.Call
    :members:
@@ -129,7 +126,7 @@ Caller Ids
 
 .. autoclass:: twilio.rest.resources.CallerIds
    :members:
-   :inherited-members:
+   :exclude-members: instance
 
 .. autoclass:: twilio.rest.resources.CallerId
    :members:
@@ -167,7 +164,7 @@ Conferences
 
 .. autoclass:: twilio.rest.resources.Conferences
    :members:
-   :inherited-members:
+   :exclude-members: instance
 
 .. autoclass:: twilio.rest.resources.Conference
    :members:
@@ -210,7 +207,7 @@ Notifications
 
 .. autoclass:: twilio.rest.resources.Notifications
    :members:
-   :inherited-members:
+   :exclude-members: instance
 
 .. autoclass:: twilio.rest.resources.Notification
    :members:
@@ -288,7 +285,7 @@ Participlants
 
 .. autoclass:: twilio.rest.resources.Participants
    :members:
-   :inherited-members:
+   :exclude-members: instance
 
 .. autoclass:: twilio.rest.resources.Participant
    :members:
@@ -335,7 +332,7 @@ Phone Numbers
 
 .. autoclass:: twilio.rest.resources.PhoneNumbers
    :members:
-   :inherited-members:
+   :exclude-members: instance
 
 .. autoclass:: twilio.rest.resources.PhoneNumber
    :members:
@@ -459,7 +456,7 @@ Recordings
 
 .. autoclass:: twilio.rest.resources.Recordings
    :members:
-   :inherited-members:
+   :exclude-members: instance
 
 .. autoclass:: twilio.rest.resources.Recording
    :members:
@@ -516,6 +513,7 @@ Sandbox
 
 .. autoclass:: twilio.rest.resources.Sandboxes
    :members:
+   :exclude-members: instance
 
 .. autoclass:: twilio.rest.resources.Sandbox
    :members:
@@ -566,7 +564,6 @@ SMS Messages
 
 .. autoclass:: twilio.rest.resources.SmsMessages
    :members:
-   :inherited-members:
 
 .. autoclass:: twilio.rest.resources.SmsMessage
    :members:
@@ -629,7 +626,7 @@ Transcriptions
 
 .. autoclass:: twilio.rest.resources.Transcriptions
    :members:
-   :inherited-members:
+   :exclude-members: instance
 
 .. autoclass:: twilio.rest.resources.Transcription
    :members:
