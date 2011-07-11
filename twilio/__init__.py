@@ -1,4 +1,6 @@
-class TwilioException(Exception): pass
+class TwilioException(Exception):
+    pass
+
 
 class TwilioRestException(TwilioException):
 

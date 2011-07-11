@@ -2,7 +2,7 @@ import unittest
 from datetime import datetime
 from datetime import date
 from twilio.rest.resources import parse_date
-from twilio.rest.resources import fparam
+from twilio.rest.resources import transform_params
 from twilio.rest.resources import convert_keys
 from twilio.rest.resources import convert_case
 from twilio.rest.resources import normalize_dates
@@ -33,7 +33,12 @@ class CoreTest(unittest.TestCase):
     def test_fparam(self):
         d = {"HEY": None, "YOU": 3}
         ed = {"YOU":3}
-        self.assertEquals(fparam(d), ed)
+        self.assertEquals(transform_params(d), ed)
+
+    def test_fparam_booleans(self):
+        d = {"HEY": None, "YOU": 3, "Activated": False}
+        ed = {"YOU":3, "Activated": "false"}
+        self.assertEquals(transform_params(d), ed)
 
     def test_normalize_dates(self):
 
