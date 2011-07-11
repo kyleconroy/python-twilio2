@@ -1,7 +1,7 @@
 import logging
 import os
-
 from twilio import TwilioException
+from twilio.rest.resources import make_request
 from twilio.rest.resources import Accounts
 from twilio.rest.resources import Applications
 from twilio.rest.resources import Calls
@@ -34,8 +34,51 @@ class TwilioRestClient(object):
     A client for accessing the Twilio REST API
     """
 
-    def request(self, *args, **kwargs):
-        pass
+    def request(self, path, method=None, vars=None):
+        """sends a request and gets a response from the Twilio REST API
+
+        .. deprecated:: 3.0
+
+        path: the URL (relative to the endpoint URL, after the /v1
+        url: the HTTP method to use, defaults to POST
+        vars: for POST or PUT, a dict of data to send
+
+        returns Twilio response in XML or raises an exception on error
+
+        This method is only included for backwards compatability reasons.
+        It will be removed in a future version
+        """
+        logging.warning(":meth:`TwilioRestClient.request` is deprecated and "
+                        "will be removed in a future version")
+
+        vars = vars or {}
+        params = None
+        data = None
+
+        if not path or len(path) < 1:
+            raise ValueError('Invalid path parameter')
+        if method and method not in ['GET', 'POST', 'DELETE', 'PUT']:
+            raise NotImplementedError(
+                'HTTP %s method not implemented' % method)
+
+        if path[0] == '/':
+            uri = _TWILIO_API_URL + path
+        else:
+            uri = _TWILIO_API_URL + '/' + path
+
+        if method == "GET":
+            params = vars
+        elif method == "POST" or method == "PUT":
+            data = vars
+
+        headers = {
+            "User-Agent": "twilio-python",
+            }
+
+        resp = make_request(method, uri, auth=self.auth, data=data,
+                            params=params, headers=headers)
+
+        return resp.content
 
     def __init__(self, account=None, token=None, base="https://api.twilio.com",
                  version="2010-04-01", client=None):
@@ -49,7 +92,7 @@ class TwilioRestClient(object):
             if not account or not token:
                 raise TwilioException("Could not find account credentials")
 
-        auth = (account, token)
+        self.auth = (account, token)
         version_uri = "%s/%s" % (base, version)
         account_uri = "%s/%s/Accounts/%s" % (base, version, account)
 
