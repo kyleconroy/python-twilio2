@@ -30,12 +30,11 @@ By default, :meth:`search` looks for local phone numbers. Set :data:`type` to ``
 
 .. code-block:: python
 
-    numbers = conn.phone_numbers.search(type="tollfree")
+    numbers = conn.phone_numbers.search(contains="FOO")
+
 
 Numbers Containing Words
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-
 
 .. code-block:: python
 
@@ -44,8 +43,6 @@ Numbers Containing Words
 You can search for numbers in other countries by passing the `ISO Country Code <>`_ as `country`. Currently only `US` and `CA` are supported.
 
 :meth:`PhoneNumbers.search` method has plenty of other options to augment your search. See the API documentation for all available parameters.
-
-Nothing really different, just talk about the things not supported
 
 
 Buying a Number
