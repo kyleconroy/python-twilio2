@@ -1047,11 +1047,18 @@ class Conferences(ListResource):
 
 
 class Application(InstanceResource):
+    """ An application resource """
 
     def update(self, **kwargs):
+        """
+        Update this application
+        """
         return self.parent.update(self.sid, **kwargs)
 
     def delete(self):
+        """
+        Delete this application
+        """
         return self.parent.delete(self.sid)
 
 
