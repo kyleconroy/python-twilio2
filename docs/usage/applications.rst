@@ -1,12 +1,12 @@
 .. module:: twilio.rest.resources
 
 =================
-Phone Numbers
+Applications
 =================
 
-With Twilio you can search and buy real phones numbers, just using the API.
+An application inside of Twilio is just a set of URLs and other configuration data that tells Twilio how to behave when one of your Twilio numbers receives a call or SMS message.
 
-For more information, see the `IncomingPhoneNumbers REST Resource <http://www.twilio.com/docs/api/rest/incoming-phone-numbers>`_ documentation.
+For more information, see the `Application REST Resource <http://www.twilio.com/docs/api/rest/applications>`_ documentation.
 
 
 Searching and Buying a Number
@@ -24,7 +24,7 @@ Finding numbers to buy couldn't be easier. We first search for a number in area 
     if len(numbers) > 0:
         numbers[0].purchase()
     else:
-        print "No numbers in 530 available"
+        print "No numbers in 530 available
 
 Toll Free Numbers
 ^^^^^^^^^^^^^^^^^^^^^^^^
