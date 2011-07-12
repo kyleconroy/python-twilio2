@@ -26,12 +26,10 @@ Getting Started
 
 The :doc:`/getting-started` will get you up and running in a few quick minutes. This guide assumes you understand the core concepts of Twilio. If you've never used Twilio before, don't fret! Just read `about how Twilio works <http://www.twilio.com/api/>`_ and then jump in.
 
-For a more indepth guide to specific protions of the library, check out the User Guide below.
-
 User Guide
 ==================
 
-Functionality is split over three different subpackages within **twilio-python**
+Functionality is split over three different subpackages within **twilio-python**. Below are indepth guide to specific protions of the library.
 
 REST API
 ----------
@@ -45,9 +43,12 @@ Query the Twilio REST API to create phone calls, send SMS messages and so much m
     usage/phone-calls
     usage/phone-numbers
     usage/messages
-    usage/conferences
     usage/accounts
+    usage/conferences
+    usage/applications
     usage/notifications
+    usage/recordings
+    usage/transcriptions
 
 TwiML
 ---------
@@ -63,6 +64,11 @@ Utilites
 ----------
 
 Small functions useful for validating requests are coming from Twilio
+
+.. toctree::
+    :maxdepth: 2
+
+    usage/validation
 
 Upgrade Plan
 ==================

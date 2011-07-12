@@ -139,11 +139,11 @@ A sample using the old version of **twilio-python**.
     utils = twilio.Utils(ACCOUNT_SID, ACCOUNT_TOKEN)
 
     url = "http://UUUUUUUUUUUUUUUUUU"
-    postvars = {}
+    post_vars = {}
 
     signature = "SSSSSSSSSSSSSSSSSSSSSSSSSSSS"
 
-    if utils.validateRequest(url, postVar, signature):
+    if utils.validateRequest(url, post_vars, signature):
         print "was confirmed to have come from Twilio."
     else:
         print "was NOT VALID.  It might have been spoofed!"
@@ -160,11 +160,11 @@ The same sample, converted to use the new version.
     utils = util.TwilioValidation(ACCOUNT_SID, ACCOUNT_TOKEN)
 
     url = "http://UUUUUUUUUUUUUUUUUU"
-    postvars = {}
+    post_vars = {}
 
     signature = "SSSSSSSSSSSSSSSSSSSSSSSSSSSS"
 
-    if utils.validate(url, postVar, signature):
+    if utils.validate(url, post_vars, signature):
         print "was confirmed to have come from Twilio."
     else:
         print "was NOT VALID.  It might have been spoofed!"

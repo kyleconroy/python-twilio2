@@ -149,14 +149,15 @@ class Say(Verb):
     """The :class:`Say` verb converts text to speech that is read back to the
     caller.
 
-    `voice` allows you to choose a male or female voice to read text back.
+    :param voice: allows you to choose a male or female voice to read text back.
 
-    `language` allows you pick a voice with a specific language's accent and
-    pronunciations. Twilio currently supports languages 'en' (English),
-    'es' (Spanish), 'fr' (French), and 'de' (German).
+    :param language: allows you pick a voice with a specific language's accent and
+                     pronunciations. Twilio currently supports languages 'en'
+                     (English), 'es' (Spanish), 'fr' (French), and 'de' (German).
 
-    `loop` specifies how many times you'd like the text repeated. Specifying
-    '0' will cause the the :class:`Say` verb to loop until the call is hung up.
+    :param loop: specifies how many times you'd like the text repeated. Specifying
+                 '0' will cause the the :class:`Say` verb to loop until the call
+                 is hung up.
     """
     MAN = 'man'
     WOMAN = 'woman'
@@ -183,11 +184,12 @@ class Say(Verb):
 class Play(Verb):
     """Play an audio file at a URL
 
-    `url` point to af audio file. The MIME type on the file must be set
-    correctly.
+    :param url: point to af audio file. The MIME type on the file must be set
+                correctly.
 
-    `loop` specifies how many times you'd like the text repeated. Specifying
-    '0' will cause the the :class:`Say` verb to loop until the call is hung up.
+    :param loop: specifies how many times you'd like the text repeated. Specifying
+                 '0' will cause the the :class:`Say` verb to loop until the
+                 call is hung up.
     """
     def __init__(self, url, loop=1, **kwargs):
         Verb.__init__(self, loop=loop, **kwargs)
@@ -197,8 +199,8 @@ class Play(Verb):
 class Pause(Verb):
     """Pause the call
 
-    `length` specifies how many seconds Twilio will wait silently before
-    continuing on.
+    :param length: specifies how many seconds Twilio will wait silently before
+                   continuing on.
     """
     def __init__(self, length=1, **kwargs):
         Verb.__init__(self, length=length, **kwargs)
@@ -207,10 +209,10 @@ class Pause(Verb):
 class Redirect(Verb):
     """Redirect call flow to another URL
 
-    `url` specifies the url which Twilio should query to retrieve new TwiML.
-    The default is the curreny url
+    :param url: specifies the url which Twilio should query to retrieve new TwiML.
+                The default is the current url
 
-    `method` specifies the HTTP method to use when retrieving the above url
+    :param method: specifies the HTTP method to use when retrieving the above url
     """
     GET = 'GET'
     POST = 'POST'
@@ -240,15 +242,11 @@ class Reject(Verb):
 class Gather(Verb):
     """Gather digits from the caller's keypad
 
-    `action`: URL to which the digits entered will be sent
-
-    `method`: submit to 'action' url using GET or POST
-
-    `numDigits`: how many digits to gather before returning
-
-    `timeout`: wait for this many seconds before returning
-
-    `finishOnKey`: key that triggers the end of caller input
+    :param action: URL to which the digits entered will be sent
+    :param method: submit to 'action' url using GET or POST
+    :param numDigits: how many digits to gather before returning
+    :param timeout: wait for this many seconds before returning
+    :param finishOnKey: key that triggers the end of caller input
     """
     GET = 'GET'
     POST = 'POST'
@@ -277,9 +275,8 @@ class Gather(Verb):
 class Number(Verb):
     """Specify phone number in a nested Dial element.
 
-    `number`: phone number to dial
-
-    `sendDigits`: key to press after connecting to the number
+    :param number: phone number to dial
+    :param sendDigits: key to press after connecting to the number
     """
     def __init__(self, number, sendDigits=None, **kwargs):
         Verb.__init__(self, sendDigits=sendDigits, **kwargs)
@@ -289,15 +286,11 @@ class Number(Verb):
 class Sms(Verb):
     """ Send a Sms Message to a phone number
 
-    `to`: whom to send message to, defaults based on the direction of the call
-
-    `from_`: whom to send message from.
-
-    `action`: url to request after the message is queued
-
-    `method`: submit to 'action' url using GET or POST
-
-    `statusCallback`: url to hit when the message is actually sent
+    :param to: whom to send message to, defaults based on the direction of the call
+    :param from_: whom to send message from.
+    :param action: url to request after the message is queued
+    :param method: submit to 'action' url using GET or POST
+    :param statusCallback: url to hit when the message is actually sent
     """
     GET = 'GET'
     POST = 'POST'
@@ -315,19 +308,13 @@ class Sms(Verb):
 class Conference(Verb):
     """Specify conference in a nested Dial element.
 
-    `name`: friendly name of conference
-
-    `muted`: keep this participant muted (bool)
-
-    `beep`: play a beep when this participant enters/leaves (bool)
-
-    `startConferenceOnEnter`: start conf when this participants joins (bool)
-
-    `endConferenceOnExit`: end conf when this participants leaves (bool)
-
-    `waitUrl`: TwiML url that executes before conference starts
-
-    `waitMethod`: HTTP method for waitUrl GET/POST
+    :param name: friendly name of conference
+    :param muted: keep this participant muted (bool)
+    :param beep: play a beep when this participant enters/leaves (bool)
+    :param startConferenceOnEnter: start conf when this participants joins (bool)
+    :param endConferenceOnExit: end conf when this participants leaves (bool)
+    :param waitUrl: TwiML url that executes before conference starts
+    :param waitMethod: HTTP method for waitUrl GET/POST
     """
     GET = 'GET'
     POST = 'POST'
@@ -348,9 +335,8 @@ class Conference(Verb):
 class Dial(Verb):
     """Dial another phone number and connect it to this call
 
-    `action`: submit the result of the dial to this URL
-
-    `method`: submit to 'action' url using GET or POST
+    :param action: submit the result of the dial to this URL
+    :param method: submit to 'action' url using GET or POST
     """
     GET = 'GET'
     POST = 'POST'
@@ -377,10 +363,10 @@ class Dial(Verb):
 class Record(Verb):
     """Record audio from caller
 
-    action: submit the result of the dial to this URL
-    method: submit to 'action' url using GET or POST
-    maxLength: maximum number of seconds to record
-    timeout: seconds of silence before considering the recording complete
+    :param action: submit the result of the dial to this URL
+    :param method: submit to 'action' url using GET or POST
+    :param maxLength: maximum number of seconds to record
+    :param timeout: seconds of silence before considering the recording complete
     """
     GET = 'GET'
     POST = 'POST'
