@@ -9,25 +9,19 @@ An application inside of Twilio is just a set of URLs and other configuration da
 For more information, see the `Application REST Resource <http://www.twilio.com/docs/api/rest/applications>`_ documentation.
 
 
-Searching and Buying a Number
---------------------------------
+Creating an Application
+---------------------------
 
-Finding numbers to buy couldn't be easier. We first search for a number in area code 530. Once we find one, we'll purchase it for our account.
 
 .. code-block:: python
 
     from twilio.rest import TwilioRestClient
 
     conn = TwilioRestClient()
-    numbers = conn.phone_numbers.search(area_code=530)
-
-    if len(numbers) > 0:
-        numbers[0].purchase()
-    else:
-        print "No numbers in 530 available
+    numbers = conn.applications.create()
 
 Toll Free Numbers
-^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^
 
 By default, :meth:`search` looks for local phone numbers. Set :data:`type` to ``tollfree`` to search toll-free numbers instead.
 
