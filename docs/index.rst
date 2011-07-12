@@ -66,7 +66,7 @@ Utilites
 Small functions useful for validating requests are coming from Twilio
 
 .. toctree::
-    :maxdepth: 2
+    :maxdepth: 1
 
     usage/validation
 
