@@ -149,15 +149,17 @@ class Say(Verb):
     """The :class:`Say` verb converts text to speech that is read back to the
     caller.
 
-    :param voice: allows you to choose a male or female voice to read text back.
+    :param voice: allows you to choose a male or female voice to read text
+                  back.
 
-    :param language: allows you pick a voice with a specific language's accent and
-                     pronunciations. Twilio currently supports languages 'en'
-                     (English), 'es' (Spanish), 'fr' (French), and 'de' (German).
+    :param language: allows you pick a voice with a specific language's accent
+                     and pronunciations. Twilio currently supports languages
+                     'en' (English), 'es' (Spanish), 'fr' (French), and 'de'
+                     (German).
 
-    :param loop: specifies how many times you'd like the text repeated. Specifying
-                 '0' will cause the the :class:`Say` verb to loop until the call
-                 is hung up.
+    :param loop: specifies how many times you'd like the text repeated.
+                 Specifying '0' will cause the the :class:`Say` verb to loop
+                 until the call is hung up.
     """
     MAN = 'man'
     WOMAN = 'woman'
@@ -187,9 +189,9 @@ class Play(Verb):
     :param url: point to af audio file. The MIME type on the file must be set
                 correctly.
 
-    :param loop: specifies how many times you'd like the text repeated. Specifying
-                 '0' will cause the the :class:`Say` verb to loop until the
-                 call is hung up.
+    :param loop: specifies how many times you'd like the text repeated.
+                 Specifying '0' will cause the the :class:`Say` verb to loop
+                 until the call is hung up.
     """
     def __init__(self, url, loop=1, **kwargs):
         Verb.__init__(self, loop=loop, **kwargs)
@@ -209,10 +211,10 @@ class Pause(Verb):
 class Redirect(Verb):
     """Redirect call flow to another URL
 
-    :param url: specifies the url which Twilio should query to retrieve new TwiML.
-                The default is the current url
+    :param url: specifies the url which Twilio should query to retrieve new
+                TwiML. The default is the current url
 
-    :param method: specifies the HTTP method to use when retrieving the above url
+    :param method: specifies the HTTP method to use when retrieving the url
     """
     GET = 'GET'
     POST = 'POST'
@@ -286,7 +288,7 @@ class Number(Verb):
 class Sms(Verb):
     """ Send a Sms Message to a phone number
 
-    :param to: whom to send message to, defaults based on the direction of the call
+    :param to: whom to send message to
     :param from_: whom to send message from.
     :param action: url to request after the message is queued
     :param method: submit to 'action' url using GET or POST
@@ -309,10 +311,10 @@ class Conference(Verb):
     """Specify conference in a nested Dial element.
 
     :param name: friendly name of conference
-    :param muted: keep this participant muted (bool)
-    :param beep: play a beep when this participant enters/leaves (bool)
-    :param startConferenceOnEnter: start conf when this participants joins (bool)
-    :param endConferenceOnExit: end conf when this participants leaves (bool)
+    :param bool muted: keep this participant muted
+    :param bool beep: play a beep when this participant enters/leaves
+    :param bool startConferenceOnEnter: start conf when this participants joins
+    :param bool endConferenceOnExit: end conf when this participants leaves
     :param waitUrl: TwiML url that executes before conference starts
     :param waitMethod: HTTP method for waitUrl GET/POST
     """
@@ -366,7 +368,7 @@ class Record(Verb):
     :param action: submit the result of the dial to this URL
     :param method: submit to 'action' url using GET or POST
     :param maxLength: maximum number of seconds to record
-    :param timeout: seconds of silence before considering the recording complete
+    :param timeout: seconds of silence before considering the recording done
     """
     GET = 'GET'
     POST = 'POST'

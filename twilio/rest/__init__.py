@@ -10,6 +10,7 @@ from twilio.rest.resources import Notifications
 from twilio.rest.resources import Recordings
 from twilio.rest.resources import Transcriptions
 from twilio.rest.resources import Sms
+from twilio.rest.resources import Participants
 from twilio.rest.resources import PhoneNumbers
 from twilio.rest.resources import Conferences
 from twilio.rest.resources import Sandboxes
@@ -92,7 +93,7 @@ class TwilioRestClient(object):
             if not account or not token:
                 raise TwilioException("Could not find account credentials")
 
-        self.auth = (account, token)
+        auth = (account, token)
         version_uri = "%s/%s" % (base, version)
         account_uri = "%s/%s/Accounts/%s" % (base, version, account)
 
@@ -107,3 +108,15 @@ class TwilioRestClient(object):
         self.phone_numbers = PhoneNumbers(account_uri, auth)
         self.conferences = Conferences(account_uri, auth)
         self.sandboxes = Sandboxes(account_uri, auth)
+
+        self.auth = auth
+        self.account_uri = account_uri
+
+    def participants(self, conference_sid):
+        """
+        Return a :class:`Participants` instance for the :class:`Conference`
+        with conference_sid,
+        """
+        base_uri = "%s/Conferences/%s" % (self.account_uri, conference_sid)
+        return Participants(base_uri, self.auth)
+

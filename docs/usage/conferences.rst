@@ -38,7 +38,7 @@ The :meth:`Conferences.list` method supports filtering on :attr:`status`, :attr:
 Listing Participants
 ----------------------
 
-Each :class:`Conference` has :attr:`participants` which represent all participants currently in the given conference.
+Each :class:`Conference` has a :attr:`participants` instance which represents all current users in the conference
 
 .. code-block:: python
 
@@ -53,6 +53,10 @@ Each :class:`Conference` has :attr:`participants` which represent all participan
 Managing Participants
 ----------------------
 
+Each :class:`Conference` has a :attr:`participants` function that returns a
+:class:`Participants` instance. This behaviour differs from other list resources
+because :class:`Participants` needs a participant sid AND a conference sid to access the participants resource.
+
 Participants can be either muted or kicked out of the conference. The following code kicks out the first participants and mutes the rest.
 
 .. note::
@@ -62,7 +66,7 @@ Participants can be either muted or kicked out of the conference. The following 
     from twilio.rest import TwilioClient
 
     conn = TwilioClient()
-    participants = conn.participants.list(conference="CF123")
+    participants = conn.participants("CF123").list()
 
     if len(participants) == 0:
         return
