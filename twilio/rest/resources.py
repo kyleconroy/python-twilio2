@@ -1047,7 +1047,12 @@ class Conferences(ListResource):
 
 
 class Application(InstanceResource):
-    pass
+
+    def update(self, **kwargs):
+        return self.parent.update(self.sid, **kwargs)
+
+    def delete(self):
+        return self.parent.delete(self.sid)
 
 
 class Applications(ListResource):
