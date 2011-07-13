@@ -25,7 +25,7 @@ Here is how you would place an outgoing call with the older version.
     # Outgoing Caller ID previously validated with Twilio
     CALLER_ID = 'NNNNNNNNNN';
 
-    # Create a Twilio REST account object using your Twilio account ID and token
+    # Create a Twilio REST account object using your account ID and token
     account = twilio.Account(ACCOUNT_SID, ACCOUNT_TOKEN)
 
     d = {

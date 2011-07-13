@@ -11,10 +11,10 @@ Listing Conferences
 
 .. code-block:: python
 
-    from twilio.rest import TwilioClient
+    from twilio.rest import TwilioRestClient
 
-    conn = TwilioClient()
-    conferences = conn.conferences.list()
+    client = TwilioRestClient()
+    conferences = client.conferences.list()
 
     for conference in conferences:
         print conference.sid
@@ -26,10 +26,10 @@ The :meth:`Conferences.list` method supports filtering on :attr:`status`, :attr:
 
 .. code-block:: python
 
-    from twilio.rest import TwilioClient
+    from twilio.rest import TwilioRestClient
 
-    conn = TwilioClient()
-    conferences = conn.conferences.list(status="active")
+    client = TwilioRestClient()
+    conferences = client.conferences.list(status="active")
 
     for conference in conferences:
         print conference.friendly_name
@@ -42,10 +42,10 @@ Each :class:`Conference` has a :attr:`participants` instance which represents al
 
 .. code-block:: python
 
-    from twilio.rest import TwilioClient
+    from twilio.rest import TwilioRestClient
 
-    conn = TwilioClient()
-    conference = conn.conferences.get("CF123")
+    client = TwilioRestClient()
+    conference = client.conferences.get("CF123")
 
     for participant in conference.participants.list():
         print participant.sid
@@ -63,10 +63,10 @@ Participants can be either muted or kicked out of the conference. The following 
 
 .. code-block:: python
 
-    from twilio.rest import TwilioClient
+    from twilio.rest import TwilioRestClient
 
-    conn = TwilioClient()
-    participants = conn.participants("CF123").list()
+    client = TwilioRestClient()
+    participants = client.participants("CF123").list()
 
     if len(participants) == 0:
         return

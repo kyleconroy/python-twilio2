@@ -29,7 +29,7 @@ If you'd rather not use enviroment variables, pass your account credentials dire
 
     ACCOUT_SID = "AXXXXXXXXXXXXXXXXX"
     AUTH_TOKEN = "YYYYYYYYYYYYYYYYYY"
-    conn = TwilioRestClient(ACCOUNT_SID, AUTH_TOKEN)
+    client = TwilioRestClient(ACCOUNT_SID, AUTH_TOKEN)
 
 
 Listing Resources
@@ -41,8 +41,8 @@ The :class:`TwilioRestClient` gives you access to various list resources. :meth:
 
     from twilio.rest import TwilioRestClient
 
-    conn = TwilioRestClient()
-    resources = conn.phone_calls.list()
+    client = TwilioRestClient()
+    resources = client.phone_calls.list()
 
 :meth:`resource.ListResource.list` accepts paging arguments. The following will return page 3 with page size of 25.
 
@@ -50,8 +50,8 @@ The :class:`TwilioRestClient` gives you access to various list resources. :meth:
 
     from twilio.rest import TwilioRestClient
 
-    conn = TwilioRestClient()
-    resources = conn.phone_calls.list(page=3, page_size=25)
+    client = TwilioRestClient()
+    resources = client.phone_calls.list(page=3, page_size=25)
 
 
 Listing All Resources
@@ -65,8 +65,8 @@ Sometimes you'd like to retreive all records from a list resource. Instead of ma
 
     from twilio.rest import TwilioRestClient
 
-    conn = TwilioRestClient()
-    for number in conn.phone_numbers.iter():
+    client = TwilioRestClient()
+    for number in client.phone_numbers.iter():
         print number.friendly_name
 
 
@@ -79,8 +79,8 @@ To get an individual instance resource, use :class:`resources.ListResource.get`.
 
     from twilio.rest import TwilioRestClient
 
-    conn = TwilioRestClient()
+    client = TwilioRestClient()
 
-    call = conn.calls.get("CA123")
+    call = client.calls.get("CA123")
     print call.sid
 

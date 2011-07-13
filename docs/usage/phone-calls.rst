@@ -13,10 +13,10 @@ The :class:`Calls` resource allows you to make outgoing calls. Before a call can
 
 .. code-block:: python
 
-    from twilio.rest import TwilioClient
+    from twilio.rest import TwilioRestClient
 
-    conn = TwilioClient()
-    call = conn.calls.make(to="9991231234, from_="9991231234")
+    client = TwilioRestClient()
+    call = client.calls.make(to="9991231234, from_="9991231234")
                            url="http://foo.com/call.xml")
     print call.length
     print call.sid
@@ -28,11 +28,11 @@ If you already have a :class:`Call` sid, you can use the client to retrieve that
 
 .. code-block:: python
 
-    from twilio.rest import TwilioClient
+    from twilio.rest import TwilioRestClient
 
-    conn = TwilioClient()
+    client = TwilioRestClient()
     sid = "CA12341234"
-    call = conn.calls.get(sid)
+    call = client.calls.get(sid)
 
 Accessing Specific Call Resources
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -41,11 +41,11 @@ Each :class:`Call` resource also has access to its `notifications`, `recordings`
 
 .. code-block:: python
 
-    from twilio.rest import TwilioClient
+    from twilio.rest import TwilioRestClient
 
-    conn = TwilioClient()
+    client = TwilioRestClient()
     sid = "CA12341234"
-    call = conn.calls.get(sid)
+    call = client.calls.get(sid)
 
     print call.notifications.list()
     print call.recordsings.list()
@@ -55,13 +55,13 @@ However, what if you only have a `CallSid`, and not the actual :class:`Resource`
 
 .. code-block:: python
 
-    from twilio.rest import TwilioClient
+    from twilio.rest import TwilioRestClient
 
-    conn = TwilioClient()
+    client = TwilioRestClient()
     sid = "CA24234"
-    print conn.notifications.list(call=sid)
-    print conn.recordsings.list(call=sid)
-    print conn.transcriptions.list(call=sid)
+    print client.notifications.list(call=sid)
+    print client.recordsings.list(call=sid)
+    print client.transcriptions.list(call=sid)
 
 
 Modifying Live Calls
@@ -71,11 +71,11 @@ The :class:`Call` resource makes it easy to find current live calls and redirect
 
 .. code-block:: python
 
-    from twilio.rest import TwilioClient
+    from twilio.rest import TwilioRestClient
     from twilio.rest.resources import Call
 
-    conn = TwilioClient()
-    calls = conn.calls.list(statsus=Call.IN_PROGRESS)
+    client = TwilioRestClient()
+    calls = client.calls.list(statsus=Call.IN_PROGRESS)
     for c in calls:
         c.route("http://foo.com/new.xml", method="POST")
 
@@ -83,11 +83,11 @@ Ending all live calls is also possible
 
 .. code-block:: python
 
-    from twilio.rest import TwilioClient
+    from twilio.rest import TwilioRestClient
     from twilio.rest.resources import Call
 
-    conn = TwilioClient()
-    calls = conn.calls.list(status=Call.IN_PROGRESS)
+    client = TwilioRestClient()
+    calls = client.calls.list(status=Call.IN_PROGRESS)
     for c in calls:
         c.hangup()
 
@@ -98,18 +98,18 @@ the record without having to use :meth:`get` first.
 
 .. code-block:: python
 
-    from twilio.rest import TwilioClient
+    from twilio.rest import TwilioRestClient
 
-    conn = TwilioClient()
+    client = TwilioRestClient()
     sid = "CA12341234"
-    conn.calls.update(sid, url="http://foo.com/new.xml", method="POST")
+    client.calls.update(sid, url="http://foo.com/new.xml", method="POST")
 
 Handing up the call also works.
 
 .. code-block:: python
 
-    from twilio.rest import TwilioClient
+    from twilio.rest import TwilioRestClient
 
-    conn = TwilioClient()
+    client = TwilioRestClient()
     sid = "CA12341234"
-    conn.calls.hangup(sid)
+    client.calls.hangup(sid)
