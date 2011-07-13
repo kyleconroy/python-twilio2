@@ -4,12 +4,12 @@
 Accessing REST Resources
 =========================
 
-To access Twilio REST resources, you'll first need to instantiate a :class:`TwilioClient`.
+To access Twilio REST resources, you'll first need to instantiate a :class:`TwilioRestClient`.
 
 Authentication
 --------------------------
 
-The :class:`TwilioClient` needs your Twilio credentials. While these can be passed in directly to the construcutor, we suggest storing your credentials as environment variables. Why? You'll never have to worry about committing your credentials and accidently posting them somewhere public.
+The :class:`TwilioRestClient` needs your Twilio credentials. While these can be passed in directly to the constructor, we suggest storing your credentials as environment variables. Why? You'll never have to worry about committing your credentials and accidentally posting them somewhere public.
 
 The :class:`TwilioClient` looks for :const:`TWILIO_ACCOUT_SID` and :const:`TWILIO_AUTH_TOKEN` inside the current environment.
 
@@ -21,7 +21,7 @@ With those two values set, create a new :class:`TwilioClient`.
 
     conn = TwilioRestClient()
 
-If you'd rather not use enviroment variables, pass your account credentials directly to the the constructor.
+If you'd rather not use environment variables, pass your account credentials directly to the the constructor.
 
 .. code-block:: python
 
@@ -57,7 +57,7 @@ The :class:`TwilioRestClient` gives you access to various list resources. :meth:
 Listing All Resources
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-Sometimes you'd like to retreive all records from a list resource. Instead of manually paging over the resource, the :class:`resources.ListResource.iter` method returns a generator. After exhausting the current page, the generator will request the next page of results.
+Sometimes you'd like to retrieve all records from a list resource. Instead of manually paging over the resource, the :class:`resources.ListResource.iter` method returns a generator. After exhausting the current page, the generator will request the next page of results.
 
 .. warning:: Accessing all your records can be slow. We suggest only doing so when you absolutely need all the records
 

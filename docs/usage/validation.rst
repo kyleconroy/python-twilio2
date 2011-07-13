@@ -20,7 +20,7 @@ Before you can validate requests, you'll need five pieces of information
 
 Get your Account SID and Auth Token from the `Twilio User Dashboard <https://www.twilio.com/user/account>`_.
 
-Obtaining the other three pieces of information depends on the framework of your choosing. I will assume that you have the POST data as a dicitionary and the url and X-Twilio-Signature as strings.
+Obtaining the other three pieces of information depends on the framework of your choosing. I will assume that you have the POST data as a dictionary and the url and X-Twilio-Signature as strings.
 
 The below example will print out a confirmation message if the request is actually from Twilio.com
 

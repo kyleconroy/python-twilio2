@@ -286,7 +286,7 @@ Conferences
 
    .. attribute:: participants
 
-      The :class:`Participants` resource, listing people currenlty in this conference
+      The :class:`Participants` resource, listing people currently in this conference
 
 
 Notifications
@@ -586,7 +586,7 @@ Recordings
 
    .. attribute:: formats
 
-      A diciontary of the audio formats available for this recording
+      A dictionary of the audio formats available for this recording
 
       .. code-block:: python
 

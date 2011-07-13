@@ -37,7 +37,7 @@ You can filter transcriptions by :attr:`log` and :attr:`message_date`. The :attr
 Deleting Notifications
 ------------------------
 
-Your account can sometimes generate an inordinate amount of :class:`Notification` resources. The :class:`Notifications` resource allows you to delete unecessary notifications.
+Your account can sometimes generate an inordinate amount of :class:`Notification` resources. The :class:`Notifications` resource allows you to delete unnecessary notifications.
 
 .. code-block:: python
 

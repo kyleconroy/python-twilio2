@@ -6,7 +6,7 @@
 TwiML Creation
 ==============
 
-TwiML creation begins with the :class:`Response` verb. Each succesive verb is created by calling various methods on the response, such as :meth:`say` or :meth:`play`. These methods return the verbs they create to ease the creation of nested TwiML. To finish, call the :meth:`toxml` method on the :class:`Response`, which returns raw TwiML.
+TwiML creation begins with the :class:`Response` verb. Each successive verb is created by calling various methods on the response, such as :meth:`say` or :meth:`play`. These methods return the verbs they create to ease the creation of nested TwiML. To finish, call the :meth:`toxml` method on the :class:`Response`, which returns raw TwiML.
 
 .. code-block:: python
 
@@ -17,7 +17,7 @@ TwiML creation begins with the :class:`Response` verb. Each succesive verb is cr
     str(r)
     # returns <Response><Say>Hello</Say><Response>
 
-The verb methods (outlined in the complete reference) take the body (only text) of the verb as the first argument. All attributes are keyword arguements.
+The verb methods (outlined in the complete reference) take the body (only text) of the verb as the first argument. All attributes are keyword arguments.
 
 .. code-block:: python
 

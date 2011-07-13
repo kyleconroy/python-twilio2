@@ -54,7 +54,7 @@ Client X hasn't paid you recently, so let's suspend their account.
 
     subaccount.suspend()
 
-If it was just a minunderstanding, reenable their account.
+If it was just a misunderstanding, reenable their account.
 
 .. code-block:: python
 

@@ -57,7 +57,7 @@ You can use the ''*'' wildcard to match any character. The following example fin
 Buying a Number
 ---------------
 
-If you've found a phone numnber you want, you can purchase the number
+If you've found a phone number you want, you can purchase the number
 
 .. code-block:: python
 
@@ -83,7 +83,7 @@ An :class:`Application` encapsulates all necessary URLs for use with phone numbe
     client = TwilioRestClient()
     number = client.phone_numbers.update(phone_sid, application="AP123")
 
-See :doc:`/usage/applications` for instrucitons on updating and mantaining Applications.
+See :doc:`/usage/applications` for instructions on updating and maintaining Applications.
 
 Validate Caller Id
 -----------------------

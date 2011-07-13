@@ -2,12 +2,12 @@
 Upgrade Guide
 ==============
 
-Porting your applicatoin from **twilio-python** 2.0 to 3.0 is straightforward. All the same methods are still offered. Only their location has changed.
+Porting your application from **twilio-python** 2.0 to 3.0 is straightforward. All the same methods are still offered. Only their location has changed.
 
 Making API Requests
 ====================
 
-:class:`twilio.Account` has been moved to :class:`twilio.rest.TwilioRestClient`. The rest client offers a greatly improved API; however, the old :meth:`reqeuest` method still exists (in a deprecated state). We suggest you migrate your code to use the new API.
+:class:`twilio.Account` has been moved to :class:`twilio.rest.TwilioRestClient`. The rest client offers a greatly improved API; however, the old :meth:`request` method still exists (in a deprecated state). We suggest you migrate your code to use the new API.
 
 Here is how you would place an outgoing call with the older version.
 
@@ -37,7 +37,7 @@ Here is how you would place an outgoing call with the older version.
     print account.request('/%s/Accounts/%s/Calls' % \
                          (API_VERSION, ACCOUNT_SID), 'POST', d)
 
-The same code, updated to work with the new version (albiet using deprecated methods).
+The same code, updated to work with the new version (albeit using deprecated methods).
 
 .. code-block:: python
 
@@ -59,7 +59,7 @@ The same code, updated to work with the new version (albiet using deprecated met
     print client.request('/%s/Accounts/%s/Calls' % \
                         (API_VERSION, ACCOUNT_SID), 'POST', d)
 
-A final version using the new iterface.
+A final version using the new interface.
 
 .. code-block:: python
 

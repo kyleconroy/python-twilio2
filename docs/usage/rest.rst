@@ -193,7 +193,7 @@ Filter Notifications by Log Level
     for n in conn.notifications.list(log_level=0):
         print n.error_code
 
-SMS Mesages
+SMS Messages
 ==============
 
 Sending a SMS Message
@@ -215,7 +215,7 @@ The :class:`SmsMessages` resource allows you to send outgoing text messages
 Transcriptions
 =================
 
-Show all Transcribed Messagse
+Show all Transcribed Messages
 ---------------------------------
 
 .. code-block:: python

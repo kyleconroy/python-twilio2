@@ -47,7 +47,7 @@ The following will only show recordings made before January 1, 2011.
 Deleting Recordings
 ---------------------
 
-The :class:`Recordings` resource allows you to delete unecessary recordings.
+The :class:`Recordings` resource allows you to delete unnecessary recordings.
 
 .. code-block:: python
 
@@ -59,7 +59,7 @@ The :class:`Recordings` resource allows you to delete unecessary recordings.
 Accessing Related Transcptions
 -------------------------------
 
-The :class:`Recordings` resource allows you to delete unecessary recordings. The following prints out the text for each of the transcriptions associated with this recording.
+The :class:`Recordings` resource allows you to delete unnecessary recordings. The following prints out the text for each of the transcriptions associated with this recording.
 
 .. code-block:: python
 
