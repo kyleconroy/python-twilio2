@@ -198,7 +198,13 @@ class Resource(object):
         Raise a TwilioRestException
         """
         resp = make_twilio_request(method, uri, auth=self.auth, **kwargs)
-        return resp, json.loads(resp.content)
+
+        logging.debug(resp.content)
+
+        if method == "DELETE":
+            return resp, {}
+        else:
+            return resp, json.loads(resp.content)
 
     @property
     def uri(self):
@@ -367,7 +373,7 @@ class AvailablePhoneNumbers(ListResource):
     key = "available_phone_numbers"
     instance = AvailablePhoneNumber
 
-    types = {"LOCAL": "Local", "TOLLFREE": "TollFree"}
+    types = {"local": "Local", "tollfree": "TollFree"}
 
     def __init__(self, base_uri, auth):
         super(AvailablePhoneNumbers, self).__init__(base_uri, auth)
@@ -375,13 +381,13 @@ class AvailablePhoneNumbers(ListResource):
     def get(self, sid):
         raise TwilioException("Individual AvailablePhoneNumbers have no sid")
 
-    def list(self, type="LOCAL", country="US", region=None, area_code=None,
+    def list(self, type="local", country="US", region=None, area_code=None,
              postal_code=None, near_number=None, near_lat_long=None, lata=None,
              rate_center=None, distance=None, contains=None):
         """
         Search for phone numbers
         """
-        params = transform_param({
+        params = transform_params({
                "InRegion": region,
                "InPostalCode": postal_code,
                "Contains": contains,
@@ -397,6 +403,12 @@ class AvailablePhoneNumbers(ListResource):
         resp, page = self.request("GET", uri, params=params)
 
         return [self.load_instance(i) for i in page[self.key]]
+
+    def load_instance(self, data):
+        instance = self.instance(self)
+        instance.load(data)
+        instance.load_subresources()
+        return instance
 
 
 class Transcription(InstanceResource):
@@ -420,6 +432,13 @@ class Recording(InstanceResource):
     subresources = [
         Transcriptions,
         ]
+
+    def __init__(self, *args, **kwargs):
+        super(Recording, self).__init__(*args, **kwargs)
+        self.formats = {
+            "mp3": self.uri + ".mp3",
+            "wav": self.uri + ".wav",
+            }
 
     def delete(self):
         """
@@ -693,7 +712,7 @@ class CallerIds(ListResource):
                 "Extension": extension,
                 })
 
-        resp, validation = self.request("POST", self.uri, params=params)
+        resp, validation = self.request("POST", self.uri, data=params)
         return validation
 
 
