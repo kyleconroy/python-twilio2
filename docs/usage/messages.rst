@@ -21,7 +21,10 @@ Send a text message in only a few lines of code
                                          from_="+15555555555",
                                          body="Hello!")
 
-A word of warning: The message body must be less than 160 characters in length
+
+.. note:: The message body must be less than 160 characters in length
+
+If you want to send a message from a `short code <http://www.twilio.com/api/sms/short-codes>`_ on Twilio, just set :attr:`from_` to your short code's number.
 
 
 Retrieving Sent Messages

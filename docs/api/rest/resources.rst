@@ -646,6 +646,64 @@ Sandbox
       The URI for this resource, relative to https://api.twilio.com
 
 
+Short Codes
+>>>>>>>>>>>>
+
+.. autoclass:: twilio.rest.resources.ShortCodes
+   :members:
+
+.. autoclass:: twilio.rest.resources.ShortCode
+   :members:
+
+   .. attribute:: sid
+
+      A 34 character string that uniquely identifies this resource.
+
+   .. attribute:: date_created
+
+      The date that this resource was created, given in RFC 2822 format.
+
+   .. attribute:: date_updated
+
+      The date that this resource was last updated, given in RFC 2822 format.
+
+   .. attribute:: friendly_name
+
+      A human readable descriptive text for this resource, up to 64 characters long. By default, the :attr:`friendly_name` is just the short code.
+
+   .. attribute:: account_sid
+
+      The unique id of the Account that owns this short code.
+
+   .. attribute:: short_code
+
+      The short code. e.g., 894546.
+
+   .. attribute:: api_version
+
+      SMSs to this short code will start a new TwiML session with this API version.
+
+   .. attribute:: sms_url
+
+      The URL Twilio will request when receiving an incoming SMS message to this short code.
+
+   .. attribute:: sms_method
+
+      The HTTP method Twilio will use when making requests to the :attr:`sms_url`. Either GET or POST.
+
+   .. attribute:: sms_fallback_url
+
+      The URL that Twilio will request if an error occurs retrieving or executing the TwiML from :attr:`sms_url`.
+
+   .. attribute:: sms_fallback_method
+
+      The HTTP method Twilio will use when requesting the above URL. Either GET or POST.
+
+   .. attribute:: uri
+
+      The URI for this resource, relative to https://api.twilio.com.
+
+
 SMS Messages
 >>>>>>>>>>>>
 
