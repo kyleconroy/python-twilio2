@@ -44,7 +44,7 @@ Python 2.6+ added the :const:`with` statement for context management. Using :con
 
     r = twiml.Response()
     r.say("hello")
-    with r.gather(end_on_key=4) as g:
+    with r.gather(finishOnKey=4) as g:
         g.say("world")
     print str(r)
 
@@ -55,7 +55,7 @@ which returns the following
     <?xml version="1.0" encoding="utf-8"?>
     <Response>
       <Say>Hello</Say>
-      <Gather endOnKey="4"><Say>World</Say></Gather>
+      <Gather finishOnKey="4"><Say>World</Say></Gather>
     </Response>
 
 If you don't want the XML declaration in your output, use the :meth:`toxml` method
@@ -66,7 +66,7 @@ If you don't want the XML declaration in your output, use the :meth:`toxml` meth
 
     r = twiml.Response()
     r.say("hello")
-    with r.gather(end_on_key=4) as g:
+    with r.gather(finishOnKey=4) as g:
         g.say("world")
     print r.toxml(xml_declaration=False)
 
@@ -74,5 +74,5 @@ If you don't want the XML declaration in your output, use the :meth:`toxml` meth
 
     <Response>
       <Say>Hello</Say>
-      <Gather endOnKey="4"><Say>World</Say></Gather>
+      <Gather finishOnKey="4"><Say>World</Say></Gather>
     </Response>

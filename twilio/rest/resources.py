@@ -584,10 +584,11 @@ class Calls(ListResource):
         return self.get_instances(params=params, **kwargs)
 
     def create(self, to, from_, url, method=None, fallback_url=None,
-             fallback_method=None, status_callback=None, status_method=None,
-             if_machine=None, send_digits=None, timeout=None):
+               fallback_method=None, status_callback=None, status_method=None,
+               if_machine=None, send_digits=None, timeout=None,
+               application_sid=None):
         """
-        Really just a wrapper for :meth:`create`
+        Make a phone call to a number
         """
         params = transform_params({
             "To": to,
@@ -601,6 +602,7 @@ class Calls(ListResource):
             "SendDigits": send_digits,
             "Timeout": timeout,
             "IfMachine": if_machine,
+            "ApplicationSid": application_sid,
             })
         return self.create_instance(params)
 
@@ -783,7 +785,7 @@ class PhoneNumbers(ListResource):
                  voice_fallback_method=None, status_callback_method=None,
                  sms_url=None, sms_method=None, sms_fallback_url=None,
                  sms_fallback_method=None, voice_caller_id_lookup=None,
-                 account_sid=None):
+                 account_sid=None, application_sid=None):
         """
         Attempt to purchase the specified number. The only required parameters
         are **either** phone_number or area_code
@@ -802,6 +804,7 @@ class PhoneNumbers(ListResource):
                 "SmsFallbackMethod": sms_fallback_method,
                 "VoiceCallerIdLookup": voice_caller_id_lookup,
                 "AccountSid": account_sid,
+                "ApplicationSid": application_sid,
                })
 
         if phone_number:
@@ -836,7 +839,8 @@ class PhoneNumbers(ListResource):
                voice_fallback_url=None, voice_fallback_method=None,
                status_callback_method=None, sms_url=None, sms_method=None,
                sms_fallback_url=None, sms_fallback_method=None,
-               voice_caller_id_lookup=None, account_sid=None):
+               voice_caller_id_lookup=None, account_sid=None,
+               application_sid=None):
         """
         Update this phone number instance
         """
@@ -853,6 +857,7 @@ class PhoneNumbers(ListResource):
                 "SmsFallbackMethod": sms_fallback_method,
                 "VoiceCallerIdLookup": voice_caller_id_lookup,
                 "AccountSid": account_sid,
+                "ApplicationSid": application_sid,
                 })
         return self.update_instance(sid, params)
 
@@ -917,7 +922,8 @@ class SmsMessages(ListResource):
     key = "sms_messages"
     instance = SmsMessage
 
-    def create(self, to=None, from_=None, body=None, status_callback=None):
+    def create(self, to=None, from_=None, body=None, status_callback=None,
+               application_sid=None):
         """
         Create and send a SMS Message.
 
@@ -931,6 +937,7 @@ class SmsMessages(ListResource):
             "From": from_,
             "Body": body,
             "StatusCallback": status_callback,
+            "ApplicationSid": application_sid,
             })
         return self.create_instance(params)
 
