@@ -387,6 +387,11 @@ class TestGather(TwilioTest):
         r = self.strip(r)
         self.assertEquals(r, '<?xml version="1.0" encoding="utf-8"?><Gather foo="bar" />')
 
+    def testNoDeclaration(self):
+        """add attribute"""
+        r = twiml.Gather(foo="bar")
+        self.assertEquals(r.toxml(xml_declaration=False), '<Gather foo="bar" />')
+
     def testImproperNesting(self):
         """ bad nesting"""
         verb = twiml.Gather()
