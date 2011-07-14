@@ -15,7 +15,7 @@ from twilio.rest.resources import make_twilio_request
 
 get_headers = {
     "User-Agent": "twilio-python",
-    "Accepts": "application/json",
+    "Accept": "application/json",
     }
 
 post_headers = get_headers.copy()
@@ -42,15 +42,12 @@ def test_resp_uri():
     resp = make_request("GET", "http://httpbin.org/get")
     assert_equals(resp.url, "http://httpbin.org/get")
 
-def test_twilio_resp_uri():
-    resp = make_twilio_request("GET", "http://httpbin.org/get")
-    assert_equals(resp.url, "http://httpbin.org/get")
-
 @patch('twilio.rest.resources.make_request')
 def test_make_twilio_request_headers(mock):
     url = "http://random/url"
     make_twilio_request("POST", url)
-    mock.assert_called_with("POST", url, headers=post_headers)
+    mock.assert_called_with("POST", "http://random/url.json",
+                            headers=post_headers)
 
 @raises(TwilioRestException)
 @patch('twilio.rest.resources.make_request')
@@ -61,4 +58,5 @@ def test_make_twilio_request_bad_data(mock):
 
     url = "http://random/url"
     make_twilio_request("POST", url)
-    mock.assert_called_with("POST", url, headers=post_headers)
+    mock.assert_called_with("POST", "http://random/url.json",
+                            headers=post_headers)

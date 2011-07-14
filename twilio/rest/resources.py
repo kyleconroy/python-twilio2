@@ -150,7 +150,6 @@ def make_twilio_request(method, uri, **kwargs):
     """
     headers = kwargs.get("headers", {})
     headers["User-Agent"] = "twilio-python"   # Add user aggent string
-    headers["Accepts"] = "application/json"   # Add accepts header
 
     if method == "POST" and "Content-Type" not in headers:
         headers["Content-Type"] = "application/x-www-form-urlencoded"
@@ -375,8 +374,9 @@ class AvailablePhoneNumbers(ListResource):
 
     types = {"local": "Local", "tollfree": "TollFree"}
 
-    def __init__(self, base_uri, auth):
+    def __init__(self, base_uri, auth, phone_numbers):
         super(AvailablePhoneNumbers, self).__init__(base_uri, auth)
+        self.phone_numbers = phone_numbers
 
     def get(self, sid):
         raise TwilioException("Individual AvailablePhoneNumbers have no sid")
@@ -405,7 +405,7 @@ class AvailablePhoneNumbers(ListResource):
         return [self.load_instance(i) for i in page[self.key]]
 
     def load_instance(self, data):
-        instance = self.instance(self)
+        instance = self.instance(self.phone_numbers)
         instance.load(data)
         instance.load_subresources()
         return instance
@@ -751,7 +751,8 @@ class PhoneNumbers(ListResource):
 
     def __init__(self, base_uri, auth):
         super(PhoneNumbers, self).__init__(base_uri, auth)
-        self.available_phone_numbers = AvailablePhoneNumbers(base_uri, auth)
+        self.available_phone_numbers = \
+            AvailablePhoneNumbers(base_uri, auth, self)
 
     def delete(self, sid):
         """

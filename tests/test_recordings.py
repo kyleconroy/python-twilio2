@@ -21,7 +21,7 @@ def test_paging(mock):
     recordings.list(call_sid="CA123", before=date(2010,12,5))
     exp_params = {'CallSid': 'CA123', 'DateCreated<': '2010-12-05'}
 
-    mock.assert_called_with("GET", uri, params=exp_params)
+    mock.assert_called_with("GET", uri, params=exp_params, auth=AUTH)
 
 @patch("twilio.rest.resources.make_twilio_request")
 def test_get(mock):
@@ -31,7 +31,7 @@ def test_get(mock):
     uri = "{}/Recordings/{}".format(BASE_URI, RE_SID)
     r = recordings.get(RE_SID)
 
-    mock.assert_called_with("GET", uri)
+    mock.assert_called_with("GET", uri, auth=AUTH)
 
     truri = "{}/Recordings/{}/Transcriptions".format(BASE_URI, RE_SID)
     assert_equals(r.transcriptions.uri, truri)
@@ -45,7 +45,7 @@ def test_get(mock):
     uri = "{}/Recordings/{}".format(BASE_URI, RE_SID)
     r = recordings.delete(RE_SID)
 
-    mock.assert_called_with("DELETE", uri)
+    mock.assert_called_with("DELETE", uri, auth=AUTH)
     assert_true(r)
 
 @raises(AttributeError)

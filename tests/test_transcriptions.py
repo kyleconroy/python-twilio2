@@ -18,7 +18,7 @@ def test_paging(mock):
     uri = "{}/Transcriptions".format(BASE_URI)
     transcriptions.list(page=2)
 
-    mock.assert_called_with("GET", uri, params={"Page": 2})
+    mock.assert_called_with("GET", uri, params={"Page": 2}, auth=AUTH)
 
 @patch("twilio.rest.resources.make_twilio_request")
 def test_get(mock):
@@ -28,7 +28,7 @@ def test_get(mock):
     uri = "{}/Transcriptions/TR123".format(BASE_URI)
     transcriptions.get("TR123")
 
-    mock.assert_called_with("GET", uri)
+    mock.assert_called_with("GET", uri, auth=AUTH)
 
 
 @raises(AttributeError)
