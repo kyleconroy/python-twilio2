@@ -2,26 +2,17 @@ import base64
 import hmac
 from hashlib import sha1
 
+class RequestValidator(object):
 
-class TwilioValidation(object):
-
-    def __init__(self, id, token):
-        """Initialize a twilio utility object
-
-        Arguments:
-        id     -- Twilio Account SID
-        token  -- Twilio Auth Token
-
-        Returns a Twilio util object
-        """
-        self.id = id
+    def __init__(self, token):
         self.token = token
 
-    def sign(self, uri, params):
+    def compute_signature(self, uri, params):
         """Compute the signature for a given request
 
-        uri       -- the full URI that Twilio requested on your server
-        params    -- post vars that Twilio sent with the request
+        :param uri: full URI that Twilio requested on your server
+        :param params: post vars that Twilio sent with the request
+        :param auth: tuple with (account_sid, token)
 
         Returns the computed signature
         """
@@ -37,10 +28,11 @@ class TwilioValidation(object):
     def validate(self, uri, params, signature):
         """Validate a request from Twilio
 
-        uri       -- the full URI that Twilio requested on your server
-        params    -- post vars that Twilio sent with the request
-        signature -- signature in HTTP X-Twilio-Signature header
+        :param uri: full URI that Twilio requested on your server
+        :param params: post vars that Twilio sent with the request
+        :param signature: expexcted signature in HTTP X-Twilio-Signature header
+        :param auth: tuple with (account_sid, token)
 
         returns true if the request passes validation, false if not
         """
-        return self.sign(uri, params) == signature
+        return self.compute_signature(uri, params) == signature

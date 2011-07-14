@@ -25,9 +25,22 @@ class Verb(object):
             if v:
                 self.attrs[k] = v
 
-    def __repr__(self):
-        return u'<?xml version="1.0" encoding="utf-8">' \
-            + ET.tostring(self.xml()).encode("utf-8")
+    def __str__(self):
+        return self.toxml()
+
+    def toxml(self, xml_declaration=True):
+        """
+        Return the contents of this verb as an XML string
+
+        :param bool xml_declaration: Include the XML declaration. Defaults to
+                                     True
+        """
+        xml = ET.tostring(self.xml()).encode("utf-8")
+
+        if xml_declaration:
+            return u'<?xml version="1.0" encoding="utf-8"?>' + xml
+        else:
+            return xml
 
     def xml(self):
         el = ET.Element(self.name)

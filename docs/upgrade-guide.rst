@@ -154,10 +154,9 @@ The same sample, converted to use the new version.
 
     from twilio import util
 
-    ACCOUNT_SID = 'ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
     ACCOUNT_TOKEN = 'YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY'
 
-    utils = util.TwilioValidation(ACCOUNT_SID, ACCOUNT_TOKEN)
+    utils = util.RequestValidator(ACCOUNT_TOKEN)
 
     url = "http://UUUUUUUUUUUUUUUUUU"
     post_vars = {}

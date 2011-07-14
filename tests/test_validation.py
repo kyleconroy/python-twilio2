@@ -1,13 +1,12 @@
 import unittest
-from twilio.util import TwilioValidation
+from twilio.util import RequestValidator
 
 
 class ValidationTest(unittest.TestCase):
 
     def test_validation(self):
-        sid = "AC9a9f9392lad99kla0sklakjs90j092j3"
         token = "1c892n40nd03kdnc0112slzkl3091j20"
-        validator = TwilioValidation(sid, token)
+        validator = RequestValidator(token)
 
         uri = "http://www.postbin.org/1ed898x"
         params = {
@@ -40,7 +39,6 @@ class ValidationTest(unittest.TestCase):
             }
 
         expected = "fF+xx6dTinOaCdZ0aIeNkHr/ZAA="
-        sig = validator.sign(uri, params)
 
-        self.assertEquals(sig, expected)
+        self.assertEquals(validator.compute_signature(uri, params), expected)
         self.assertTrue(validator.validate(uri, params, expected))

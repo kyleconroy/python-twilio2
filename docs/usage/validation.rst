@@ -10,15 +10,14 @@ However, there may be people out there trying to spoof the Twilio service. Lucki
 
 An `indepth guide <http://www.twilio.com/docs/security>`_ to our security features can be found in our online documentation.
 
-Before you can validate requests, you'll need five pieces of information
+Before you can validate requests, you'll need four pieces of information
 
-* your Twilio Account SID
 * your Twilio Auth Token
 * the POST data for the request
 * the requested URL
 * the X-Twilio-Signature header value
 
-Get your Account SID and Auth Token from the `Twilio User Dashboard <https://www.twilio.com/user/account>`_.
+Get your Auth Token from the `Twilio User Dashboard <https://www.twilio.com/user/account>`_.
 
 Obtaining the other three pieces of information depends on the framework of your choosing. I will assume that you have the POST data as a dictionary and the url and X-Twilio-Signature as strings.
 
@@ -26,19 +25,18 @@ The below example will print out a confirmation message if the request is actual
 
 .. code-block:: python
 
-    from twilio import util
+    from twilio.util import RequestValidator
 
-    ACCOUNT_SID = 'ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
-    ACCOUNT_TOKEN = 'YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY'
+    AUTH_TOKEN = 'YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY'
 
-    utils = util.TwilioValidation(ACCOUNT_SID, ACCOUNT_TOKEN)
+    validator = RequestValidator(AUTH_TOKEN)
 
     url = "http://www.example.com/request/url"
     post_vars = {}
 
     signature = "X-Twilio-Signature header value"
 
-    if utils.validate(url, post_vars, signature):
+    if validator.validate(url, post_vars, signature):
         print "Confirmed to have come from Twilio."
     else:
         print "NOT VALID.  It might have been spoofed!"
