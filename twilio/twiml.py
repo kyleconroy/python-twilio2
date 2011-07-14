@@ -26,7 +26,8 @@ class Verb(object):
                 self.attrs[k] = v
 
     def __repr__(self):
-        return ET.tostring(self.xml())
+        return u'<?xml version="1.0" encoding="utf-8">' \
+            + ET.tostring(self.xml()).encode("utf-8")
 
     def xml(self):
         el = ET.Element(self.name)
@@ -45,9 +46,7 @@ class Verb(object):
         return el
 
     def append(self, verb):
-        if not self.nestables:
-            raise TwimlException("%s is not nestable" % self.name)
-        if verb.name not in self.nestables:
+        if not self.nestables or verb.name not in self.nestables:
             raise TwimlException("%s is not nestable inside %s" % \
                 (verb.name, self.name))
         self.verbs.append(verb)
@@ -56,12 +55,22 @@ class Verb(object):
 
 class Response(Verb):
     """Twilio response object."""
-    def __init__(self, version="2010-04-01", **kwargs):
+    def __init__(self, **kwargs):
         """Version: Twilio API version e.g. 2008-08-01 """
 
-        Verb.__init__(self, version=version, **kwargs)
-        self.nestables = ['Say', 'Play', 'Gather', 'Record', 'Dial',
-            'Redirect', 'Pause', 'Hangup', 'Sms']
+        Verb.__init__(self, **kwargs)
+        self.nestables = [
+            'Say',
+            'Play',
+            'Gather',
+            'Record',
+            'Dial',
+            'Redirect',
+            'Pause',
+            'Hangup',
+            'Reject',
+            'Sms',
+            ]
 
     def say(self, text, **kwargs):
         """Return a newly created :class:`Say` verb, nested inside this
@@ -91,7 +100,7 @@ class Response(Verb):
     def reject(self, reason=None, **kwargs):
         """Return a newly created :class:`Hangup` verb, nested inside this
         :class:`Response` """
-        return self.append(Reject(**kwargs))
+        return self.append(Reject(reason=reason, **kwargs))
 
     def gather(self, **kwargs):
         """Return a newly created :class:`Gather` verb, nested inside this
@@ -138,7 +147,7 @@ class Response(Verb):
     def addDial(self, *args, **kwargs):
         return self.dial(*args, **kwargs)
 
-    def addRecord(self, **kwargs):
+    def addRecord(self, *args, **kwargs):
         return self.record(*args, **kwargs)
 
     def addSms(self, *args, **kwargs):
@@ -169,19 +178,18 @@ class Say(Verb):
     FRENCH = 'fr'
     GERMAN = 'de'
 
-    def __init__(self, text, voice='man', language='en', loop=1, **kwargs):
+    def __init__(self, text, voice=None, language=None, loop=None, **kwargs):
         Verb.__init__(self, voice=voice, language=language, loop=loop,
             **kwargs)
         self.body = text
-        if voice and (voice != self.MAN and voice != self.WOMAN):
+        if voice and voice not in [self.MAN, self.WOMAN]:
             raise TwimlException(
                 "Invalid Say voice parameter, must be 'man' or 'woman'")
-        if language and (language != self.ENGLISH and language != self.SPANISH
-            and language != self.FRENCH and language != self.GERMAN):
+        if language and language not in \
+                [self.ENGLISH, self.SPANISH, self.FRENCH, self.GERMAN]:
             raise TwimlException(
                 "Invalid Say language parameter, must be "
                 "'en', 'es', 'fr', or 'de'")
-
 
 class Play(Verb):
     """Play an audio file at a URL
@@ -191,9 +199,9 @@ class Play(Verb):
 
     :param loop: specifies how many times you'd like the text repeated.
                  Specifying '0' will cause the the :class:`Say` verb to loop
-                 until the call is hung up.
+                 until the call is hung up. Defaults to 1.
     """
-    def __init__(self, url, loop=1, **kwargs):
+    def __init__(self, url, loop=None, **kwargs):
         Verb.__init__(self, loop=loop, **kwargs)
         self.body = url
 
@@ -204,7 +212,7 @@ class Pause(Verb):
     :param length: specifies how many seconds Twilio will wait silently before
                    continuing on.
     """
-    def __init__(self, length=1, **kwargs):
+    def __init__(self, length=None, **kwargs):
         Verb.__init__(self, length=length, **kwargs)
 
 
@@ -219,9 +227,9 @@ class Redirect(Verb):
     GET = 'GET'
     POST = 'POST'
 
-    def __init__(self, url="", method=POST, **kwargs):
+    def __init__(self, url="", method=None, **kwargs):
         Verb.__init__(self, method=method, **kwargs)
-        if method and (method != self.GET and method != self.POST):
+        if method and method not in [self.GET, self.POST]:
             raise TwimlException( \
                 "Invalid method parameter, must be 'GET' or 'POST'")
         self.body = url
@@ -237,8 +245,8 @@ class Hangup(Verb):
 class Reject(Verb):
     """Hangup the call
     """
-    def __init__(self, **kwargs):
-        Verb.__init__(self)
+    def __init__(self, reason=None, **kwargs):
+        Verb.__init__(self, reason=reason, **kwargs)
 
 
 class Gather(Verb):
@@ -272,6 +280,15 @@ class Gather(Verb):
 
     def pause(self, **kwargs):
         return self.append(Pause(**kwargs))
+
+    def addSay(self, *args, **kwargs):
+        return self.say(*args, **kwargs)
+
+    def addPlay(self, *args, **kwargs):
+        return self.play(*args, **kwargs)
+
+    def addPause(self, *args, **kwargs):
+        return self.pause(*args, **kwargs)
 
 
 class Number(Verb):
@@ -360,6 +377,12 @@ class Dial(Verb):
 
     def conference(self, name, **kwargs):
         return self.append(Conference(name, **kwargs))
+
+    def addNumber(self, *args, **kwargs):
+        return self.number(*args, **kwargs)
+
+    def addConference(self, *args, **kwargs):
+        return self.conference(*args, **kwargs)
 
 
 class Record(Verb):
