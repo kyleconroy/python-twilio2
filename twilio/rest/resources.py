@@ -903,6 +903,7 @@ class Sms(object):
     def __init__(self, base_uri, auth):
         self.uri = "%s/SMS" % base_uri
         self.messages = SmsMessages(self.uri, auth)
+        self.short_codes = ShortCodes(self.uri, auth)
 
 
 class SmsMessage(InstanceResource):
@@ -949,6 +950,64 @@ class SmsMessages(ListResource):
             "DateSent>": after,
             })
         return self.get_instances(params=params, **kwargs)
+
+
+class ShortCode(InstanceResource):
+
+    def update(self, **kwargs):
+        return self.parent.update(self.name, **kwargs)
+
+
+class ShortCodes(ListResource):
+
+    name = "ShortCodes"
+    key = "short_codes"
+    instance = ShortCode
+
+    def list(self, short_code=None, friendly_name=None, **kwargs):
+        """
+        Returns a page of :class:`ShortCode` resources as a list. For
+        paging informtion see :class:`ListResource`.
+
+        :param short_code: Only show the ShortCode resources that match this
+                           pattern. You can specify partial numbers and use '*'
+                           as a wildcard for any digit.
+        :param friendly_name: Only show the ShortCode resources with friendly
+                              names that exactly match this name.
+        """
+        params = transform_params({
+            "ShortCode": short_code,
+            "FriendlyName": friendly_name,
+            })
+        return self.get_instances(params=params, **kwargs)
+
+    def update(self, sid, friendly_name=None, api_version=None, url=None,
+               method=None, fallback_url=None, fallback_method=None):
+        """
+        Returns a page of :class:`SMSMessage` resources as a list. For
+        paging informtion see :class:`ListResource`.
+
+        :param friendly_name: Description of the short code, with maximum
+                              length 64 characters.
+        :param api_version: SMSs to this short code will start a new TwiML
+                            session with this API version.
+        :param url: The URL that Twilio should request when somebody sends an
+                    SMS to the short code.
+        :param method: The HTTP method that should be used to request the url.
+        :param fallback_url: A URL that Twilio will request if an error occurs
+                             requesting or executing the TwiML at the url.
+        :param fallback_method: The HTTP method that should be used to request
+                                the fallback_url.
+        """
+        params = transform_params({
+            "FriendlyName": friendly_name,
+            "ApiVersion": api_version,
+            "SmsUrl": url,
+            "SmsMethod": method,
+            "SmsFallbackUrl": fallback_url,
+            "SmsFallbackMethod": fallback_method,
+            })
+        return self.update_instance(sid, params)
 
 
 class Participant(InstanceResource):
