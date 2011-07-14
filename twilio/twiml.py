@@ -322,10 +322,13 @@ class Record(Verb):
     GET = 'GET'
     POST = 'POST'
     
-    def __init__(self, action=None, method=None, maxLength=None, 
-        timeout=None, **kwargs):
-        Verb.__init__(self, action=action, method=method, maxLength=maxLength,
-            timeout=timeout, **kwargs)
+    def __init__(self, action=None, method=None, timeout=None,
+        finishOnKey=None, maxLength=None, transcribe=None,
+        transcribeCallback=None, playBeep=None, **kwargs):
+        Verb.__init__(self, action=action, method=method, timeout=timeout,
+                finishOnKey=finishOnKey, maxLength=maxLength,
+                transcribe=transcribe, transcribeCallback=transcribeCallback,
+                playBeep=playBeep, **kwargs)
         if method and (method != self.GET and method != self.POST):
             raise TwimlException( \
                 "Invalid method parameter, must be GET or POST")
