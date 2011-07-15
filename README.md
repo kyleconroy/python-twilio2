@@ -16,8 +16,7 @@ Getting started with the Twilio API couldn't be easier. Create a Twilio REST cli
     print call.sid
 ```
 
-Generating TwiML
-=================
+## Generating TwiML
 
 To control phone calls, your application need to output TwiML. Use :class:`twilio.twiml..Response` to easily create such responses.
 
