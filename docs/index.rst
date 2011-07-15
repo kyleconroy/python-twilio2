@@ -1,21 +1,15 @@
-.. twilio-python2 documentation master file, created by
-   sphinx-quickstart on Mon Dec 13 16:47:32 2010.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
 ==================================
-The Twilio Python Library
+Twilio Python
 ==================================
 
-The **twilio-python** helper library simplifies interaction with Twilio's `REST API <http://www.twilio.com/docs/api/twiml/>`_ and facilitates creation of valid `TwiML <http://www.twilio.com/docs/api/twiml/>`_.
-
+Make requests to Twilio's `REST API <http://www.twilio.com/docs/api/twiml/>`_ and create `TwiML <http://www.twilio.com/docs/api/twiml/>`_ without a hassle. And you thought Twilio couldn't get any easier.
 
 .. _installation:
 
 Installation
 ================
 
-**twilio-python** is listed on `PyPi <http://pypi.python.org/pypi>`_, so just use :data:`pip`
+Latest version: `3.0`_
 
 .. code-block:: bash
 
@@ -30,31 +24,63 @@ You can also download the source and install using :data:`setuptools`
 Getting Started
 ================
 
-.. toctree::
-    :maxdepth: 1
+The :doc:`/getting-started` will get you up and running in a few quick minutes. This guide assumes you understand the core concepts of Twilio. If you've never used Twilio before, don't fret! Just read `about how Twilio works <http://www.twilio.com/api/>`_ and then jump in.
 
-    getting-started
-    
+.. _user-guide:
 
 User Guide
 ==================
 
+Functionality is split over three different sub-packages within **twilio-python**. Below are in-depth guide to specific portions of the library.
+
+REST API
+----------
+
+Query the Twilio REST API to create phone calls, send SMS messages and so much more
+
 .. toctree::
-    :maxdepth: 2
+    :maxdepth: 1
 
     usage/basics
-    usage/twiml
     usage/phone-calls
     usage/phone-numbers
     usage/messages
-    usage/conferences
     usage/accounts
+    usage/conferences
+    usage/applications
     usage/notifications
+    usage/recordings
+    usage/transcriptions
+
+TwiML
+---------
+
+Generates valid TwiML for controlling and manipulating phone calls.
+
+.. toctree::
+    :maxdepth: 2
+
+    usage/twiml
+
+Utilites
+----------
+
+Small functions useful for validating requests are coming from Twilio
+
+.. toctree::
+    :maxdepth: 1
+
+    usage/validation
+
+Upgrade Plan
+==================
+
+`twilio-python` 3.0 introduced backwards-incompatible changes to the API. See the :doc:`/upgrade-guide` for step-by-step instructions for migrating to 3.0. In many cases, the same methods are still offered, just in different locations.
 
 API Reference
 ==================
 
-A complete guide to all public APIs found in `twilio-python`
+A complete guide to all public APIs found in `twilio-python`. Auto-generated, so only use when you really need to dive deep into the library.
 
 .. toctree::
     :maxdepth: 2
@@ -63,7 +89,7 @@ A complete guide to all public APIs found in `twilio-python`
 
 Support and Development
 ==========================
-All development occurs over on `Github <https://github.com/twilio/twilio-python>`_. To checkout the source, 
+All development occurs over on `Github <https://github.com/twilio/twilio-python>`_. To checkout the source,
 
 .. code-block:: bash
 
@@ -82,7 +108,3 @@ Current stable version is 3.0.0.
    :maxdepth: 1
 
    changelog
-
-This project uses `semantic versioning <http://semver.org/>`_.
-
-

@@ -4,12 +4,16 @@
 :mod:`twilio.rest.resources`
 =============================
 
+.. autoclass:: ListResource
+   :members: count, get, iter
+
+
 Accounts
 >>>>>>>>>
 
 .. autoclass:: Accounts
    :members:
-   :inherited-members:
+   :exclude-members: instance
 
 .. autoclass:: Account
    :members:
@@ -39,12 +43,99 @@ Accounts
       The authorization token for this account. This token should be kept a secret, so no sharing.
 
 
+Applications
+>>>>>>>>>>>>>>>
+
+.. autoclass:: Applications
+   :members:
+   :exclude-members: instance
+
+.. autoclass:: Application
+   :members:
+
+   .. attribute:: sid
+
+      A 34 character string that uniquely identifies this application.
+
+   .. attribute:: date_created
+
+      The date that this application was created, in GMT in RFC 2822 format
+
+   .. attribute:: date_updated
+
+      The date that this application was last updated, in GMT in RFC 2822 format.
+
+   .. attribute:: friendly_name
+
+      A human readable description of this application, up to 64 characters long. By default the FriendlyName is your email address.
+
+   .. attribute:: status
+
+      The status of this account. Usually active, but can be suspended if you've been bad, or closed if you've been horrible.
+
+   .. attribute:: api_version
+
+      Requests to this application will start a new TwiML session with this API version.
+
+   .. attribute:: voice_url
+
+      URL Twilio will request when a phone number assigned to this application receives a call.
+
+   .. attribute:: voice_method
+
+      The HTTP method Twilio will use when requesting the above Url. Either GET or POST.
+
+   .. attribute:: voice_fallback_url
+
+      The URL that Twilio will request if an error occurs retrieving or executing the TwiML requested by Url.
+
+   .. attribute:: voice_fallback_method
+
+      The HTTP method Twilio will use when requesting the VoiceFallbackUrl. Either GET or POST.
+
+   .. attribute:: status_callback
+
+      The URL that Twilio will request to pass status parameters (such as call ended) to your application.
+
+   .. attribute:: status_callback_method
+
+      The HTTP method Twilio will use to make requests to the StatusCallback URL. Either GET or POST.
+
+   .. attribute:: voice_caller_id_lookup
+
+      Look up the caller's caller-ID name from the CNAM database (additional charges apply). Either true or false.
+
+   .. attribute:: sms_url
+
+      The URL Twilio will request when a phone number assigned to this application receives an incoming SMS message.
+
+   .. attribute:: sms_method
+
+      The HTTP method Twilio will use when making requests to the SmsUrl. Either GET or POST.
+
+   .. attribute:: sms_fallback_url
+
+      The URL that Twilio will request if an error occurs retrieving or executing the TwiML from SmsUrl.
+
+   .. attribute:: sms_fallback_method
+
+      The HTTP method Twilio will use when requesting the above URL. Either GET or POST.
+
+   .. attribute:: sms_status_callback
+
+      Twilio will make a POST request to this URL to pass status parameters (such as sent or failed) to your application if you specify this application's Sid as the ApplicationSid on an outgoing SMS request.
+
+   .. attribute:: uri
+
+      The URI for this resource, relative to https://api.twilio.com
+
+
 Calls
 >>>>>>
 
 .. autoclass:: twilio.rest.resources.Calls
    :members:
-   :inherited-members:
+   :exclude-members: instance
 
 .. autoclass:: twilio.rest.resources.Call
    :members:
@@ -53,7 +144,7 @@ Calls
 
       A 34 character string that uniquely identifies this resource.
 
-   .. attribute:: parent_call_sid 
+   .. attribute:: parent_call_sid
 
       A 34 character string that uniquely identifies the call that created this leg.
 
@@ -73,7 +164,7 @@ Calls
 
       The phone number that received this call. e.g., +16175551212 (E.164 format)
 
-   .. attribute:: from_ 
+   .. attribute:: from_
 
       The phone number that made this call. e.g., +16175551212 (E.164 format)
 
@@ -90,19 +181,19 @@ Calls
       The start time of the call, given as GMT in RFC 2822 format. Empty if the call has not yet been dialed.
 
    .. attribute:: end_time
-   
+
       The end time of the call, given as GMT in RFC 2822 format. Empty if the call did not complete successfully.
 
    .. attribute:: duration
 
       The length of the call in seconds. This value is empty for busy, failed, unanswered or ongoing calls.
 
-   .. attribute:: price 
-   
+   .. attribute:: price
+
       The charge for this call in USD. Populated after the call is completed. May not be immediately available.
 
    .. attribute:: direction
-   
+
       A string describing the direction of the call. inbound for inbound calls, outbound-api for calls initiated via the REST API or outbound-dial for calls initiated by a <Dial> verb.
 
    .. attribute:: answered_by
@@ -122,7 +213,7 @@ Caller Ids
 
 .. autoclass:: twilio.rest.resources.CallerIds
    :members:
-   :inherited-members:
+   :exclude-members: instance
 
 .. autoclass:: twilio.rest.resources.CallerId
    :members:
@@ -160,7 +251,7 @@ Conferences
 
 .. autoclass:: twilio.rest.resources.Conferences
    :members:
-   :inherited-members:
+   :exclude-members: instance
 
 .. autoclass:: twilio.rest.resources.Conference
    :members:
@@ -195,7 +286,7 @@ Conferences
 
    .. attribute:: participants
 
-      The :class:`Participants` resource, listing people currenlty in this conference
+      The :class:`Participants` resource, listing people currently in this conference
 
 
 Notifications
@@ -203,7 +294,7 @@ Notifications
 
 .. autoclass:: twilio.rest.resources.Notifications
    :members:
-   :inherited-members:
+   :exclude-members: instance
 
 .. autoclass:: twilio.rest.resources.Notification
    :members:
@@ -281,7 +372,7 @@ Participlants
 
 .. autoclass:: twilio.rest.resources.Participants
    :members:
-   :inherited-members:
+   :exclude-members: instance
 
 .. autoclass:: twilio.rest.resources.Participant
    :members:
@@ -328,7 +419,7 @@ Phone Numbers
 
 .. autoclass:: twilio.rest.resources.PhoneNumbers
    :members:
-   :inherited-members:
+   :exclude-members: instance
 
 .. autoclass:: twilio.rest.resources.PhoneNumber
    :members:
@@ -452,7 +543,7 @@ Recordings
 
 .. autoclass:: twilio.rest.resources.Recordings
    :members:
-   :inherited-members:
+   :exclude-members: instance
 
 .. autoclass:: twilio.rest.resources.Recording
    :members:
@@ -495,7 +586,7 @@ Recordings
 
    .. attribute:: formats
 
-      A diciontary of the audio formats available for this recording
+      A dictionary of the audio formats available for this recording
 
       .. code-block:: python
 
@@ -509,6 +600,7 @@ Sandbox
 
 .. autoclass:: twilio.rest.resources.Sandboxes
    :members:
+   :exclude-members: instance
 
 .. autoclass:: twilio.rest.resources.Sandbox
    :members:
@@ -554,12 +646,69 @@ Sandbox
       The URI for this resource, relative to https://api.twilio.com
 
 
+Short Codes
+>>>>>>>>>>>>
+
+.. autoclass:: twilio.rest.resources.ShortCodes
+   :members:
+
+.. autoclass:: twilio.rest.resources.ShortCode
+   :members:
+
+   .. attribute:: sid
+
+      A 34 character string that uniquely identifies this resource.
+
+   .. attribute:: date_created
+
+      The date that this resource was created, given in RFC 2822 format.
+
+   .. attribute:: date_updated
+
+      The date that this resource was last updated, given in RFC 2822 format.
+
+   .. attribute:: friendly_name
+
+      A human readable descriptive text for this resource, up to 64 characters long. By default, the :attr:`friendly_name` is just the short code.
+
+   .. attribute:: account_sid
+
+      The unique id of the Account that owns this short code.
+
+   .. attribute:: short_code
+
+      The short code. e.g., 894546.
+
+   .. attribute:: api_version
+
+      SMSs to this short code will start a new TwiML session with this API version.
+
+   .. attribute:: sms_url
+
+      The URL Twilio will request when receiving an incoming SMS message to this short code.
+
+   .. attribute:: sms_method
+
+      The HTTP method Twilio will use when making requests to the :attr:`sms_url`. Either GET or POST.
+
+   .. attribute:: sms_fallback_url
+
+      The URL that Twilio will request if an error occurs retrieving or executing the TwiML from :attr:`sms_url`.
+
+   .. attribute:: sms_fallback_method
+
+      The HTTP method Twilio will use when requesting the above URL. Either GET or POST.
+
+   .. attribute:: uri
+
+      The URI for this resource, relative to https://api.twilio.com.
+
+
 SMS Messages
 >>>>>>>>>>>>
 
 .. autoclass:: twilio.rest.resources.SmsMessages
    :members:
-   :inherited-members:
 
 .. autoclass:: twilio.rest.resources.SmsMessage
    :members:
@@ -622,7 +771,7 @@ Transcriptions
 
 .. autoclass:: twilio.rest.resources.Transcriptions
    :members:
-   :inherited-members:
+   :exclude-members: instance
 
 .. autoclass:: twilio.rest.resources.Transcription
    :members:
@@ -640,7 +789,7 @@ Transcriptions
       The date that this resource was last updated, given in RFC 2822 format.
 
    .. attribute:: account_sid
-   
+
       The unique id of the Account responsible for this transcription.
 
    .. attribute:: status

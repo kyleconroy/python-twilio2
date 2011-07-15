@@ -1,39 +1,48 @@
 import unittest
 from datetime import datetime
 from datetime import date
-from twilio.rest import core
+from twilio.rest.resources import parse_date
+from twilio.rest.resources import transform_params
+from twilio.rest.resources import convert_keys
+from twilio.rest.resources import convert_case
+from twilio.rest.resources import normalize_dates
 
 
 class CoreTest(unittest.TestCase):
-    
+
     def test_date(self):
         d = date(2009,10,10)
-        self.assertEquals(core.parse_date(d), "2009-10-10")
+        self.assertEquals(parse_date(d), "2009-10-10")
 
     def test_datetime(self):
         d = datetime(2009,10,10)
-        self.assertEquals(core.parse_date(d), "2009-10-10")
+        self.assertEquals(parse_date(d), "2009-10-10")
 
     def test_string_date(self):
         d = "2009-10-10"
-        self.assertEquals(core.parse_date(d), "2009-10-10")
+        self.assertEquals(parse_date(d), "2009-10-10")
 
     def test_string_date(self):
         d = None
-        self.assertEquals(core.parse_date(d), None)
+        self.assertEquals(parse_date(d), None)
 
     def test_string_date(self):
         d = False
-        self.assertEquals(core.parse_date(d), None)
+        self.assertEquals(parse_date(d), None)
 
     def test_fparam(self):
         d = {"HEY": None, "YOU": 3}
         ed = {"YOU":3}
-        self.assertEquals(core.fparam(d), ed)
+        self.assertEquals(transform_params(d), ed)
+
+    def test_fparam_booleans(self):
+        d = {"HEY": None, "YOU": 3, "Activated": False}
+        ed = {"YOU":3, "Activated": "false"}
+        self.assertEquals(transform_params(d), ed)
 
     def test_normalize_dates(self):
 
-        @core.normalize_dates
+        @normalize_dates
         def foo(on=None, before=None, after=None):
             return {
                 "on": on,
@@ -41,7 +50,7 @@ class CoreTest(unittest.TestCase):
                 "after": after,
                 }
 
-        d = foo(on="2009-10-10", before=date(2009,10,10), 
+        d = foo(on="2009-10-10", before=date(2009,10,10),
                 after=datetime(2009,10,10))
 
         self.assertEquals(d["on"], "2009-10-10")
@@ -49,9 +58,9 @@ class CoreTest(unittest.TestCase):
         self.assertEquals(d["before"], "2009-10-10")
 
     def test_convert_case(self):
-        self.assertEquals(core.convert_case("from_"), "From")
-        self.assertEquals(core.convert_case("to"), "To")
-        self.assertEquals(core.convert_case("frienldy_name"), "FrienldyName")
+        self.assertEquals(convert_case("from_"), "From")
+        self.assertEquals(convert_case("to"), "To")
+        self.assertEquals(convert_case("frienldy_name"), "FrienldyName")
 
     def test_convert_keys(self):
         d = {
@@ -68,5 +77,5 @@ class CoreTest(unittest.TestCase):
             "EndTime": 0,
             }
 
-        self.assertEquals(ed, core.convert_keys(d))
-               
+        self.assertEquals(ed, convert_keys(d))
+
