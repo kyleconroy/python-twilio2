@@ -1,4 +1,8 @@
+A module for using the Twilio REST API and generating valid TwiML.
+
 ## Installation
+
+Install from PyPi using pip
 
     pip install twilio
 
