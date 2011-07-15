@@ -26,6 +26,8 @@ Getting Started
 
 The :doc:`/getting-started` will get you up and running in a few quick minutes. This guide assumes you understand the core concepts of Twilio. If you've never used Twilio before, don't fret! Just read `about how Twilio works <http://www.twilio.com/api/>`_ and then jump in.
 
+.. _user-guide:
+
 User Guide
 ==================
 

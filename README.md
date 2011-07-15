@@ -1,33 +1,40 @@
-Making Twilio even easier (is it possible?)
+# Getting Started
 
-## Installation
+Getting started with the Twilio API couldn't be easier. Create a Twilio REST client to get started. For example, the following code makes a call using the Twilio REST API.
 
-We aren't on PyPi just yet, but you can install straight from github using pip
+## Making a Call
 
-    pip install -e git+https://github.com/derferman/python-twilio2.git#egg=twilio
 
-## Examples
+```python
 
-### REST API
+    from twilio.rest import TwilioRestClient()
 
-    import twilio
-
-    conn = twilio.api.Client()
-    call = conn.calls.make(to="9991231234, from_="9991231234",
-                           url="http://foo.com/call.xml")
+    client = TwilioRestClient()
+    call = client.calls.make(to="9991231234, from_="9991231234",
+                             url="http://foo.com/call.xml")
     print call.length
     print call.sid
+```
 
+Generating TwiML
+=================
 
-### Twiml
+To control phone calls, your application need to output TwiML. Use :class:`twilio.twiml..Response` to easily create such responses.
+
+```python
 
     from twilio import twiml
 
     r = twiml.Response()
     r.play("monkey.mp3", loop=5)
-    r.toxml() 
-    # returns <Response><Play loop="3">monkey.mp3</Play><Response>
+    print str(r)
+```
 
-### Documentation
+```xml
+    <?xml version="1.0" encoding="utf-8"?>
+    <Response><Play loop="5">monkey.mp3</Play><Response>
+```
 
-<http://derferman.github.com/python-twilio2/>
+## Digging Deeper
+
+The full power of the Twilio API is at your finger tips. The [full documentation](http://derferman.github.com/python-twilio2/) explains all the awesome features available to use.
