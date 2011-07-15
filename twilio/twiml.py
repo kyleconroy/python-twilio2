@@ -353,11 +353,11 @@ class Conference(Verb):
 
     def __init__(self, name, muted=None, beep=None,
         startConferenceOnEnter=None, endConferenceOnExit=None, waitUrl=None,
-        waitMethod=None, **kwargs):
+        waitMethod=None, maxParticipants=None, **kwargs):
         Verb.__init__(self, muted=muted, beep=beep,
             startConferenceOnEnter=startConferenceOnEnter,
             endConferenceOnExit=endConferenceOnExit, waitUrl=waitUrl,
-            waitMethod=waitMethod, **kwargs)
+            waitMethod=waitMethod, maxParticipants=maxParticipants, **kwargs)
         if waitMethod and (waitMethod != self.GET and waitMethod != self.POST):
             raise TwimlException( \
                 "Invalid waitMethod parameter, must be GET or POST")
@@ -412,7 +412,6 @@ class Record(Verb):
     def __init__(self, action=None, method=None, timeout=None,
         finishOnKey=None, maxLength=None, transcribe=None,
         transcribeCallback=None, playBeep=None, **kwargs):
-
         Verb.__init__(self, action=action, method=method, timeout=timeout,
                 finishOnKey=finishOnKey, maxLength=maxLength,
                 transcribe=transcribe, transcribeCallback=transcribeCallback,
