@@ -12,7 +12,7 @@ Making a Call
     from twilio.rest import TwilioRestClient()
 
     client = TwilioRestClient()
-    call = client.calls.make(to="9991231234, from_="9991231234",
+    call = client.calls.make(to="9991231234", from_="9991231234",
                              url="http://foo.com/call.xml")
     print call.length
     print call.sid
